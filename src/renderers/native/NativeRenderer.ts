@@ -717,22 +717,93 @@ export class NativeRenderer implements IChartRenderer {
         const doc = this.wrapper.ownerDocument;
         const el = doc.createElement('div');
         el.className = 'tt-loading'; // stable hook for probes and host styling
+        const theme = this.chromeTheme();
+        // On a dark chart the loader's candles are pure white with a soft white glow; on a light
+        // chart white would vanish, so they take the text colour and no glow.
+        const bg = /^#([0-9a-f]{6})$/i.exec(theme.background);
+        const bgN = bg ? parseInt(bg[1]!, 16) : 0;
+        const dark = (0.299 * (bgN >> 16) + 0.587 * ((bgN >> 8) & 255) + 0.114 * (bgN & 255)) / 255 < 0.5;
+        const color = theme.textColor;
+        const candleColor = dark ? '#ffffff' : color;
+        const glow = dark ? 'drop-shadow(0 0 3px rgba(255,255,255,0.6)) drop-shadow(0 0 8px rgba(255,255,255,0.25))' : 'none';
         Object.assign(el.style, {
             position: 'absolute',
             inset: '0',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '7px',
+            gap: '14px',
             pointerEvents: 'none',
         });
-        for (let i = 0; i < 3; i += 1) {
-            const dot = doc.createElement('span');
-            Object.assign(dot.style, { width: '7px', height: '7px', borderRadius: '50%', background: this.chromeTheme().textColor, opacity: '0.15' });
-            // Staggered phases via negative delays — every dot animates from the first frame.
-            dot.animate([{ opacity: 0.12 }, { opacity: 0.55 }], { duration: 800, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out', delay: -i * 260 });
-            el.appendChild(dot);
+        // A row of small candles that differ in width, body and wick length, as real price bars do:
+        // tall bodies, thin dojis, long and short wicks. Hollow outlined bodies are up bars and
+        // solid bodies down bars, so the row still reads as buying and selling. A wave of light
+        // sweeps across it from left to right. Every number is px inside a 44px-tall box.
+        interface MiniCandle {
+            w: number;
+            wick: readonly [number, number];
+            body: readonly [number, number];
+            down?: boolean;
         }
+        const candles: readonly MiniCandle[] = [
+            { w: 7, wick: [10, 30], body: [14, 26] },
+            { w: 9, wick: [16, 34], body: [20, 30], down: true },
+            { w: 10, wick: [4, 36], body: [8, 30], down: true },
+            { w: 7, wick: [8, 21], body: [12, 17] },
+            { w: 7, wick: [6, 19], body: [10, 15], down: true },
+            { w: 10, wick: [2, 28], body: [6, 24] },
+            { w: 6, wick: [14, 28], body: [18, 25], down: true },
+        ];
+        const row = doc.createElement('div');
+        Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '9px' });
+        candles.forEach((spec, i) => {
+            const candle = doc.createElement('span');
+            Object.assign(candle.style, { position: 'relative', width: `${spec.w}px`, height: '44px', opacity: '0.5', filter: glow });
+            // The wick is two segments, above and below the body, so it never shows inside a
+            // hollow body.
+            const wickSegment = (from: number, to: number): HTMLElement => {
+                const seg = doc.createElement('span');
+                Object.assign(seg.style, {
+                    position: 'absolute',
+                    left: `${Math.floor(spec.w / 2)}px`,
+                    top: `${from}px`,
+                    height: `${Math.max(0, to - from)}px`,
+                    width: '1px',
+                    background: candleColor,
+                });
+                return seg;
+            };
+            const body = doc.createElement('span');
+            Object.assign(body.style, {
+                position: 'absolute',
+                left: '0',
+                right: '0',
+                top: `${spec.body[0]}px`,
+                height: `${spec.body[1] - spec.body[0]}px`,
+                boxSizing: 'border-box',
+                border: `1px solid ${candleColor}`,
+                background: spec.down ? candleColor : 'transparent',
+            });
+            candle.append(wickSegment(spec.wick[0], spec.body[0]), body, wickSegment(spec.body[1], spec.wick[1]));
+            // One pulse per cycle, each candle a step later than the one on its left, so the light
+            // travels left to right and the quiet stretch of the cycle lets it start over.
+            candle.animate(
+                [
+                    { opacity: 0.5, offset: 0 },
+                    { opacity: 1, offset: 0.2, easing: 'ease-out' },
+                    { opacity: 0.5, offset: 0.55 },
+                    { opacity: 0.5, offset: 1 },
+                ],
+                { duration: 2000, iterations: Infinity, delay: i * 130 },
+            );
+            row.appendChild(candle);
+        });
+        const label = doc.createElement('span');
+        label.textContent = 'Loading';
+        Object.assign(label.style, { fontFamily: 'ui-monospace, Consolas, monospace', fontSize: '10px', letterSpacing: '0.12em', color, opacity: '0.5' });
+        label.animate([{ opacity: 0.35 }, { opacity: 0.7 }], { duration: 1600, iterations: Infinity, direction: 'alternate', easing: 'ease-in-out' });
+        el.append(row, label);
         this.wrapper.appendChild(el); // appended last ⇒ above the canvases, still under dialogs
         this.loadingEl = el;
     }
