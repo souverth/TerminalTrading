@@ -17,7 +17,7 @@ If a change seems to need an exception, stop and raise it as a design question. 
 | A5 | Only the **composition root** (`TerminalTrading.ts` and the package barrels) imports concrete backends. | [boundaries.md](../architecture/boundaries.md) | Review |
 | A6 | **One chart is one market and one time axis.** Panes share the X axis. | `AGENTS.md` | Review |
 | A7 | **Extend through public seams**: chart types, renderer layers, native indicators, widget actions, settings sections. A new hole in a layer is a design decision. | `AGENTS.md` | Review |
-| A8 | The in-chart **attribution mark stays on by default**. Any example or document that disables it states the equivalent-notice obligation. | `NOTICE`, `AGENTS.md` | Review |
+| A8 | The in-chart **attribution mark stays on by default**, and its "Built on Vela" credit stays visible (never hover-only). Any example or document that disables the mark states the equivalent-notice obligation: the name "Vela" with a link to its project page. | `NOTICE`, `AGENTS.md` | Review |
 
 ## Data and model
 

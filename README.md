@@ -194,12 +194,10 @@ Terminal Trading is licensed under the **Apache License, Version 2.0** (see [LIC
 The [NOTICE](NOTICE) file adds an **attribution requirement**, and redistributions must
 include it per Apache-2.0 §4(d):
 
-- Every chart renders a small **Terminal Trading attribution watermark** — the project logomark,
-  linking to the [project page][homepage] — enabled by default. You may restyle or
-  reposition it to fit your design.
+- Every chart renders a small **attribution mark** — a "T" that spells out Terminal Trading on hover, beside an always-visible credit, "Built on Vela", linking to the [Vela project page](https://velacharts.dev) — enabled by default. You may restyle or reposition it to fit your design.
 - You may turn the watermark off (`chart.renderer.set('attribution', false)`) **only if**
   an equivalent visible attribution is shown elsewhere on the same page or screen, where
-  your users can see it: the name "Terminal Trading" linking to the project page.
+  your users can see it: the name "Vela" linking to the [Vela project page](https://velacharts.dev).
 - Removing, hiding, or obscuring the attribution without providing that equivalent
   notice is not permitted.
 

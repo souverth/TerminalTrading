@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { attributionMarkColor, createAttributionMark, createCustomMark } from '../src/renderers/native/chrome/AttributionMark';
-import { VELA_LETTERS_SVG, VELA_MARK_SVG } from '../src/renderers/native/chrome/vela-logos';
+import {
+    ATTRIBUTION_CREDIT,
+    ATTRIBUTION_URL,
+    BRAND_URL,
+    attributionMarkColor,
+    createAttributionMark,
+    createCustomMark,
+} from '../src/renderers/native/chrome/AttributionMark';
 
 /** The DOM subset the mark builders touch — tests run in a plain node environment. */
 function stubDocument(): Document {
@@ -65,31 +71,31 @@ describe('attribution mark screenshot opt-in', () => {
     });
 });
 
-describe('the built-in mark is TerminalTrading\'s', () => {
-    it('shows the Morning Star V and reveals the rest of the wordmark beside it, linking to the project', () => {
-        const mark = createAttributionMark(stubDocument(), '#151619') as unknown as {
-            href: string;
-            title: string;
-            children: Array<{ className: string; innerHTML: string }>;
-        };
-        const [symbol, letters] = mark.children;
+describe('the built-in mark', () => {
+    type El = { className: string; textContent: string; href: string; title: string; children: El[] };
+    const build = () => createAttributionMark(stubDocument(), '#151619') as unknown as El;
+
+    it('shows a T and reveals the rest of the product name beside it, linking to the project', () => {
+        const [brand] = build().children;
+        const [symbol, wordmark] = brand!.children;
+        expect(brand?.className).toBe('tt-attr-brand');
+        expect(brand?.href).toBe(BRAND_URL);
+        expect(brand?.title).toBe('Terminal Trading');
         expect(symbol?.className).toBe('tt-attr-symbol');
-        expect(symbol?.innerHTML).toBe(VELA_MARK_SVG);
-        expect(letters?.className).toBe('tt-attr-wordmark');
-        expect(letters?.innerHTML).toBe(VELA_LETTERS_SVG);
-        expect(mark.href).toContain('https://velacharts.dev/');
-        expect(mark.title).toBe('Charting by Vela');
+        expect(symbol?.textContent).toBe('T');
+        expect(wordmark?.className).toBe('tt-attr-wordmark');
+        expect(symbol!.textContent + wordmark!.textContent).toBe('Terminal Trading');
     });
 
-    it('both halves are inline SVGs that paint via currentColor, on one shared height and baseline', () => {
-        for (const svg of [VELA_MARK_SVG, VELA_LETTERS_SVG]) {
-            expect(svg).toContain('<svg');
-            expect(svg).toContain('currentColor');
-            expect(svg).not.toContain('data:image/png');
-        }
-        // Same viewBox y-range: drawn at one CSS height, the letters land on the V's baseline.
-        const yRange = (svg: string) => svg.match(/viewBox="[\d.]+ (-?[\d.]+) [\d.]+ ([\d.]+)"/)?.slice(1);
-        expect(yRange(VELA_MARK_SVG)).toEqual(['-142', '148']);
-        expect(yRange(VELA_LETTERS_SVG)).toEqual(yRange(VELA_MARK_SVG));
+    // The NOTICE file requires the name "Vela" with a link to its project page to stay
+    // visible wherever a chart is shown: the credit is plain text, not hover-revealed.
+    it('keeps a credit that names Vela and links to its project page, outside the hover reveal', () => {
+        const [brand, credit] = build().children;
+        expect(credit?.className).toBe('tt-attr-credit');
+        expect(credit?.textContent).toBe(ATTRIBUTION_CREDIT);
+        expect(credit?.textContent).toContain('Vela');
+        expect(credit?.href).toBe(ATTRIBUTION_URL);
+        expect(ATTRIBUTION_URL).toContain('https://velacharts.dev/');
+        expect(brand?.children.some((c) => c === credit)).toBe(false);
     });
 });

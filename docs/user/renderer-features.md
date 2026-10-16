@@ -123,7 +123,7 @@ follows a synced crosshair's veil too.
 
 | Feature | Type | Default | Notes |
 |---|---|---|---|
-| `attribution` | boolean | `true` | The in-chart attribution mark (bottom-left logomark linking to the Terminal Trading project). Disabling it is allowed only when an equivalent visible attribution is displayed elsewhere on the page (see the repository's [`NOTICE`](../../NOTICE) file). |
+| `attribution` | boolean | `true` | The in-chart attribution mark (bottom-left: a "T" that spells out Terminal Trading on hover, beside a visible "Built on Vela" credit that links to the Vela project page). Disabling it is allowed only when an equivalent visible attribution is displayed elsewhere on the page: the name "Vela" with a link to its project page (see the repository's [`NOTICE`](../../NOTICE) file). |
 | `settings` | boolean | `false` | An in-chart gear button + dialog to edit a curated slice of the rich config (colors, fonts, scale, timezone) with export/import. |
 | `marks` | boolean or `{ visible?, groups? }` | everything on | The [timeline-mark](./api-reference.md#chartmarks--the-timeline-marks-control-surface) lane above the time axis. `false` hides the lane; `{ groups: { dividends: false } }` hides one group — the same switch as the Events tab's checkboxes, persisted with the config. Partial merge; malformed fields drop. |
 
