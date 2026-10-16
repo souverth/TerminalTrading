@@ -1,0 +1,14 @@
+# <Imperative summary, 72 characters or fewer, no trailing period>
+#
+# Why does this change exist? What can the user do now, or what no longer breaks?
+# Wrap lines at 72 characters. Write in English. Do not name other charting products.
+#
+# Examples:
+#   Add a fib wedge drawing tool
+#   Fix crosshair label clipping at the right edge
+#   Document the workspace persist option
+#
+# Refs: #123
+#
+# Enable this template once per clone:
+#   git config commit.template .github/commit_template.txt
