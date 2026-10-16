@@ -1,0 +1,23 @@
+{
+  "name": "vela-tradingview-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local market-data server for the playground, powered by @mathieuc/tradingview",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "@fastify/websocket": "^11.0.2",
+    "@mathieuc/tradingview": "^4.0.0",
+    "fastify": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
