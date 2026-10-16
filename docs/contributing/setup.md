@@ -28,7 +28,7 @@ Vela™ keeps a deliberately thin set of npm scripts. Each maps to one well-know
 | **lint** | `npm run lint` | Lints the source (eslint). This also enforces the architecture boundaries. |
 | **test** | `npm test` | Runs the fast Node unit suite once (vitest). |
 | **test:watch** | `npm run test:watch` | Re-runs the unit suite on change (vitest). |
-| **playground** | `npm run playground` | Serves `playground/` (vite, `http://localhost:5190`, no build step, HMR). The index links two pages mounting straight from `src/`: `/widget.html` (the single-chart widget) and `/workspace.html` (the multi-chart workspace). The Binance provider talks to the public API directly, so no server is needed. |
+| **playground** | `npm run playground` | Serves `playground/` (vite, `http://localhost:5190`, no build step, HMR). The index links two pages mounting straight from `src/`: `/widget.html` (the single-chart widget) and `/workspace.html` (the multi-chart workspace). The widget page needs no server: its Binance provider talks to the public API directly. The workspace page also expects a local server on port 3000; see [workflow.md](./workflow.md#the-playground). |
 
 > One npm quirk worth internalizing: **`test` runs as `npm test`**, while everything else needs the `run` keyword (`npm run build`, `npm run lint`, and so on).
 
@@ -36,9 +36,9 @@ The four scripts that define "done" — **typecheck, lint, test, build** — are
 
 ## Two artifacts from one source
 
-A single source tree produces **two different build artifacts**, and knowing which is which prevents a lot of confusion:
+A single source tree produces **two kinds of build artifacts** (`tsup.config.ts` defines three builds), and knowing which is which prevents a lot of confusion:
 
-- **The library build** is what application code consumes. It ships ESM, CJS, and type definitions, and **externalizes the backends** (the scripting engine and the renderer dependency are left as external imports rather than inlined). Externalized does **not** mean the consumer must hand-wire those backends: the renderer dependency remains a **required runtime dependency** that the consumer's package manager resolves normally, and the default backends still wire themselves automatically through the composition root. You only supply your own backend when you deliberately want to replace a default (see [workflow.md](./workflow.md#where-to-make-a-change-by-layer)).
-- **The self-contained browser bundle** is a single IIFE that **bundles everything** — the renderer dependency, the scripting engine, and the **inlined worker** — and exposes the library as a global (`window.Vela`).
+- **The library build** is what application code consumes. It ships ESM, CJS, and type definitions for the main entry and the subpath entries (`plugin`, `ui`, `widget`, `workspace`, and the `providers/*` data providers). Packages listed under `dependencies` stay external imports that the consumer's package manager resolves. Vela™ bundles no scripting engine, so none is linked. The default backends still wire themselves through the composition root; you supply your own only when you deliberately replace a default (see [workflow.md](./workflow.md#where-to-make-a-change-by-layer)).
+- **The browser bundles** are self-contained IIFEs that **bundle all dependencies** and expose the library as a global (`window.Vela`). They come in a readable development form (`vela.global.js`) and a minified form (`vela.global.min.js`). An engine addon loads **after** one of them and resolves `@luxalgo/vela` to that same `window.Vela`, so there is never a second copy of the library.
 
 The **playground serves `src/` directly** (vite): changes appear on save with no build step. The browser bundle exists for CDN-style consumers of the library, not for development.

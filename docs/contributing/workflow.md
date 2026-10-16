@@ -39,13 +39,36 @@ These rules are enforced by lint as an import ACL with named exception buckets. 
 `npm run playground` serves `playground/` with vite on `http://localhost:5190` (no build step;
 changes hot-reload on save). The index page links the two surfaces:
 
-- **`/widget.html`** (`playground/widget.ts`) — mounts the **Vela™ widget** straight from `src/`.
-  It registers the Binance provider (public API, no key, no server) and the page's own
-  `demo-engine.ts` — a tiny `ScriptingEngine` implementation, since Vela™ bundles none — with a
-  starter indicator manifest and a "Code" topbar entry that runs a script on demand. Use
-  `window.widget` from the browser console to poke at the live instance.
-- **`/workspace.html`** (`playground/workspace.ts`) — mounts the multi-chart **VelaWorkspace**
-  on the same provider and demo engine.
+- **`/widget.html`** (`playground/widget.ts`) — mounts a single-chart **VelaWorkspace**
+  (`layout: false`) straight from `src/`. It registers the Binance provider (public API, no
+  key, no server) and the page's own `demo-engine.ts` — a tiny `ScriptingEngine`
+  implementation, since Vela™ bundles none — with a starter indicator manifest and a "Code"
+  topbar entry that runs a script on demand. Use `window.ws` from the browser console to
+  poke at the live instance.
+- **`/workspace.html`** (`playground/workspace.ts`) — mounts the multi-chart **VelaWorkspace**.
+  It registers two providers and two engines, and its default cells use the `tv` provider, so
+  it needs a local server (see below):
+    - `tv` — `playground/tv-provider.ts`, a client for a local market-data server.
+    - `binance` — the public API; use it when the server is not running.
+    - `demo` — the page's own demo engine.
+    - `pine` — Pine Script through `@luxalgo/vela-pinets` (an addon, not part of this package).
+  It also installs a Pine script library and editor (`scripts-manager.ts`, `pine-editor.ts`).
+  Use `window.__ws` from the console.
+
+The helper modules `library-api.ts`, `pine-editor.ts`, `scripts-manager.ts`, and `tv-provider.ts`
+are imported by `workspace.ts`; they are not pages.
+
+### Local server for the workspace page
+
+`tv-provider.ts` and `library-api.ts` call a server on `http://localhost:3000`:
+
+- **Market data** — `GET /api/candles` and `WS /ws/candles`. The `server/` folder in this
+  repository implements them; see [server/README.md](../../server/README.md).
+- **Script library** — `/api/scripts`. `server/` does not implement it, so the library dialog
+  and the Pine editor only work against a server that does.
+
+The server is a development aid. It wraps an unofficial upstream and has no authentication, so
+do not expose it on a public network.
 
 ## Where to make a change, by layer
 
