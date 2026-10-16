@@ -4,7 +4,7 @@
 // chart type, an engine or a panel, but not "every chart should start with this feature
 // set". This is that missing half — the same shape as the other contribution registries,
 // and the renderer-side counterpart of `registerDefaultEngine`, except it reaches EVERY
-// chart: the widget's, each workspace cell's, and a bare `new Vela()`.
+// chart: the widget's, each workspace cell's, and a bare `new Terminal Trading()`.
 
 const defaults = new Map<string, unknown>();
 

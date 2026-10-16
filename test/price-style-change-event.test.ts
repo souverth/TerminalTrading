@@ -14,7 +14,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 };
 
 import { NativeRenderer } from '../src/renderers/native/NativeRenderer';
-import { VelaWorkspace } from '../src/workspace/VelaWorkspace';
+import { TerminalTradingWorkspace } from '../src/workspace/TerminalTradingWorkspace';
 
 beforeAll(() => {
     Element.prototype.animate ??= (() => ({ cancel() {}, finish() {}, addEventListener() {} })) as unknown as Element['animate'];
@@ -40,7 +40,7 @@ describe('workspace event cell:priceStyle', () => {
     it('relays one event, from the switched cell only, while that cell still shows the old style', () => {
         const host = document.createElement('div');
         document.body.append(host);
-        const ws = new VelaWorkspace(host, { layout: '4' } as never);
+        const ws = new TerminalTradingWorkspace(host, { layout: '4' } as never);
         const [a, b] = ws.cells().map((c) => c.id) as [string, string];
         const seen: Array<{ id: string; from: string; to: string; showing: string }> = [];
         ws.on('cell:priceStyle', (e) => seen.push({ ...e, showing: ws.cell(e.id)!.priceStyle }));

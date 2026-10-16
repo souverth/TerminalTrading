@@ -1,4 +1,4 @@
-import type { VelaTheme, ThemeName } from '../../../core/options';
+import type { TerminalTradingTheme, ThemeName } from '../../../core/options';
 import type { ChartConfig } from '../core/chartConfig';
 import {
     chartType,
@@ -92,7 +92,7 @@ function styleLabel(id: string): string {
     return chartType(id)?.label ?? BUILTIN_STYLE_LABELS[id] ?? id;
 }
 
-const SD_STYLE_ID = 'vela-settings-controls';
+const SD_STYLE_ID = 'tt-settings-controls';
 const SD_STYLE_REV = '6';
 
 /**
@@ -100,9 +100,9 @@ const SD_STYLE_REV = '6';
  * the chart container), not the live plot background: recoloring the plot must not repaint
  * the dialog, but switching the app between dark and light must.
  */
-export const SETTINGS_SURFACE = 'var(--vela-surface)';
-export const SETTINGS_BORDER = 'var(--vela-border)';
-export const SETTINGS_TEXT = 'var(--vela-fg)';
+export const SETTINGS_SURFACE = 'var(--tt-surface)';
+export const SETTINGS_BORDER = 'var(--tt-border)';
+export const SETTINGS_TEXT = 'var(--tt-fg)';
 
 /** The reference control styles (checkbox, selects/inputs, swatches, scrollbars). */
 function ensureControlStyles(): void {
@@ -113,85 +113,85 @@ function ensureControlStyles(): void {
     st.id = SD_STYLE_ID;
     st.dataset.rev = SD_STYLE_REV;
     st.textContent = `
-${overlayScrollbarCss('.vela-sd-pane')}
+${overlayScrollbarCss('.tt-sd-pane')}
 /* Tab rail / footer button / header close: base styles live HERE, not inline on the
    elements — inline declarations always beat stylesheet :hover rules, which is exactly
    what killed these hovers before. Active tab state is the .on class,
-   hover fills follow the app convention (--vela-hover + --vela-fg-bright, fast transition). */
-.vela-sd-tab{text-align:left;padding:9px 12px;background:transparent;border:none;border-radius:var(--vela-radius-md);color:var(--vela-fg-muted);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-sd-tab:hover{background:var(--vela-hover);color:var(--vela-fg-bright);}
-.vela-sd-tab.on{background:var(--vela-active);color:var(--vela-fg-bright);}
-.vela-sd-btn{height:30px;padding:0 14px;font-size:var(--vela-font-size-md);color:var(--vela-fg);background:var(--vela-surface-sunken);border:1px solid var(--vela-border);border-radius:var(--vela-radius-md);cursor:pointer;font-family:inherit;transition:background var(--vela-dur-fast) ease,border-color var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-sd-btn:hover{background:var(--vela-hover);border-color:var(--vela-border-strong);color:var(--vela-fg-bright);}
-.vela-sd-close{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--vela-fg-muted);line-height:0;width:30px;height:30px;border-radius:var(--vela-radius-sm);transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-sd-close:hover{background:var(--vela-hover);color:var(--vela-fg-bright);}
+   hover fills follow the app convention (--tt-hover + --tt-fg-bright, fast transition). */
+.tt-sd-tab{text-align:left;padding:9px 12px;background:transparent;border:none;border-radius:var(--tt-radius-md);color:var(--tt-fg-muted);font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-sd-tab:hover{background:var(--tt-hover);color:var(--tt-fg-bright);}
+.tt-sd-tab.on{background:var(--tt-active);color:var(--tt-fg-bright);}
+.tt-sd-btn{height:30px;padding:0 14px;font-size:var(--tt-font-size-md);color:var(--tt-fg);background:var(--tt-surface-sunken);border:1px solid var(--tt-border);border-radius:var(--tt-radius-md);cursor:pointer;font-family:inherit;transition:background var(--tt-dur-fast) ease,border-color var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-sd-btn:hover{background:var(--tt-hover);border-color:var(--tt-border-strong);color:var(--tt-fg-bright);}
+.tt-sd-close{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--tt-fg-muted);line-height:0;width:30px;height:30px;border-radius:var(--tt-radius-sm);transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-sd-close:hover{background:var(--tt-hover);color:var(--tt-fg-bright);}
 /* Rows/blocks gated away by chart-type conditions, TOC filters, or the instance strip.
    !important: the pane grid rewrites inline display ('contents') AFTER the initial
    visibility pass, so a class must win. */
-.vela-sd-hide{display:none !important;}
+.tt-sd-hide{display:none !important;}
 /* Indented rail sub-entry (a chart-type section's subsection tab). */
-.vela-sd-tab-sub{padding-left:28px;font-weight:600;font-size:12px;}
+.tt-sd-tab-sub{padding-left:28px;font-weight:600;font-size:12px;}
 /* Instance strip: a tab per present instance (label, ✕ on the active removable one)
    and a dashed + that turns on the next absent instance. The rule under it separates
    the strip from the instance's TOC + rows area. */
-.vela-sd-itabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:14px 0 0;padding-bottom:12px;border-bottom:1px solid var(--vela-border);}
-.vela-sd-itab{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;background:transparent;border:1px solid var(--vela-border);border-radius:var(--vela-radius-md);color:var(--vela-fg-muted);font-family:inherit;font-size:var(--vela-font-size-md);font-weight:600;cursor:pointer;transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease,border-color var(--vela-dur-fast) ease;}
-.vela-sd-itab:hover{background:var(--vela-hover);color:var(--vela-fg-bright);}
-.vela-sd-itab.on{background:var(--vela-active);color:var(--vela-fg-bright);border-color:var(--vela-border-strong);}
-.vela-sd-ix{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:-4px;border-radius:var(--vela-radius-sm);color:var(--vela-fg-muted);font-size:10px;line-height:1;}
-.vela-sd-ix:hover{background:var(--vela-hover);color:var(--vela-fg-bright);}
-.vela-sd-itab-add{border-style:dashed;min-width:30px;justify-content:center;padding:0;}
+.tt-sd-itabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:14px 0 0;padding-bottom:12px;border-bottom:1px solid var(--tt-border);}
+.tt-sd-itab{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 11px;background:transparent;border:1px solid var(--tt-border);border-radius:var(--tt-radius-md);color:var(--tt-fg-muted);font-family:inherit;font-size:var(--tt-font-size-md);font-weight:600;cursor:pointer;transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease,border-color var(--tt-dur-fast) ease;}
+.tt-sd-itab:hover{background:var(--tt-hover);color:var(--tt-fg-bright);}
+.tt-sd-itab.on{background:var(--tt-active);color:var(--tt-fg-bright);border-color:var(--tt-border-strong);}
+.tt-sd-ix{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-right:-4px;border-radius:var(--tt-radius-sm);color:var(--tt-fg-muted);font-size:10px;line-height:1;}
+.tt-sd-ix:hover{background:var(--tt-hover);color:var(--tt-fg-bright);}
+.tt-sd-itab-add{border-style:dashed;min-width:30px;justify-content:center;padding:0;}
 /* Structured pane: group TOC column + rows column, TOP-ALIGNED (the shared padding-top
    lives on the wrap, never on one column). The TOC sticks while the pane scrolls; the
    vertical rule sits on the rows column so it spans the full content height. When every
    group gates out the TOC hides and .no-toc drops the rule with it. */
-.vela-sd-struct{display:flex;align-items:flex-start;padding-top:14px;}
-.vela-sd-toc{position:sticky;top:0;flex:0 0 auto;min-width:104px;display:flex;flex-direction:column;gap:2px;padding:2px 14px 0 0;}
-.vela-sd-struct>[data-sd-rows-host]{border-left:1px solid var(--vela-border);padding-left:18px;}
-.vela-sd-struct.no-toc>[data-sd-rows-host]{border-left:none;padding-left:0;}
-.vela-sd-toc-btn{text-align:left;padding:6px 10px;background:transparent;border:none;border-radius:var(--vela-radius-sm);color:var(--vela-fg-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-sd-toc-btn:hover{background:var(--vela-hover);color:var(--vela-fg-bright);}
-.vela-sd-toc-btn.on{background:var(--vela-active);color:var(--vela-fg-bright);}
+.tt-sd-struct{display:flex;align-items:flex-start;padding-top:14px;}
+.tt-sd-toc{position:sticky;top:0;flex:0 0 auto;min-width:104px;display:flex;flex-direction:column;gap:2px;padding:2px 14px 0 0;}
+.tt-sd-struct>[data-sd-rows-host]{border-left:1px solid var(--tt-border);padding-left:18px;}
+.tt-sd-struct.no-toc>[data-sd-rows-host]{border-left:none;padding-left:0;}
+.tt-sd-toc-btn{text-align:left;padding:6px 10px;background:transparent;border:none;border-radius:var(--tt-radius-sm);color:var(--tt-fg-muted);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-sd-toc-btn:hover{background:var(--tt-hover);color:var(--tt-fg-bright);}
+.tt-sd-toc-btn.on{background:var(--tt-active);color:var(--tt-fg-bright);}
 /* Soft-disable: a subsection's enableKey is off — rows stay visible (browseable) but
    muted and non-interactive. Applied to each row's children so it survives display:contents;
    !important beats the inline opacity on labels. */
-.vela-sd-soft>*{opacity:0.4 !important;pointer-events:none !important;}
+.tt-sd-soft>*{opacity:0.4 !important;pointer-events:none !important;}
 /* A mark group nested under a parent group on the Events tab: indented one step per level
-   (--vela-sd-depth). The indent rides the first child (the switch) as a MARGIN — padding
+   (--tt-sd-depth). The indent rides the first child (the switch) as a MARGIN — padding
    would push the switch's own tick out of its box. */
-.vela-sd-nested>*:first-child{margin-left:calc(var(--vela-sd-depth,1)*24px);}
-/* ── mobile presentation (.vela-sd-mobile on the scrim; structural sizes are inline in open()) ──
+.tt-sd-nested>*:first-child{margin-left:calc(var(--tt-sd-depth,1)*24px);}
+/* ── mobile presentation (.tt-sd-mobile on the scrim; structural sizes are inline in open()) ──
    The tab rail becomes a burger-opened overlay sidebar; the group TOC becomes a sticky
    row of horizontally scrollable tabs; the instance strip scrolls instead of wrapping;
    controls grow to touch size and labels may wrap (the grid gives them a flexible track). */
-.vela-sd-mobile .vela-sd-burger{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--vela-fg);line-height:0;width:36px;height:36px;border-radius:var(--vela-radius-sm);margin-right:2px;}
-.vela-sd-mobile .vela-sd-burger:active{background:var(--vela-hover);}
-.vela-sd-mobile .vela-sd-railscrim{position:absolute;inset:0;z-index:2;background:var(--vela-backdrop);display:none;}
-.vela-sd-mobile .vela-sd-railscrim.open{display:block;}
-.vela-sd-mobile .vela-sd-rail{position:absolute;left:0;top:0;bottom:0;z-index:3;width:min(240px,80%);box-sizing:border-box;background:var(--vela-surface);border-right:1px solid var(--vela-border);box-shadow:var(--vela-shadow-dialog);transform:translateX(-105%);transition:transform var(--vela-dur-med) var(--vela-ease);}
-.vela-sd-mobile .vela-sd-rail.open{transform:translateX(0);}
-.vela-sd-mobile .vela-sd-tab{padding:12px;}
-.vela-sd-mobile .vela-sd-struct{flex-direction:column;padding-top:8px;}
-.vela-sd-mobile .vela-sd-toc{position:sticky;top:0;z-index:1;background:var(--vela-surface);flex-direction:row;overflow-x:auto;scrollbar-width:none;min-width:0;width:100%;box-sizing:border-box;gap:4px;padding:2px 0 8px;}
-.vela-sd-mobile .vela-sd-toc::-webkit-scrollbar{display:none;}
-.vela-sd-mobile .vela-sd-toc-btn{flex:none;padding:8px 12px;font-size:13px;}
-.vela-sd-mobile .vela-sd-struct>[data-sd-rows-host]{border-left:none;padding-left:0;width:100%;}
-.vela-sd-mobile .vela-sd-itabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
-.vela-sd-mobile .vela-sd-itabs::-webkit-scrollbar{display:none;}
-.vela-sd-mobile .vela-sd-itab{height:36px;flex:none;}
-.vela-sd-mobile .vela-switch{width:22px;height:22px;}
-.vela-sd-mobile .vela-select-trigger,.vela-sd-mobile .vela-num input,.vela-sd-mobile .vela-width-field{height:34px;}
-.vela-sd-mobile .vela-sd-close{width:40px;height:40px;}
-.vela-sd-mobile .vela-sd-btn{height:38px;}
-.vela-sd-mobile .vela-sd-row span,.vela-sd-mobile .vela-sd-bool span,.vela-sd-mobile .vela-field-label{white-space:normal !important;}
+.tt-sd-mobile .tt-sd-burger{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--tt-fg);line-height:0;width:36px;height:36px;border-radius:var(--tt-radius-sm);margin-right:2px;}
+.tt-sd-mobile .tt-sd-burger:active{background:var(--tt-hover);}
+.tt-sd-mobile .tt-sd-railscrim{position:absolute;inset:0;z-index:2;background:var(--tt-backdrop);display:none;}
+.tt-sd-mobile .tt-sd-railscrim.open{display:block;}
+.tt-sd-mobile .tt-sd-rail{position:absolute;left:0;top:0;bottom:0;z-index:3;width:min(240px,80%);box-sizing:border-box;background:var(--tt-surface);border-right:1px solid var(--tt-border);box-shadow:var(--tt-shadow-dialog);transform:translateX(-105%);transition:transform var(--tt-dur-med) var(--tt-ease);}
+.tt-sd-mobile .tt-sd-rail.open{transform:translateX(0);}
+.tt-sd-mobile .tt-sd-tab{padding:12px;}
+.tt-sd-mobile .tt-sd-struct{flex-direction:column;padding-top:8px;}
+.tt-sd-mobile .tt-sd-toc{position:sticky;top:0;z-index:1;background:var(--tt-surface);flex-direction:row;overflow-x:auto;scrollbar-width:none;min-width:0;width:100%;box-sizing:border-box;gap:4px;padding:2px 0 8px;}
+.tt-sd-mobile .tt-sd-toc::-webkit-scrollbar{display:none;}
+.tt-sd-mobile .tt-sd-toc-btn{flex:none;padding:8px 12px;font-size:13px;}
+.tt-sd-mobile .tt-sd-struct>[data-sd-rows-host]{border-left:none;padding-left:0;width:100%;}
+.tt-sd-mobile .tt-sd-itabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+.tt-sd-mobile .tt-sd-itabs::-webkit-scrollbar{display:none;}
+.tt-sd-mobile .tt-sd-itab{height:36px;flex:none;}
+.tt-sd-mobile .tt-switch{width:22px;height:22px;}
+.tt-sd-mobile .tt-select-trigger,.tt-sd-mobile .tt-num input,.tt-sd-mobile .tt-width-field{height:34px;}
+.tt-sd-mobile .tt-sd-close{width:40px;height:40px;}
+.tt-sd-mobile .tt-sd-btn{height:38px;}
+.tt-sd-mobile .tt-sd-row span,.tt-sd-mobile .tt-sd-bool span,.tt-sd-mobile .tt-field-label{white-space:normal !important;}
 /* The wrap rule above is for ROW LABELS only: a select's closed value must keep its
    single-line ellipsis, or a long option wraps to several lines inside the 34px
    trigger and spills over the rows around it. Three classes so it outranks the
    two-classes-plus-element selector above. The kit's fixed 100px column is a desktop
    alignment device; on mobile the trigger hugs its value instead (the grid's control
    column is max-content), capped so a long option still ellipsizes before the label. */
-.vela-sd-mobile .vela-select-trigger .vela-select-label{white-space:nowrap !important;}
-.vela-sd-mobile .vela-select:not([data-fill]){width:auto;min-width:100px;max-width:min(220px,55vw);}`;
+.tt-sd-mobile .tt-select-trigger .tt-select-label{white-space:nowrap !important;}
+.tt-sd-mobile .tt-select:not([data-fill]){width:auto;min-width:100px;max-width:min(220px,55vw);}`;
     if (!existing) document.head.appendChild(st);
 }
 
@@ -265,12 +265,12 @@ export class SettingsDialog {
 
     constructor(
         private readonly container: HTMLElement,
-        private theme: VelaTheme,
+        private theme: TerminalTradingTheme,
     ) {
         if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
     }
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         this.reopenIfLive();
     }
@@ -331,7 +331,7 @@ export class SettingsDialog {
         if (mobile) {
             burger = document.createElement('button');
             burger.type = 'button';
-            burger.className = 'vela-sd-burger';
+            burger.className = 'tt-sd-burger';
             burger.innerHTML = iconAt('burger', 16);
             burger.title = 'Sections';
             burger.addEventListener('click', () => this.toggleRail?.());
@@ -347,7 +347,7 @@ export class SettingsDialog {
             align: 'top',
             draggable: !mobile,
             flush: true,
-            className: 'vela-dialog--settings',
+            className: 'tt-dialog--settings',
             headerStart: burger,
             closeOnBackdrop: true,
             footer: (foot) => {
@@ -355,7 +355,7 @@ export class SettingsDialog {
                 const resetBtn = document.createElement('button');
                 resetBtn.type = 'button';
                 resetBtn.textContent = 'Reset defaults';
-                resetBtn.className = 'vela-sd-btn';
+                resetBtn.className = 'tt-sd-btn';
                 resetBtn.addEventListener('click', () => this.onReset?.());
                 foot.appendChild(resetBtn);
             },
@@ -364,7 +364,7 @@ export class SettingsDialog {
             // old instance's signal tear down the freshly opened one.
             onOpenChange: (open) => { if (!open && this.ui === ui) this.close(); },
         });
-        if (mobile) ui.positioner.classList.add('vela-sd-mobile');
+        if (mobile) ui.positioner.classList.add('tt-sd-mobile');
         ui.positioner.style.paddingTop = mobile ? '0' : '8vh';
 
         this.root = ui.positioner;
@@ -433,7 +433,7 @@ export class SettingsDialog {
             // Gate via the !important class, not inline display: the field-grid pass
             // rewrites every group's display to 'contents' AFTER this visibility pass.
             for (const key of priceStyleIds()) {
-                groups[key]?.classList.toggle('vela-sd-hide', key !== active);
+                groups[key]?.classList.toggle('tt-sd-hide', key !== active);
             }
         };
         body.append(
@@ -672,7 +672,7 @@ export class SettingsDialog {
                 for (const { group } of rows) {
                     const el = rowsById.get(group.id);
                     if (!el || group.parent === undefined) continue;
-                    el.classList.toggle('vela-sd-soft', !this.markGroupVisible(group.parent));
+                    el.classList.toggle('tt-sd-soft', !this.markGroupVisible(group.parent));
                 }
             };
             for (const { group: g, depth } of rows) {
@@ -681,8 +681,8 @@ export class SettingsDialog {
                     refreshDimming();
                 });
                 if (depth > 0) {
-                    row.classList.add('vela-sd-nested');
-                    row.style.setProperty('--vela-sd-depth', String(depth));
+                    row.classList.add('tt-sd-nested');
+                    row.style.setProperty('--tt-sd-depth', String(depth));
                 }
                 rowsById.set(g.id, row);
                 body.append(sid(row, markGroupSettingsId(g.id)));
@@ -721,7 +721,7 @@ export class SettingsDialog {
             ? 'display:flex;min-height:0;flex:1 1 auto;position:relative;overflow:hidden;'
             : 'display:flex;min-height:360px;max-height:calc(70vh - 100px);flex:1 1 auto;';
         const rail = document.createElement('div');
-        rail.className = 'vela-sd-rail';
+        rail.className = 'tt-sd-rail';
         // Mobile: the class rules turn the rail into the slide-in sidebar; the inline
         // styles here carry only its inner layout. Desktop keeps the fixed column.
         rail.style.cssText = mobile
@@ -730,7 +730,7 @@ export class SettingsDialog {
         let railScrim: HTMLElement | null = null;
         if (mobile) {
             railScrim = document.createElement('div');
-            railScrim.className = 'vela-sd-railscrim';
+            railScrim.className = 'tt-sd-railscrim';
             railScrim.addEventListener('click', () => this.toggleRail?.());
             this.toggleRail = (open?: boolean) => {
                 const on = open ?? !rail.classList.contains('open');
@@ -739,7 +739,7 @@ export class SettingsDialog {
             };
         }
         const paneHost = document.createElement('div');
-        paneHost.className = 'vela-sd-pane';
+        paneHost.className = 'tt-sd-pane';
         // overflow-anchor off: Chrome's scroll anchoring can jump this scroller when a
         // body-portaled popover (select list, color picker) is swapped in one gesture.
         paneHost.style.cssText = mobile ? 'flex:1;min-width:0;overflow-y:auto;overflow-anchor:none;padding:6px 14px calc(14px + env(safe-area-inset-bottom, 0px));' : 'flex:1;overflow-y:auto;overflow-anchor:none;padding:6px 18px 14px;';
@@ -754,7 +754,7 @@ export class SettingsDialog {
                 const tab = document.createElement('button');
                 tab.type = 'button';
                 tab.textContent = title;
-                tab.className = 'vela-sd-tab' + (child.dataset.sdSub !== undefined ? ' vela-sd-tab-sub' : '');
+                tab.className = 'tt-sd-tab' + (child.dataset.sdSub !== undefined ? ' tt-sd-tab-sub' : '');
                 panes.push({ title, el, tab, style: child.dataset.sdStyle, visibility: child.dataset.sdVisibility });
                 current = el;
                 child.remove();
@@ -803,7 +803,7 @@ export class SettingsDialog {
         const wanted =
             section !== undefined
                 ? panes.findIndex((p) => p.title.toLowerCase() === section.toLowerCase())
-                : panes.findIndex((p) => p.style === config.series.style && !p.tab.classList.contains('vela-sd-tab-sub'));
+                : panes.findIndex((p) => p.style === config.series.style && !p.tab.classList.contains('tt-sd-tab-sub'));
         activate(wanted >= 0 ? wanted : 0);
         this.syncTypeTabs?.(config.series.style);
 
@@ -939,7 +939,7 @@ export class SettingsDialog {
         refreshers.push(() => {
             // A class, not inline display: the pane grid dissolves rows into
             // display:contents AFTER the first pass, which would wipe inline 'none'.
-            for (const e of entries) e.el.classList.toggle('vela-sd-hide', !settingsRowVisible(e.when, bag));
+            for (const e of entries) e.el.classList.toggle('tt-sd-hide', !settingsRowVisible(e.when, bag));
         });
     }
 
@@ -962,10 +962,10 @@ export class SettingsDialog {
         const controls: HTMLElement[] = [];
         for (const c of n.controls) {
             const el = this.inlineControl(c, bag, put, n.toggle !== undefined);
-            // Keyed controls re-read the bag on every refresh ('vela-sync') — several
+            // Keyed controls re-read the bag on every refresh ('tt-sync') — several
             // `when`-gated rows may share one key (a per-mode row set over one stored
             // state), and the hidden twins must not go stale when the visible one edits.
-            if (c.kind !== 'hint') refreshers.push(() => el.dispatchEvent(new Event('vela-sync')));
+            if (c.kind !== 'hint') refreshers.push(() => el.dispatchEvent(new Event('tt-sync')));
             if (c.kind !== 'hint' && c.when) {
                 el.dataset.sdSelfGated = '1';
                 const when = c.when;
@@ -978,7 +978,7 @@ export class SettingsDialog {
         if (n.toggle) {
             const t = n.toggle;
             const el = this.toggleRow(n.label, bag[t.key] as boolean, (v) => put(t.key, v), controls, () => bag[t.key] === true);
-            refreshers.push(() => el.dispatchEvent(new Event('vela-sync')));
+            refreshers.push(() => el.dispatchEvent(new Event('tt-sync')));
             return el;
         }
         return this.rowWith(n.label, controls);
@@ -998,7 +998,7 @@ export class SettingsDialog {
         if (c.kind === 'hint') {
             const s = document.createElement('span');
             s.textContent = c.text;
-            s.style.cssText = 'color:var(--vela-fg-muted);';
+            s.style.cssText = 'color:var(--tt-fg-muted);';
             return s;
         }
         if (c.kind === 'color') {
@@ -1069,7 +1069,7 @@ export class SettingsDialog {
     ): HTMLElement {
         const wrap = document.createElement('div');
         const strip = document.createElement('div');
-        strip.className = 'vela-sd-itabs';
+        strip.className = 'tt-sd-itabs';
         // A lone always-present instance has nothing to switch or add — sections that
         // go structured purely for the group TOC get no one-tab strip.
         if (instances.length > 1 || instances[0]?.enableKey !== undefined) wrap.append(strip);
@@ -1090,13 +1090,13 @@ export class SettingsDialog {
                 if (!present(inst)) return;
                 const tab = document.createElement('button');
                 tab.type = 'button';
-                tab.className = 'vela-sd-itab' + (i === active ? ' on' : '');
+                tab.className = 'tt-sd-itab' + (i === active ? ' on' : '');
                 const lbl = document.createElement('span');
                 lbl.textContent = inst.label;
                 tab.append(lbl);
                 if (i === active && inst.enableKey) {
                     const x = document.createElement('span');
-                    x.className = 'vela-sd-ix';
+                    x.className = 'tt-sd-ix';
                     x.textContent = '✕';
                     x.title = `Remove ${inst.label}`;
                     x.addEventListener('click', (e) => {
@@ -1116,7 +1116,7 @@ export class SettingsDialog {
             if (absent >= 0) {
                 const add = document.createElement('button');
                 add.type = 'button';
-                add.className = 'vela-sd-itab vela-sd-itab-add';
+                add.className = 'tt-sd-itab tt-sd-itab-add';
                 add.textContent = '+';
                 add.title = `Add ${instances[absent]!.label}`;
                 add.addEventListener('click', () => {
@@ -1125,7 +1125,7 @@ export class SettingsDialog {
                 });
                 strip.append(add);
             }
-            contents.forEach((c, i) => c.classList.toggle('vela-sd-hide', i !== active));
+            contents.forEach((c, i) => c.classList.toggle('tt-sd-hide', i !== active));
         };
         refreshers.push(refresh);
         return wrap;
@@ -1154,9 +1154,9 @@ export class SettingsDialog {
         enableKey?: string,
     ): HTMLElement {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-sd-struct';
+        wrap.className = 'tt-sd-struct';
         const toc = document.createElement('div');
-        toc.className = 'vela-sd-toc';
+        toc.className = 'tt-sd-toc';
         const rowsHost = document.createElement('div');
         rowsHost.dataset.sdRowsHost = '1';
         rowsHost.style.cssText = 'flex:1 1 auto;min-width:0;';
@@ -1200,7 +1200,7 @@ export class SettingsDialog {
                 if (!live[gi]) return;
                 const b = document.createElement('button');
                 b.type = 'button';
-                b.className = 'vela-sd-toc-btn' + (gi === activeIdx ? ' on' : '');
+                b.className = 'tt-sd-toc-btn' + (gi === activeIdx ? ' on' : '');
                 b.textContent = label;
                 b.addEventListener('click', () => {
                     this.typeActiveGroup.set(paneKey, label);
@@ -1209,7 +1209,7 @@ export class SettingsDialog {
                 toc.append(b);
             });
             const anyGroup = live.some(Boolean);
-            toc.classList.toggle('vela-sd-hide', !anyGroup);
+            toc.classList.toggle('tt-sd-hide', !anyGroup);
             wrap.classList.toggle('no-toc', !anyGroup);
 
             const enabled = !enableKey || bag[enableKey] === true;
@@ -1227,9 +1227,9 @@ export class SettingsDialog {
                     }
                     visible = hasContent;
                 }
-                e.el.classList.toggle('vela-sd-hide', !visible);
+                e.el.classList.toggle('tt-sd-hide', !visible);
                 // Soft-disable everything except the master toggle while the feature is off.
-                e.el.classList.toggle('vela-sd-soft', visible && !enabled && e.key !== enableKey);
+                e.el.classList.toggle('tt-sd-soft', visible && !enabled && e.key !== enableKey);
             }
         };
         refreshers.push(refresh);
@@ -1273,7 +1273,7 @@ export class SettingsDialog {
 
     /** A label row with arbitrary controls in the shared control column (no toggle). */
     private rowWith(label: string, controls: HTMLElement[]): HTMLElement {
-        return fieldRow({ label, labelSize: 'sm', control: controls, className: 'vela-sd-row' });
+        return fieldRow({ label, labelSize: 'sm', control: controls, className: 'tt-sd-row' });
     }
 
     private section(title: string): HTMLElement {
@@ -1299,7 +1299,7 @@ export class SettingsDialog {
             label,
             labelSize: 'sm',
             fit: true,
-            className: 'vela-sd-row',
+            className: 'tt-sd-row',
             control: buildFieldControl({
                 kind: 'color',
                 theme: this.theme,
@@ -1317,7 +1317,7 @@ export class SettingsDialog {
 
     /** An enable row: checkbox + label in the label column, dependent controls in the
      *  shared control column; the control group dims and ignores input while the toggle
-     *  is off. With `get`, the row re-reads its state on a 'vela-sync' event. */
+     *  is off. With `get`, the row re-reads its state on a 'tt-sync' event. */
     private toggleRow(label: string, value: boolean, onToggle: (v: boolean) => void, controls: HTMLElement[], get?: () => boolean, info?: HTMLElement): HTMLElement {
         return fieldRow({
             label,
@@ -1326,7 +1326,7 @@ export class SettingsDialog {
             toggle: { checked: value, onChange: onToggle, get },
             control: controls,
             info,
-            className: controls.length === 0 ? 'vela-sd-bool' : 'vela-sd-row',
+            className: controls.length === 0 ? 'tt-sd-bool' : 'tt-sd-row',
         });
     }
 
@@ -1343,7 +1343,7 @@ export class SettingsDialog {
         if (unit) {
             const u = document.createElement('span');
             u.textContent = unit;
-            u.style.cssText = 'color:var(--vela-fg-muted);';
+            u.style.cssText = 'color:var(--tt-fg-muted);';
             controls.push(u);
         }
         return this.rowWith(label, controls);
@@ -1354,7 +1354,7 @@ export class SettingsDialog {
         return fieldRow({
             label,
             labelSize: 'sm',
-            className: 'vela-sd-row',
+            className: 'tt-sd-row',
             control: buildFieldControl({
                 kind: 'select',
                 options: options.map(([v, l]) => ({ value: v, label: l })),

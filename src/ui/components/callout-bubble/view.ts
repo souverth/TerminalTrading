@@ -4,7 +4,7 @@
 // descriptors), so contribution seams can route it without ever handing over DOM.
 // The bubble is a single element the caller places and decorates (tooltips stay the
 // caller's: renderer chrome attaches its bare-chart tips, widget chrome the kit's).
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { iconAt } from '../../../core/icons';
 import { injectStyles } from '../../styles';
 import { Popover, type PopoverBoundary } from '../popover';
@@ -17,9 +17,9 @@ export interface CalloutBubbleOptions extends CalloutBubbleSpec {
     /** Where the deployed panel portals (default: the document body). Pass the chart
      *  or widget root so the panel lives inside the host's DOM. */
     host?: HTMLElement;
-    /** Live theme, for a panel deployed OUTSIDE a `.vela-ui` token host (renderer
+    /** Live theme, for a panel deployed OUTSIDE a `.tt-ui` token host (renderer
      *  chrome on a bare chart passes its theme getter; widget chrome may omit it). */
-    theme?: () => VelaTheme;
+    theme?: () => TerminalTradingTheme;
     /** Panel clamp — `'viewport'` (default) flips the panel above the bubble when the
      *  bottom screen edge is too close for it to deploy below. */
     boundary?: PopoverBoundary;
@@ -30,7 +30,7 @@ export class CalloutBubble {
     private spec: CalloutBubbleSpec;
     private readonly size: number;
     private readonly host: HTMLElement | undefined;
-    private readonly theme: (() => VelaTheme) | undefined;
+    private readonly theme: (() => TerminalTradingTheme) | undefined;
     private readonly boundary: PopoverBoundary | undefined;
     private pop: Popover | null = null;
 
@@ -45,7 +45,7 @@ export class CalloutBubble {
         const doc = (opts.host ?? document.body).ownerDocument;
         injectStyles(CALLOUT_STYLE_ID, CALLOUT_CSS, doc);
         this.el = doc.createElement('span');
-        this.el.className = 'vela-callout';
+        this.el.className = 'tt-callout';
         this.el.style.width = `${this.size}px`;
         this.el.style.height = `${this.size}px`;
         // A click's job is the panel — never the row/chip underneath (selection,
@@ -129,27 +129,27 @@ export class CalloutBubble {
     private buildPanel(body: HTMLElement, panel: CalloutPanel): void {
         const doc = body.ownerDocument;
         const root = doc.createElement('div');
-        root.className = 'vela-callout-panel';
+        root.className = 'tt-callout-panel';
         if (panel.title) {
             const title = doc.createElement('div');
-            title.className = 'vela-callout-title';
+            title.className = 'tt-callout-title';
             title.textContent = panel.title;
             root.appendChild(title);
         }
         for (const row of calloutPanelRows(panel.items)) {
             if (row.type === 'text') {
                 const text = doc.createElement('div');
-                text.className = 'vela-callout-text';
+                text.className = 'tt-callout-text';
                 text.textContent = row.text;
                 root.appendChild(text);
                 continue;
             }
             const actions = doc.createElement('div');
-            actions.className = 'vela-callout-actions';
+            actions.className = 'tt-callout-actions';
             for (const item of row.buttons) {
                 const btn = doc.createElement('button');
                 btn.type = 'button';
-                btn.className = 'vela-callout-btn' + (item.primary ? ' vela-callout-btn-primary' : '');
+                btn.className = 'tt-callout-btn' + (item.primary ? ' tt-callout-btn-primary' : '');
                 btn.textContent = item.label;
                 btn.addEventListener('click', () => {
                     item.run();

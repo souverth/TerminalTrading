@@ -17,7 +17,7 @@ import type {
     DataWindowGroup,
     DataWindowReadout,
 } from '../../core/ports/IChartRenderer';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import type { OHLCV } from '../../core/model/ohlcv';
 import type { Millis } from '../../core/model/time';
 import type { VolumeLayerData, VpvrLayerData } from '../../core/model/volume-layers';
@@ -128,7 +128,7 @@ const SCROLL_BTN_PROXIMITY_PX = 120; // the button reveals only while the cursor
 const MIN_VISIBLE_BARS = 2; // never zoom/pan so far that fewer than this many candles stay on screen (the only pan limit)
 const ZOOM_OUT_MARGIN_BARS = 6; // breathing room at max zoom-out: all bars + this margin fill the width (no thin strip)
 // (The animation time-constants — zoom, fling, scroll, autoscale, live-bar glides — are
-// host-configurable through `VelaOptions.animations`; their defaults live in core/options.)
+// host-configurable through `TerminalTradingOptions.animations`; their defaults live in core/options.)
 // After the candle reveal the indicator models fade in over this long (capped at the reveal's own duration).
 const INTRO_MODEL_FADE_MS = 350;
 // Fling ends when on-screen motion drops below this (PIXELS/ms). Kept in pixel units
@@ -161,7 +161,7 @@ const SEPARATOR_HIT_PX = 4;
 export class NativeRenderer implements IChartRenderer {
     readonly capabilities: RendererCapabilities = NATIVE_CAPABILITIES;
 
-    private theme!: VelaTheme;
+    private theme!: TerminalTradingTheme;
     // The app "chrome" surface (drawing toolbar + in-chart dialogs): background + text.
     // Owned by the app theme alone (mount/setTheme) — config-level background/text edits
     // (settings dialog, persisted configs) recolor the plot AND the axis scales (see
@@ -180,7 +180,7 @@ export class NativeRenderer implements IChartRenderer {
     private drawingsCanvas!: HTMLCanvasElement;
     private cursorCanvas!: HTMLCanvasElement;
     private overlayRoot!: HTMLDivElement;
-    /** The host-styleable twin of the `shadeRight` veil (`.vela-shade-right`), directly under
+    /** The host-styleable twin of the `shadeRight` veil (`.tt-shade-right`), directly under
      *  the cursor canvas; hidden whenever the crosshair layer paints no veil. */
     private shadeRightEl: HTMLDivElement | null = null;
     /** The veil geometry last written to {@link shadeRightEl} ('' = hidden) — the DOM is
@@ -400,7 +400,7 @@ export class NativeRenderer implements IChartRenderer {
             if (typeof opts.priceAxisTicks === 'function') this.priceAxisTicks.setHook(opts.priceAxisTicks);
         }
         // Seed a theme so getConfig()/applyConfig() work before mount (mount overwrites
-        // it with the real, Vela-resolved theme). Candle colors follow opts.
+        // it with the real, Terminal Trading-resolved theme). Candle colors follow opts.
         this.theme = this.deriveTheme(DARK_THEME);
     }
 
@@ -715,7 +715,7 @@ export class NativeRenderer implements IChartRenderer {
         if (this.loadingEl) return;
         const doc = this.wrapper.ownerDocument;
         const el = doc.createElement('div');
-        el.className = 'vela-loading'; // stable hook for probes and host styling
+        el.className = 'tt-loading'; // stable hook for probes and host styling
         Object.assign(el.style, {
             position: 'absolute',
             inset: '0',
@@ -1272,7 +1272,7 @@ export class NativeRenderer implements IChartRenderer {
      * back this tick — the same paint also repaints the drawings layers, so they're
      * current. DOM chrome joins as a best-effort text/chip raster (see
      * `rasterizeOverlay`): the per-pane indicator legends, plus any host overlay that
-     * opts in with a `data-vela-screenshot` attribute on the mount container's
+     * opts in with a `data-tt-screenshot` attribute on the mount container's
      * subtree (the widget marks its status line, and its symbol watermark with
      * `"under"` — drawn beneath the canvases, where it sits on screen). Only the
      * crosshair (L2) is intentionally excluded. {@link screenshot} is this canvas
@@ -1292,19 +1292,19 @@ export class NativeRenderer implements IChartRenderer {
         // DOM replicas share the plot's coordinate space (the canvases fill it).
         const plotRect = this.plot?.getBoundingClientRect();
         const frame = plotRect && plotRect.width > 0 ? { left: plotRect.left, top: plotRect.top, dpr: out.width / plotRect.width } : null;
-        const hostMarked = [...(this.mountContainer?.querySelectorAll('[data-vela-screenshot]') ?? [])];
+        const hostMarked = [...(this.mountContainer?.querySelectorAll('[data-tt-screenshot]') ?? [])];
         if (frame) {
             for (const el of hostMarked) {
-                if (el.getAttribute('data-vela-screenshot') === 'under') rasterizeOverlay(ctx, el, frame);
+                if (el.getAttribute('data-tt-screenshot') === 'under') rasterizeOverlay(ctx, el, frame);
             }
         }
         for (const canvas of [...this.canvasPile(), this.chromeCanvas, this.drawingsCanvas]) {
             if (canvas && canvas.width > 0 && canvas.height > 0) ctx.drawImage(canvas, 0, 0);
         }
         if (frame) {
-            for (const lg of this.plot?.querySelectorAll('[data-vela-pane]') ?? []) rasterizeOverlay(ctx, lg, frame);
+            for (const lg of this.plot?.querySelectorAll('[data-tt-pane]') ?? []) rasterizeOverlay(ctx, lg, frame);
             for (const el of hostMarked) {
-                if (el.getAttribute('data-vela-screenshot') !== 'under') rasterizeOverlay(ctx, el, frame);
+                if (el.getAttribute('data-tt-screenshot') !== 'under') rasterizeOverlay(ctx, el, frame);
             }
         }
         return out;
@@ -1387,14 +1387,14 @@ export class NativeRenderer implements IChartRenderer {
 
     /** Theme with the configured candle up/down colors applied (candles, wicks,
      *  plotcandle defaults, and the current-price line direction all follow them). */
-    private deriveTheme(theme: VelaTheme): VelaTheme {
+    private deriveTheme(theme: TerminalTradingTheme): TerminalTradingTheme {
         return { ...theme, upColor: this.candleUp, downColor: this.candleDown };
     }
 
     /** The theme the chrome (drawing toolbar / settings popups) paints with: the live theme
      *  but pinned to the stable surface background, text, and border, so custom plot cosmetics
      *  never recolor the toolbar, gutters, or drawing UI chrome. */
-    private chromeTheme(): VelaTheme {
+    private chromeTheme(): TerminalTradingTheme {
         return {
             ...this.theme,
             background: this.surfaceBackground,
@@ -1413,7 +1413,7 @@ export class NativeRenderer implements IChartRenderer {
     }
 
     // ── lifecycle ──
-    mount(container: HTMLElement, theme: VelaTheme): void {
+    mount(container: HTMLElement, theme: TerminalTradingTheme): void {
         this.mountContainer = container;
         this.publishGutters();
         this.theme = this.deriveTheme(theme);
@@ -1464,10 +1464,10 @@ export class NativeRenderer implements IChartRenderer {
         Object.assign(this.cursorCanvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', pointerEvents: 'none' });
 
         // The `shadeRight` veil's styleable twin, just under the cursor canvas: host CSS on
-        // `.vela-shade-right` (a `backdrop-filter`) reaches the candles beneath it but never the
+        // `.tt-shade-right` (a `backdrop-filter`) reaches the candles beneath it but never the
         // crosshair line or the veil paint above it. Transparent unless the host styles it.
         this.shadeRightEl = document.createElement('div');
-        this.shadeRightEl.className = 'vela-shade-right';
+        this.shadeRightEl.className = 'tt-shade-right';
         this.shadeRightEl.setAttribute('aria-hidden', 'true');
         this.shadeRightEl.hidden = true;
         Object.assign(this.shadeRightEl.style, { position: 'absolute', top: '0', left: '0', width: '0', height: '0', pointerEvents: 'none', display: 'none' });
@@ -1623,7 +1623,7 @@ export class NativeRenderer implements IChartRenderer {
         this.userDrawings.historyChords = this.historyChordsEnabled; // may be set before init()
         // Honor a layout mode pushed before mount (the shell may set it ahead of the chart build).
         if (this.layoutMode === 'mobile') {
-            this.mountContainer?.setAttribute('data-vela-layout', this.layoutMode);
+            this.mountContainer?.setAttribute('data-tt-layout', this.layoutMode);
             this.userDrawings.setLayoutMode(this.layoutMode);
             if (this.scrollButton) {
                 this.scrollButton.style.width = `${SCROLL_BTN_SIZE_TOUCH}px`;
@@ -1802,7 +1802,7 @@ export class NativeRenderer implements IChartRenderer {
         this.resize(); // syncSize re-reads dpr and re-sizes both canvases together
     };
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = this.deriveTheme(theme);
         // a full app-theme swap re-bases the chrome surface
         this.surfaceBackground = theme.background;
@@ -1908,11 +1908,11 @@ export class NativeRenderer implements IChartRenderer {
         this.shadeRightEl = null;
         this.attributionEl?.remove();
         this.attributionEl = null;
-        this.mountContainer?.style.removeProperty('--vela-toolbar-gutter');
-        this.mountContainer?.style.removeProperty('--vela-scale-gutter');
-        this.mountContainer?.style.removeProperty('--vela-bottom-gutter');
-        this.mountContainer?.style.removeProperty('--vela-price-pane-top');
-        this.mountContainer?.style.removeProperty('--vela-price-pane-bottom');
+        this.mountContainer?.style.removeProperty('--tt-toolbar-gutter');
+        this.mountContainer?.style.removeProperty('--tt-scale-gutter');
+        this.mountContainer?.style.removeProperty('--tt-bottom-gutter');
+        this.mountContainer?.style.removeProperty('--tt-price-pane-top');
+        this.mountContainer?.style.removeProperty('--tt-price-pane-bottom');
         this.mountContainer = null;
         this.wrapper?.remove();
     }
@@ -2166,7 +2166,7 @@ export class NativeRenderer implements IChartRenderer {
             if (skip == null) {
                 // Nothing index-aligned to measure against (a drawings-only model). Keep the
                 // old, honest-but-approximate behavior rather than inventing a count.
-                console.warn(`[vela] indicator "${model.id}" starts before the first bar with no series to align on — rendering unanchored`);
+                console.warn(`[terminal-trading] indicator "${model.id}" starts before the first bar with no series to align on — rendering unanchored`);
                 this.scene.setAnchorOffset(model.id, 0);
                 return;
             }
@@ -2182,7 +2182,7 @@ export class NativeRenderer implements IChartRenderer {
             if (this.bars[mid]!.time >= anchor) { at = mid; hi = mid - 1; } else lo = mid + 1;
         }
         if (at >= this.bars.length || this.bars[at]!.time !== anchor) {
-            console.warn(`[vela] indicator "${model.id}" anchorTime matches no chart bar — rendering unanchored`);
+            console.warn(`[terminal-trading] indicator "${model.id}" anchorTime matches no chart bar — rendering unanchored`);
             this.scene.setAnchorOffset(model.id, 0);
             return;
         }
@@ -2360,7 +2360,7 @@ export class NativeRenderer implements IChartRenderer {
     setLayoutMode(mode: 'mobile' | 'desktop'): void {
         if (mode === this.layoutMode) return;
         this.layoutMode = mode;
-        this.mountContainer?.setAttribute('data-vela-layout', mode);
+        this.mountContainer?.setAttribute('data-tt-layout', mode);
         this.userDrawings?.setLayoutMode(mode);
         this.settingsDialog?.setLayoutMode(mode);
         this.inputsUI?.setLayoutMode(mode);
@@ -3287,13 +3287,13 @@ export class NativeRenderer implements IChartRenderer {
         this.updateLegendValues();
     }
 
-    /** Repaint the L2 crosshair canvas and keep the `.vela-shade-right` element on the veil it painted. */
+    /** Repaint the L2 crosshair canvas and keep the `.tt-shade-right` element on the veil it painted. */
     private renderCrosshairLayer(): void {
         this.crosshairLayer.render(this.scene, this.coords, this.theme, this.hoverSeparatorY, this.externalCrossPx());
         this.syncShadeRight();
     }
 
-    /** Position (or hide) the `.vela-shade-right` element over the veil of the last crosshair frame. */
+    /** Position (or hide) the `.tt-shade-right` element over the veil of the last crosshair frame. */
     private syncShadeRight(): void {
         const el = this.shadeRightEl;
         if (!el) return;
@@ -4110,11 +4110,11 @@ export class NativeRenderer implements IChartRenderer {
             : dataHeight;
         // Extra collapsed strips below that pane push the button up by exactly their height.
         this.scrollBtnBottomPx = SCROLL_BTN_BOTTOM + Math.max(0, dataHeight - paneBottom);
-        // Publish the same inset as `--vela-bottom-gutter` (time axis + collapsed strips
+        // Publish the same inset as `--tt-bottom-gutter` (time axis + collapsed strips
         // below the lowest open pane) beside the left/right gutters, so host overlays
         // anchored to the plot's bottom edge (the workspace's shared attribution mark)
         // climb over collapsed strips exactly like the renderer's own bottom chrome.
-        this.mountContainer?.style.setProperty('--vela-bottom-gutter', `${TIME_AXIS_H + Math.max(0, dataHeight - paneBottom)}px`);
+        this.mountContainer?.style.setProperty('--tt-bottom-gutter', `${TIME_AXIS_H + Math.max(0, dataHeight - paneBottom)}px`);
         // Clear the whole scale gutter (wider when merged own-scale columns are present), not just
         // the single master column — otherwise the button lands inside a multi-column scale.
         this.scrollBtnRightPx = this.rightAxisW + SCROLL_BTN_RIGHT_INSET;
@@ -4148,18 +4148,18 @@ export class NativeRenderer implements IChartRenderer {
         this.syncSize();
     }
 
-    /** Publish the gutters on the mount container as `--vela-toolbar-gutter` (left,
-     *  drawings toolbar) and `--vela-scale-gutter` (right, the full price-scale width
+    /** Publish the gutters on the mount container as `--tt-toolbar-gutter` (left,
+     *  drawings toolbar) and `--tt-scale-gutter` (right, the full price-scale width
      *  incl. merged own-scale columns), so host overlays sharing that container (a
      *  status line, a watermark, a custom legend) can anchor to the plot's edges
      *  without reaching into the renderer's DOM. */
     private publishGutters(): void {
-        this.mountContainer?.style.setProperty('--vela-toolbar-gutter', `${this.toolbarGutter}px`);
-        this.mountContainer?.style.setProperty('--vela-scale-gutter', `${this.rightAxisW}px`);
+        this.mountContainer?.style.setProperty('--tt-toolbar-gutter', `${this.toolbarGutter}px`);
+        this.mountContainer?.style.setProperty('--tt-scale-gutter', `${this.rightAxisW}px`);
     }
 
-    /** Publish the price pane's vertical insets as `--vela-price-pane-top` /
-     *  `--vela-price-pane-bottom` on the mount container, so the symbol watermark
+    /** Publish the price pane's vertical insets as `--tt-price-pane-top` /
+     *  `--tt-price-pane-bottom` on the mount container, so the symbol watermark
      *  (and any other host overlay) can clip to the price pane instead of spanning
      *  study panes and the time axis. A maximized study pane collapses the box to
      *  zero height — the mark does not appear on a study. */
@@ -4170,8 +4170,8 @@ export class NativeRenderer implements IChartRenderer {
         const top = price ? price.bounds.top : 0;
         const height = price ? price.bounds.height : this.coords.height;
         const bottom = Math.max(0, plotH - (top + height));
-        this.mountContainer.style.setProperty('--vela-price-pane-top', `${top}px`);
-        this.mountContainer.style.setProperty('--vela-price-pane-bottom', `${bottom}px`);
+        this.mountContainer.style.setProperty('--tt-price-pane-top', `${top}px`);
+        this.mountContainer.style.setProperty('--tt-price-pane-bottom', `${bottom}px`);
     }
 
     /** The built-in mark, or the host's own when one is set. */

@@ -10,7 +10,7 @@ import { priceStyleIds } from '../src/renderers/native/core/chartConfig';
 import { heikinAshiFull } from '../src/core/price-styles/heikin-ashi';
 import type { OHLCV } from '../src/core/model/ohlcv';
 
-registerBuiltinChartTypes(); // normally done by the Vela constructor
+registerBuiltinChartTypes(); // normally done by the TerminalTrading constructor
 
 const identity = { full: (r: readonly OHLCV[]) => [...r], next: (r: OHLCV) => r };
 

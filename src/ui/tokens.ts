@@ -1,45 +1,45 @@
 // Design tokens — the single visual vocabulary every kit component (and widget chrome)
 // consumes. Two layers:
 //   • STATIC tokens (spacing, radii, z-index, motion, type scale): one shared sheet on
-//     `.vela-ui` hosts — theme-independent.
-//   • THEME tokens (surfaces, text, borders, states): computed from the chart's `VelaTheme`
+//     `.tt-ui` hosts — theme-independent.
+//   • THEME tokens (surfaces, text, borders, states): computed from the chart's `TerminalTradingTheme`
 //     by `themeTokens` (shared with the renderer's own chrome) and written as inline custom
 //     properties on the host — the chart theme stays the single source of truth.
-import type { VelaTheme } from '../core/options';
+import type { TerminalTradingTheme } from '../core/options';
 import { STATIC_TOKENS, themeTokens } from '../core/tokens';
 import { injectStyles } from './styles';
 
-const STATIC_ID = 'vela-ui-tokens';
+const STATIC_ID = 'tt-ui-tokens';
 
 const STATIC_DECLS = Object.entries(STATIC_TOKENS)
     .map(([k, v]) => `    ${k}: ${v};`)
     .join('\n');
 
 const STATIC_CSS = `
-.vela-ui, .vela-ui-layer {
+.tt-ui, .tt-ui-layer {
 ${STATIC_DECLS}
-    font-family: var(--vela-font, -apple-system, system-ui, sans-serif);
+    font-family: var(--tt-font, -apple-system, system-ui, sans-serif);
     box-sizing: border-box;
     /* Chrome text (titles, buttons, menus, readouts) is UI, not copy — never selectable. */
     user-select: none;
     -webkit-user-select: none;
 }
-.vela-ui *, .vela-ui-layer * { box-sizing: border-box; }
+.tt-ui *, .tt-ui-layer * { box-sizing: border-box; }
 /* Text ENTRY is the one exception: selection is part of editing. */
-.vela-ui :is(input, textarea), .vela-ui-layer :is(input, textarea) { user-select: text; -webkit-user-select: text; }
+.tt-ui :is(input, textarea), .tt-ui-layer :is(input, textarea) { user-select: text; -webkit-user-select: text; }
 /* iOS Safari zooms the page when a focused field is under 16px, and often
    keeps that zoom after the field blurs or a dialog closes. The shell's
    mobile size class is the honest gate — not a media query — so an embedded
    chart on a wide desktop still gets the rule when it is in the phone layout.
    Scoped to the kit root so a host page's own [data-layout] is never touched. */
-.vela-ui[data-layout='mobile'] :is(input, textarea, select) { font-size: 16px; }
-.vela-icon { display: inline-flex; align-items: center; flex: none; }
-.vela-icon svg { display: block; }
+.tt-ui[data-layout='mobile'] :is(input, textarea, select) { font-size: 16px; }
+.tt-icon { display: inline-flex; align-items: center; flex: none; }
+.tt-icon svg { display: block; }
 `;
 
 /** Write the theme-derived custom properties onto a host element (the widget root and
  *  every floating layer — menus/tooltips portal outside the root, so layers re-apply). */
-export function applyThemeTokens(el: HTMLElement, t: VelaTheme): void {
+export function applyThemeTokens(el: HTMLElement, t: TerminalTradingTheme): void {
     const tokens = themeTokens(t);
     for (const key in tokens) el.style.setProperty(key, tokens[key]!);
 }
@@ -51,23 +51,23 @@ export function applyThemeTokens(el: HTMLElement, t: VelaTheme): void {
  *  `getConfig()` snapshot; a missing/shapeless one falls back to the base app theme.
  *  Floating menus and dropdowns do NOT use this — they mount on {@link floatingLayerHost}
  *  so their surface follows the app theme alone. */
-export function applyPlotOverlayTokens(host: HTMLElement, base: VelaTheme, config: unknown): void {
+export function applyPlotOverlayTokens(host: HTMLElement, base: TerminalTradingTheme, config: unknown): void {
     const layout = (config as { layout?: { background?: string; textColor?: string } } | null)?.layout;
     const t = layout?.background && layout.textColor ? { ...base, background: layout.background, textColor: layout.textColor } : base;
     applyThemeTokens(host, t);
 }
 
-/** Mount floating kit layers (menus, select lists) on the nearest `.vela-ui` so they
+/** Mount floating kit layers (menus, select lists) on the nearest `.tt-ui` so they
  *  inherit the app-theme tokens. A plot-overlay host (the cell) retokens from
  *  `layout.background`; chrome panels must not follow that. Falls back to `fallback`
  *  (typically `document.body`) when no kit host is an ancestor. */
 export function floatingLayerHost(from: HTMLElement, fallback?: HTMLElement): HTMLElement {
-    return (from.closest('.vela-ui') as HTMLElement | null) ?? fallback ?? from;
+    return (from.closest('.tt-ui') as HTMLElement | null) ?? fallback ?? from;
 }
 
-/** Mark an element as a kit host: static token sheet + the `.vela-ui` class. */
-export function ensureUIHost(el: HTMLElement, theme?: VelaTheme): void {
+/** Mark an element as a kit host: static token sheet + the `.tt-ui` class. */
+export function ensureUIHost(el: HTMLElement, theme?: TerminalTradingTheme): void {
     injectStyles(STATIC_ID, STATIC_CSS, el.getRootNode() as Document | ShadowRoot);
-    el.classList.add('vela-ui');
+    el.classList.add('tt-ui');
     if (theme) applyThemeTokens(el, theme);
 }

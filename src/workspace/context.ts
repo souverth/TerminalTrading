@@ -2,7 +2,7 @@
 // already build against (`ctx.chart` resolves lazily to the ACTIVE cell's chart, as
 // the contribution system anticipated), plus additive multi-chart extensions. Existing
 // plugins keep working unchanged; grid-aware ones narrow to WorkspaceWidgetContext.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { WidgetContext } from '../widget/contributions';
 import type { ChartCell } from './ChartCell';
 import type { WorkspaceReplay } from './WorkspaceReplay';
@@ -11,7 +11,7 @@ import type { WorkspaceReplay } from './WorkspaceReplay';
 export interface WorkspaceWidgetContext extends WidgetContext {
     /** Every live cell (layout order) — id + LIVE chart + its market. A LIVE getter
      *  (fresh array per read): read it at the point of use, never keep the array. */
-    cells: ReadonlyArray<{ id: string; chart: Vela; symbol: string; timeframe: string }>;
+    cells: ReadonlyArray<{ id: string; chart: TerminalTrading; symbol: string; timeframe: string }>;
     /** LIVE getter — follows every active-cell switch. */
     activeCellId: string;
     setActiveCell(id: string): void;
@@ -49,7 +49,7 @@ export function buildContext(host: ContextHost): WorkspaceWidgetContext {
     return {
         get chart() {
             const cell = host.active();
-            if (!cell) throw new Error('VelaWorkspace has no active cell yet');
+            if (!cell) throw new Error('TerminalTradingWorkspace has no active cell yet');
             return cell.chart;
         },
         get symbol() {

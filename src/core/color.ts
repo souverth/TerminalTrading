@@ -64,7 +64,7 @@ export function toHex6(color: string, fallback = '#888888'): string {
 }
 
 /** Perceived-dark check (relative luminance below mid-gray). Unparseable input counts as
- *  dark — the dark palette is Vela's default, so it is the safer assumption. */
+ *  dark — the dark palette is Terminal Trading's default, so it is the safer assumption. */
 export function isDarkColor(color: string): boolean {
     const c = parseRgb(color);
     if (!c) return true;

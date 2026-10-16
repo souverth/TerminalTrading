@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { attachChromeTooltip } from '../../shared/chrome-tooltip';
 import { AXIS_MASTER_W } from './axisLayout';
 
@@ -21,7 +21,7 @@ export interface AxisScaleButtonsDeps {
     onToggleLog(paneId: string): void;
 }
 
-const STYLE_ID = 'vela-axis-scale-buttons';
+const STYLE_ID = 'tt-axis-scale-buttons';
 
 const BTN_PX = 18; // square hit target per letter button
 const BTN_GAP = 4; // air between A and L — close enough to read as a pair
@@ -44,9 +44,9 @@ function ensureStyles(): void {
     const st = document.createElement('style');
     st.id = STYLE_ID;
     st.textContent = `
-.vela-axis-btn{display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:var(--vela-radius-sm);background:transparent;cursor:pointer;font:600 10px/1 -apple-system,Segoe UI,sans-serif;color:var(--vela-fg-muted);}
-.vela-axis-btn:hover{background:var(--vela-active);color:var(--vela-fg-bright);}
-.vela-axis-on,.vela-axis-on:hover{background:var(--vela-selected-bg);color:var(--vela-selected-fg);}
+.tt-axis-btn{display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:var(--tt-radius-sm);background:transparent;cursor:pointer;font:600 10px/1 -apple-system,Segoe UI,sans-serif;color:var(--tt-fg-muted);}
+.tt-axis-btn:hover{background:var(--tt-active);color:var(--tt-fg-bright);}
+.tt-axis-on,.tt-axis-on:hover{background:var(--tt-selected-bg);color:var(--tt-selected-fg);}
 `;
     document.head.appendChild(st);
 }
@@ -64,7 +64,7 @@ export class AxisScaleButtons {
     private readonly tipDisposers: Array<() => void> = [];
     private hoverPaneId: string | null = null;
 
-    constructor(private readonly plot: HTMLElement, private theme: VelaTheme, private readonly deps: AxisScaleButtonsDeps) {
+    constructor(private readonly plot: HTMLElement, private theme: TerminalTradingTheme, private readonly deps: AxisScaleButtonsDeps) {
         ensureStyles();
         this.cluster = document.createElement('div');
         Object.assign(this.cluster.style, {
@@ -95,7 +95,7 @@ export class AxisScaleButtons {
         b.type = 'button';
         b.setAttribute('aria-label', title); // not `title` — native tooltips are banned on renderer chrome
         b.textContent = label;
-        b.className = 'vela-axis-btn';
+        b.className = 'tt-axis-btn';
         Object.assign(b.style, { width: `${BTN_PX}px`, height: `${BTN_PX}px` });
         this.tipDisposers.push(attachChromeTooltip(b, {
             host: this.plot,
@@ -133,7 +133,7 @@ export class AxisScaleButtons {
     private readonly onPlotLeave = (): void => this.setHoverPane(null);
 
     /** Re-tint the chip when the plot background/border change (theme swap, config edit). */
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         this.applyTheme();
     }
@@ -168,8 +168,8 @@ export class AxisScaleButtons {
     private sync(): void {
         const pane = this.deps.panes().find((p) => p.id === this.hoverPaneId);
         if (!pane) return;
-        this.autoBtn.classList.toggle('vela-axis-on', pane.auto);
-        this.logBtn.classList.toggle('vela-axis-on', pane.log);
+        this.autoBtn.classList.toggle('tt-axis-on', pane.auto);
+        this.logBtn.classList.toggle('tt-axis-on', pane.log);
     }
 
     destroy(): void {

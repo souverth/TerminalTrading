@@ -257,7 +257,7 @@ async function safeBars(provider: DataProvider, ticker: string, tf: string, rang
     try {
         return await provider.getBars(ticker, tf, range);
     } catch (e) {
-        console.warn(`[vela] data fetch failed for ${ticker} ${tf} — ${e instanceof Error ? e.message : String(e)}`);
+        console.warn(`[terminal-trading] data fetch failed for ${ticker} ${tf} — ${e instanceof Error ? e.message : String(e)}`);
         return [];
     }
 }
@@ -287,7 +287,7 @@ class RegistryFetchFeed implements MarketDataFeed {
         } catch (e) {
             // Same fault posture as `safeBars`: a throwing provider empties the chart,
             // never rejects the load — batches already painted stay painted.
-            console.warn(`[vela] progressive fetch failed for ${ticker} ${cfg.timeframe ?? '60'} — ${e instanceof Error ? e.message : String(e)}`);
+            console.warn(`[terminal-trading] progressive fetch failed for ${ticker} ${cfg.timeframe ?? '60'} — ${e instanceof Error ? e.message : String(e)}`);
             return [];
         }
     }

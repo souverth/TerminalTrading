@@ -230,7 +230,7 @@ describe('surfaces with exit CSS', () => {
 
     function host(): HTMLElement {
         const el = document.createElement('div');
-        el.className = 'vela-ui';
+        el.className = 'tt-ui';
         document.body.append(el);
         return el;
     }
@@ -242,7 +242,7 @@ describe('surfaces with exit CSS', () => {
     }
 
     it('side panel: reports closed at once, stays on screen until its exit ends', async () => {
-        const panel = new SidePanel(host(), 'Objects', 'vela-test');
+        const panel = new SidePanel(host(), 'Objects', 'tt-test');
         const told: boolean[] = [];
         panel.onOpenChange = (open) => told.push(open);
         panel.toggle(true);
@@ -259,7 +259,7 @@ describe('surfaces with exit CSS', () => {
     });
 
     it('side panel: a reopen during the exit cancels it', async () => {
-        const panel = new SidePanel(host(), 'Objects', 'vela-test');
+        const panel = new SidePanel(host(), 'Objects', 'tt-test');
         panel.toggle(true);
         panel.toggle(false);
         panel.toggle(); // a bare toggle reads the logical state: it reopens
@@ -272,7 +272,7 @@ describe('surfaces with exit CSS', () => {
     });
 
     it('side panel: an instant close skips the exit, and cuts short one already running', () => {
-        const a = new SidePanel(host(), 'A', 'vela-a');
+        const a = new SidePanel(host(), 'A', 'tt-a');
         a.toggle(true);
         a.toggle(false, true);
         expect(a.el.hidden).toBe(true);
@@ -290,8 +290,8 @@ describe('surfaces with exit CSS', () => {
             chrome: { setPanelButtons: () => {}, setPanelActive: () => {} },
             context: () => ({}) as WidgetContext,
         });
-        const a = new SidePanel(host(), 'A', 'vela-a');
-        const b = new SidePanel(host(), 'B', 'vela-b');
+        const a = new SidePanel(host(), 'A', 'tt-a');
+        const b = new SidePanel(host(), 'B', 'tt-b');
         dock.addBuiltIn({ id: 'a', title: 'A', icon: 'list', order: 1, panel: a });
         dock.addBuiltIn({ id: 'b', title: 'B', icon: 'list', order: 2, panel: b });
         dock.toggle('a', true);
@@ -312,7 +312,7 @@ describe('surfaces with exit CSS', () => {
         expect(pop.el.hasAttribute('data-closing')).toBe(true);
         pop.show();
         expect(pop.el.hasAttribute('data-closing')).toBe(false);
-        expect(h.querySelectorAll('.vela-popover')).toHaveLength(1);
+        expect(h.querySelectorAll('.tt-popover')).toHaveLength(1);
         exit.resolve();
         await ticks();
         expect(pop.el.isConnected).toBe(true);
@@ -340,7 +340,7 @@ describe('surfaces with exit CSS', () => {
         const menu = new Menu({ host: h, trigger: button(h), items: [{ id: 'a', label: 'A' }] });
         menu.open();
         await settled();
-        const list = h.querySelector<HTMLElement>('.vela-menu')!;
+        const list = h.querySelector<HTMLElement>('.tt-menu')!;
         menu.close();
         await settled();
         expect(list.hidden).toBe(false);

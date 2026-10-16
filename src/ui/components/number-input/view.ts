@@ -33,7 +33,7 @@ export class NumberInput {
         this.last = String(opts.value);
 
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-num';
+        wrap.className = 'tt-num';
         wrap.dataset.size = this.ctrl.size;
         if (opts.fill ?? this.ctrl.size !== 'sm') wrap.dataset.fill = '';
         if (opts.compact) wrap.dataset.compact = '';
@@ -108,7 +108,7 @@ export class NumberInput {
 
     private buildSteppers(doc: Document, applyDir: (dir: 1 | -1) => void): HTMLElement {
         const steps = doc.createElement('div');
-        steps.className = 'vela-num-step';
+        steps.className = 'tt-num-step';
         const mk = (dir: 1 | -1, icon: string, label: string): HTMLButtonElement => {
             const b = doc.createElement('button');
             b.type = 'button';

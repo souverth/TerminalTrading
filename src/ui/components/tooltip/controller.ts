@@ -1,4 +1,4 @@
-// Tooltip CONTROLLER — the framework-agnostic half: the Zag tooltip machine plus Vela's
+// Tooltip CONTROLLER — the framework-agnostic half: the Zag tooltip machine plus Terminal Trading's
 // option mapping. No DOM here; any view layer (vanilla today, React later) consumes it.
 import * as tooltip from '@zag-js/tooltip';
 import { nextUid, normalizeProps } from '../../zag';
@@ -28,7 +28,7 @@ export function tooltipController(opts: TooltipControllerOptions = {}): TooltipC
     return {
         machine: tooltip.machine,
         props: {
-            id: nextUid('vela-tooltip'),
+            id: nextUid('tt-tooltip'),
             openDelay: opts.openDelay ?? 0,
             closeDelay: opts.closeDelay ?? 0,
             interactive: opts.interactive ?? false,

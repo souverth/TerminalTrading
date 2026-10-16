@@ -1,13 +1,13 @@
 // One workspace CELL — a stable IDENTITY (its declared name, or `c<N>` for a slot no
-// entry declared) holding a full Vela chart plus its per-cell overlays and per-cell
+// entry declared) holding a full Terminal Trading chart plus its per-cell overlays and per-cell
 // state: statusline, watermark, context menu, its own undo timeline, and its indicator
 // ledger (shared manifest, per-cell instances). The identity never derives from content:
 // symbol/timeframe/style are mutable state, switched IN PLACE via `chart.setMarket` (the
 // chart instance survives every market change and only dies with the cell itself, on a
 // layout change — its state then round-trips through the workspace pool, so shrinking
 // 4 → 2 → 4 restores the third and fourth exactly, indicators and drawings included).
-import { Vela } from '../Vela';
-import { normalizeSession, type MarketSession, type NativeBackend, type VelaOptions, type VelaTheme } from '../core/options';
+import { TerminalTrading } from '../TerminalTrading';
+import { normalizeSession, type MarketSession, type NativeBackend, type TerminalTradingOptions, type TerminalTradingTheme } from '../core/options';
 import type { OHLCV } from '../core/model/ohlcv';
 import type { VisibleRangePreset } from '../core/visible-range';
 import type { VisibleRange } from '../core/ports/IChartRenderer';
@@ -68,7 +68,7 @@ export type CellBoot = PooledCellState & Pick<CellSeed, 'data' | 'visibleRange'>
 
 /** The per-cell SEED the workspace's top-level chart options provide — same words as
  *  the widget; `cells[id]` spreads over this. */
-export function seedDefaults(opts: Pick<VelaOptions, 'symbol' | 'timeframe' | 'bars' | 'priceStyle' | 'session' | 'data' | 'visibleRange'>): CellSeed {
+export function seedDefaults(opts: Pick<TerminalTradingOptions, 'symbol' | 'timeframe' | 'bars' | 'priceStyle' | 'session' | 'data' | 'visibleRange'>): CellSeed {
     return {
         symbol: opts.symbol,
         timeframe: opts.timeframe,
@@ -86,7 +86,7 @@ export function seedDefaults(opts: Pick<VelaOptions, 'symbol' | 'timeframe' | 'b
  *  market/view seeds (those flow through {@link CellSeed}), and `drawings`' toolbar
  *  sub-key (see {@link cellDrawings}). */
 export type CellChartDefaults = Pick<
-    VelaOptions,
+    TerminalTradingOptions,
     'renderer' | 'defaultLanguage' | 'currentPriceLine' | 'logScale' | 'animations' | 'glow' | 'upColor' | 'downColor' | 'drawings' | 'settings' | 'priceAxis'
 >;
 
@@ -134,7 +134,7 @@ export interface CellDeps {
     engines: Record<string, () => ScriptingEngine>;
     /** The workspace's top-level chart options every cell's chart starts from. */
     chartDefaults: CellChartDefaults;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
     live: boolean;
     volume: boolean;
     statusline: boolean;
@@ -243,10 +243,10 @@ export class ChartCell {
      *  rule resolves to on this cell. Undefined until metadata lands or when none is declared. */
     private exchangeZone: string | undefined;
 
-    private inner: Vela | null;
+    private inner: TerminalTrading | null;
     /** The live app theme — seeded from deps, updated on `theme:changed` (the base the
      *  plot-overlay tokens re-derive from). */
-    private appTheme: VelaTheme;
+    private appTheme: TerminalTradingTheme;
     private readonly statusline: Statusline | null;
     /** Keeps this cell's market badge on the symbol's real calendar (see {@link MarketStatusTracker}). */
     private readonly marketStatus: MarketStatusTracker | null;
@@ -311,7 +311,7 @@ export class ChartCell {
         };
         const doc = gridHost.ownerDocument;
         this.host = doc.createElement('div');
-        this.host.className = 'vela-cell';
+        this.host.className = 'tt-cell';
         this.host.dataset.cellId = id;
         this.host.style.cssText = 'position:relative;overflow:hidden;';
         // Capture-phase: a press anywhere in the cell (canvas, legend, dialogs) activates it
@@ -320,7 +320,7 @@ export class ChartCell {
         this.host.addEventListener('focusin', () => this.deps.activate(id));
         gridHost.appendChild(this.host);
 
-        this.inner = new Vela(
+        this.inner = new TerminalTrading(
             this.host,
             {
                 ...deps.chartDefaults,
@@ -963,8 +963,8 @@ export class ChartCell {
 
     /** The LIVE chart of this cell — never cache it across a layout change (the cell's
      *  identity is what endures; the chart dies with the cell). */
-    get chart(): Vela {
-        if (!this.inner) throw new Error(`[vela] cell "${this.id}" is destroyed`);
+    get chart(): TerminalTrading {
+        if (!this.inner) throw new Error(`[terminal-trading] cell "${this.id}" is destroyed`);
         return this.inner;
     }
 
@@ -1031,7 +1031,7 @@ export class ChartCell {
 
     /** The workspace shell keeps the app theme; the cell host's tokens re-derive from
      *  the LIVE plot surface for overlay ink (statusline, watermark). Menus portal to
-     *  `.vela-ui` and keep the app-theme surface (see {@link applyPlotOverlayTokens}). */
+     *  `.tt-ui` and keep the app-theme surface (see {@link applyPlotOverlayTokens}). */
     private syncPlotOverlayTokens(): void {
         applyPlotOverlayTokens(this.host, this.appTheme, this.inner?.renderer.getConfig() ?? null);
     }
@@ -1386,7 +1386,7 @@ export class ChartCell {
                 }) ?? null
             );
         } catch (err) {
-            console.warn(`[vela] indicator "${entry.name}" failed to add:`, err);
+            console.warn(`[terminal-trading] indicator "${entry.name}" failed to add:`, err);
             return null;
         }
     }
@@ -1420,7 +1420,7 @@ export class ChartCell {
             try {
                 this.history.silently(() => h.restore(this.extState[h.key], this.stateContext()));
             } catch (err) {
-                console.warn(`[vela] state persistence "${h.key}" restore failed:`, err);
+                console.warn(`[terminal-trading] state persistence "${h.key}" restore failed:`, err);
             }
         }
     }
@@ -1436,7 +1436,7 @@ export class ChartCell {
                 if (value === undefined) delete ext[h.key];
                 else ext[h.key] = value;
             } catch (err) {
-                console.warn(`[vela] state persistence "${h.key}" serialize failed:`, err);
+                console.warn(`[terminal-trading] state persistence "${h.key}" serialize failed:`, err);
             }
         }
         this.extState = ext; // the merged bag is the new baseline

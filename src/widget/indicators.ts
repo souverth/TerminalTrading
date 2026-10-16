@@ -83,7 +83,7 @@ export async function resolveIndicators(
             if (script === undefined) throw new Error('entry has neither script nor url');
             out.push({ name: entry.name, script, language: entry.language, enabled: entry.enabled !== false, category: entry.category });
         } catch (err) {
-            console.warn(`[vela] indicator "${entry.name}" skipped:`, err);
+            console.warn(`[terminal-trading] indicator "${entry.name}" skipped:`, err);
         }
     }
     return out;

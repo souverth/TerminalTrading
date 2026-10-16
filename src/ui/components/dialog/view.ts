@@ -53,17 +53,17 @@ export class Dialog {
         const host = opts.host ?? doc.body;
 
         this.backdrop = doc.createElement('div');
-        this.backdrop.className = 'vela-dialog-backdrop vela-ui-layer';
-        if (opts.dimBackdrop !== true) this.backdrop.classList.add('vela-dialog-backdrop--clear');
+        this.backdrop.className = 'tt-dialog-backdrop tt-ui-layer';
+        if (opts.dimBackdrop !== true) this.backdrop.classList.add('tt-dialog-backdrop--clear');
         this.positioner = doc.createElement('div');
-        this.positioner.className = 'vela-dialog-positioner vela-ui-layer';
+        this.positioner.className = 'tt-dialog-positioner tt-ui-layer';
         if (opts.contained) {
             this.backdrop.dataset.contained = '';
             this.positioner.dataset.contained = '';
         }
         this.positioner.dataset.align = opts.align ?? 'top';
         this.panel = doc.createElement('div');
-        this.panel.className = 'vela-dialog';
+        this.panel.className = 'tt-dialog';
         if (opts.className) {
             for (const cls of opts.className.split(/\s+/)) if (cls) this.panel.classList.add(cls);
         }
@@ -75,12 +75,12 @@ export class Dialog {
         });
 
         const header = doc.createElement('div');
-        header.className = 'vela-dialog-header';
+        header.className = 'tt-dialog-header';
         if (opts.draggable) {
             header.style.cursor = 'move';
             let sx = 0, sy = 0, ox = 0, oy = 0, dragging = false;
             header.addEventListener('pointerdown', (e) => {
-                if ((e.target as HTMLElement).closest('.vela-dialog-close')) return;
+                if ((e.target as HTMLElement).closest('.tt-dialog-close')) return;
                 dragging = true;
                 sx = e.clientX - ox;
                 sy = e.clientY - oy;
@@ -96,16 +96,16 @@ export class Dialog {
         }
         if (opts.headerStart) header.appendChild(opts.headerStart);
         const title = doc.createElement('div');
-        title.className = 'vela-dialog-title';
+        title.className = 'tt-dialog-title';
         title.textContent = opts.title ?? '';
         this.titleEl = title;
         const close = doc.createElement('button');
-        close.className = 'vela-dialog-close';
+        close.className = 'tt-dialog-close';
         close.appendChild(iconEl('close', doc));
         header.append(title, close);
 
         this.body = doc.createElement('div');
-        this.body.className = 'vela-dialog-body';
+        this.body.className = 'tt-dialog-body';
         if (opts.flush) this.body.dataset.flush = '';
         if (opts.content instanceof Node) this.body.appendChild(opts.content);
         else if (typeof opts.content === 'function') opts.content(this.body);
@@ -113,7 +113,7 @@ export class Dialog {
         this.panel.append(header, this.body);
         if (opts.footer) {
             const foot = doc.createElement('div');
-            foot.className = 'vela-dialog-footer';
+            foot.className = 'tt-dialog-footer';
             if (opts.footer instanceof Node) foot.appendChild(opts.footer);
             else opts.footer(foot);
             this.panel.appendChild(foot);
@@ -249,7 +249,7 @@ export class Dialog {
         if (this.panel.contains(node) || this.backdrop.contains(node) || this.positioner.contains(node)) return true;
         const el = node instanceof Element ? node : node.parentElement;
         // Portaled select lists / color chips / menus live on the document, not in the panel.
-        return el?.closest('.vela-popover, .vela-menu') != null;
+        return el?.closest('.tt-popover, .tt-menu') != null;
     }
 
     destroy(): void {

@@ -1,18 +1,18 @@
 // Shell state persistence — pluggable storage. localStorage by default; hosts inject
-// any `VelaStorage` (sync like localStorage, or async like a REST/IndexedDB backend).
+// any `TerminalTradingStorage` (sync like localStorage, or async like a REST/IndexedDB backend).
 // The persisted FORMAT is the unified state document (`src/state/document.ts`) — one
 // codec for every shell.
 
 /** The storage contract BOTH shells persist through (the widget wrapper and the
  *  workspace — one name, one shape). Methods may be synchronous or return promises. */
-export interface VelaStorage {
+export interface TerminalTradingStorage {
     get(key: string): string | null | Promise<string | null>;
     set(key: string, value: string): void | Promise<void>;
     remove?(key: string): void | Promise<void>;
 }
 
-/** @deprecated Use {@link VelaStorage} — same contract, shell-neutral name. */
-export type WidgetStorage = VelaStorage;
+/** @deprecated Use {@link TerminalTradingStorage} — same contract, shell-neutral name. */
+export type WidgetStorage = TerminalTradingStorage;
 
 /**
  * The default adapter — window.localStorage, silent on quota/privacy failures.

@@ -1,7 +1,7 @@
 /**
- * A tiny scripting engine, written against Vela's public `ScriptingEngine` port.
+ * A tiny scripting engine, written against Terminal Trading's public `ScriptingEngine` port.
  *
- * Vela ships NO engine — the port is the product, engines are separate packages
+ * Terminal Trading ships NO engine — the port is the product, engines are separate packages
  * (Pine Script: `@luxalgo/vela-pinets`) or host code. This one exists so the
  * playground can exercise the whole indicator path — prepare → inputs schema →
  * execute → model → re-run — WITHOUT any engine dependency, and so

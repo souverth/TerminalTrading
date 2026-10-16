@@ -11,21 +11,21 @@ import { timeframeLabel } from './timeframe';
 import { mobilePlacement, widgetActions, type WidgetContext } from './contributions';
 import { TOPBAR_BUILTIN_IDS } from './topbar-composition';
 
-const STYLE_ID = 'vela-widget-mobilebar';
+const STYLE_ID = 'tt-widget-mobilebar';
 const CSS = `
-.vela-mobilebar {
+.tt-mobilebar {
     display: none;
     align-items: stretch;
     gap: 2px;
     padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--vela-border);
-    color: var(--vela-fg-muted);
+    border-top: 1px solid var(--tt-border);
+    color: var(--tt-fg-muted);
     flex: none;
 }
-[data-layout='mobile'] .vela-mobilebar { display: flex; }
-[data-layout='mobile'] .vela-widget-topbar { display: none; }
-[data-layout='mobile'] .vela-widget-bottombar { display: none; }
-.vela-mb-item {
+[data-layout='mobile'] .tt-mobilebar { display: flex; }
+[data-layout='mobile'] .tt-widget-topbar { display: none; }
+[data-layout='mobile'] .tt-widget-bottombar { display: none; }
+.tt-mb-item {
     all: unset;
     flex: 1 1 0;
     min-width: 0;
@@ -36,21 +36,21 @@ const CSS = `
     gap: 6px;
     border-radius: 6px;
     cursor: pointer;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
     font-size: 13px;
     font-weight: 600;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-mb-item[hidden] { display: none !important; }
-.vela-mb-item:active { background: var(--vela-hover); }
-.vela-mb-item .vela-icon { font-size: 18px; width: 18px; height: 18px; }
+.tt-mb-item[hidden] { display: none !important; }
+.tt-mb-item:active { background: var(--tt-hover); }
+.tt-mb-item .tt-icon { font-size: 18px; width: 18px; height: 18px; }
 /* A lit stop (the maximize toggle while something is isolated): the inverse
    "selected" chip — white on the dark theme, dark on the light one. */
-.vela-mb-item.vela-mb-on, .vela-mb-item.vela-mb-on:active { background: var(--vela-selected-bg); color: var(--vela-selected-fg); }
+.tt-mb-item.tt-mb-on, .tt-mb-item.tt-mb-on:active { background: var(--tt-selected-bg); color: var(--tt-selected-fg); }
 /* Left-aligned contributed actions get their own stops (the built-in indicators
    slot) — the wrapper is layout-transparent so each stop flexes like a sibling. */
-.vela-mb-actions { display: contents; }
-.vela-mb-symbol {
+.tt-mb-actions { display: contents; }
+.tt-mb-symbol {
     flex: 1.6 1 0;
     font-size: 14px;
     letter-spacing: 0.3px;
@@ -100,31 +100,31 @@ export class MobileBar {
         const doc = host.ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
         this.el = doc.createElement('div');
-        this.el.className = 'vela-mobilebar';
+        this.el.className = 'tt-mobilebar';
 
         const item = (cls: string, label: string, onClick: () => void, icon?: string): HTMLButtonElement => {
             const b = doc.createElement('button');
-            b.className = `vela-mb-item ${cls}`;
+            b.className = `tt-mb-item ${cls}`;
             b.setAttribute('aria-label', label);
             if (icon) b.appendChild(iconEl(icon, doc));
             b.addEventListener('click', onClick);
             return b;
         };
 
-        this.symbolEl = item('vela-mb-symbol', 'Symbol search', opts.onSymbolClick);
+        this.symbolEl = item('tt-mb-symbol', 'Symbol search', opts.onSymbolClick);
         this.symbolEl.textContent = parseSymbol(opts.symbol).ticker;
-        this.tfEl = item('vela-mb-tf', 'Timeframe', opts.onTimeframeClick);
+        this.tfEl = item('tt-mb-tf', 'Timeframe', opts.onTimeframeClick);
         this.tfEl.textContent = timeframeLabel(opts.timeframe);
         const onIndicators = opts.onIndicatorsClick;
-        const indicators = onIndicators ? item('vela-mb-indicators', 'Indicators', onIndicators, 'indicators') : null;
+        const indicators = onIndicators ? item('tt-mb-indicators', 'Indicators', onIndicators, 'indicators') : null;
         this.actionsHost = doc.createElement('span');
-        this.actionsHost.className = 'vela-mb-actions';
+        this.actionsHost.className = 'tt-mb-actions';
         const onDrawings = opts.onDrawingsClick;
-        const drawings = onDrawings ? item('vela-mb-drawings', 'Drawings', onDrawings, 'pen') : null;
+        const drawings = onDrawings ? item('tt-mb-drawings', 'Drawings', onDrawings, 'pen') : null;
         const onMaximize = opts.onMaximizeClick;
-        this.maxEl = onMaximize ? item('vela-mb-maximize', 'Maximize chart', onMaximize, 'maximize') : null;
-        const more = item('vela-mb-more', 'More', opts.onMoreClick, 'kebab');
-        const settings = item('vela-mb-settings', 'Chart settings', opts.onSettingsClick, 'gear');
+        this.maxEl = onMaximize ? item('tt-mb-maximize', 'Maximize chart', onMaximize, 'maximize') : null;
+        const more = item('tt-mb-more', 'More', opts.onMoreClick, 'kebab');
+        const settings = item('tt-mb-settings', 'Chart settings', opts.onSettingsClick, 'gear');
 
         this.el.append(this.symbolEl, this.tfEl, ...(indicators ? [indicators] : []), this.actionsHost, ...(drawings ? [drawings] : []), ...(this.maxEl ? [this.maxEl] : []), more, settings);
         host.appendChild(this.el);
@@ -144,7 +144,7 @@ export class MobileBar {
         const builtin = new Set<string>(TOPBAR_BUILTIN_IDS);
         for (const action of widgetActions('topbar', ctx).filter((a) => mobilePlacement(a) === 'bar' && !builtin.has(a.id))) {
             const b = doc.createElement('button');
-            b.className = 'vela-mb-item';
+            b.className = 'tt-mb-item';
             b.setAttribute('aria-label', action.label);
             if (action.icon) b.appendChild(iconEl(action.icon, doc));
             else b.appendChild(doc.createTextNode(action.label));
@@ -168,7 +168,7 @@ export class MobileBar {
      *  or a maximized pane inside the active chart) — inverse chip + restore glyph. */
     setMaximizeActive(on: boolean): void {
         if (!this.maxEl) return;
-        this.maxEl.classList.toggle('vela-mb-on', on);
+        this.maxEl.classList.toggle('tt-mb-on', on);
         this.maxEl.setAttribute('aria-label', on ? 'Restore layout' : 'Maximize chart');
         this.maxEl.replaceChildren(iconEl(on ? 'restore' : 'maximize', this.el.ownerDocument));
     }

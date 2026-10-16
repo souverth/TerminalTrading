@@ -5,27 +5,27 @@ import type { KeymapManager } from '../ui/keymap';
 import { Dialog } from '../ui/components/dialog';
 import { injectStyles } from '../ui/styles';
 
-const STYLE_ID = 'vela-widget-shortcuts';
+const STYLE_ID = 'tt-widget-shortcuts';
 const CSS = `
-.vela-sh-cat {
-    color: var(--vela-fg-muted);
-    font-size: var(--vela-font-size-sm);
+.tt-sh-cat {
+    color: var(--tt-fg-muted);
+    font-size: var(--tt-font-size-sm);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: var(--vela-space-2) 0 var(--vela-space-1);
+    padding: var(--tt-space-2) 0 var(--tt-space-1);
 }
-.vela-sh-row { display: flex; align-items: center; gap: var(--vela-space-3); padding: 3px 0; }
-.vela-sh-label { flex: 1; }
-.vela-sh-keys { display: flex; gap: 4px; }
-.vela-sh-key {
-    background: var(--vela-surface-overlay);
-    border: 1px solid var(--vela-border-soft);
-    border-radius: var(--vela-radius-sm);
+.tt-sh-row { display: flex; align-items: center; gap: var(--tt-space-3); padding: 3px 0; }
+.tt-sh-label { flex: 1; }
+.tt-sh-keys { display: flex; gap: 4px; }
+.tt-sh-key {
+    background: var(--tt-surface-overlay);
+    border: 1px solid var(--tt-border-soft);
+    border-radius: var(--tt-radius-sm);
     padding: 1px 7px;
-    font-size: var(--vela-font-size-sm);
+    font-size: var(--tt-font-size-sm);
     font-variant-numeric: tabular-nums;
 }
-.vela-sh-static { color: var(--vela-fg-muted); font-size: var(--vela-font-size-sm); margin-top: var(--vela-space-2); }
+.tt-sh-static { color: var(--tt-fg-muted); font-size: var(--tt-font-size-sm); margin-top: var(--tt-space-2); }
 `;
 
 export class ShortcutsHelp {
@@ -67,21 +67,21 @@ export class ShortcutsHelp {
         this.list.replaceChildren();
         const addCategory = (text: string): void => {
             const cat = doc.createElement('div');
-            cat.className = 'vela-sh-cat';
+            cat.className = 'tt-sh-cat';
             cat.textContent = text;
             this.list.appendChild(cat);
         };
         const addRow = (label: string, keys: readonly string[]): void => {
             const row = doc.createElement('div');
-            row.className = 'vela-sh-row';
+            row.className = 'tt-sh-row';
             const l = doc.createElement('span');
-            l.className = 'vela-sh-label';
+            l.className = 'tt-sh-label';
             l.textContent = label;
             const ks = doc.createElement('span');
-            ks.className = 'vela-sh-keys';
+            ks.className = 'tt-sh-keys';
             for (const key of keys) {
                 const k = doc.createElement('span');
-                k.className = 'vela-sh-key';
+                k.className = 'tt-sh-key';
                 k.textContent = key;
                 ks.appendChild(k);
             }
@@ -106,7 +106,7 @@ export class ShortcutsHelp {
         addRow('Delete the drawing under the cursor', ['Middle-click']);
         // The two type-to-act routes live outside the keymap (any-printable routing).
         const s = doc.createElement('div');
-        s.className = 'vela-sh-static';
+        s.className = 'tt-sh-static';
         s.textContent = 'Typing a letter or 0 opens the symbol search; typing a digit from 1 to 9 opens the timeframe entry.';
         this.list.appendChild(s);
     }

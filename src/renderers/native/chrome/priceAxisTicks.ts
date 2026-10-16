@@ -141,6 +141,6 @@ export class PriceAxisTickSource {
     private warnOnce(what: string, detail: unknown): void {
         if (this.warned) return;
         this.warned = true;
-        console.warn(`[vela] the priceAxisTicks function ${what} — the default ticks are used instead.`, detail);
+        console.warn(`[terminal-trading] the priceAxisTicks function ${what} — the default ticks are used instead.`, detail);
     }
 }

@@ -40,7 +40,7 @@ describe('mobile placement', () => {
             onSettingsClick: () => {},
             getContext: () => ({}) as WidgetContext,
         });
-        const stops = [...host.querySelectorAll('.vela-mb-actions button')].map((b) => b.getAttribute('aria-label'));
+        const stops = [...host.querySelectorAll('.tt-mb-actions button')].map((b) => b.getAttribute('aria-label'));
         expect(stops).toEqual(['On bar']);
     });
 
@@ -61,7 +61,7 @@ describe('mobile placement', () => {
             layout: { shape: () => ({ rows: 2, cols: 2 }), presets: () => [], onSelectGrid: () => {}, onSelectPreset: () => {} },
         });
         drawer.open();
-        const rows = [...document.querySelectorAll('.vela-md-row .vela-md-row-label')].map((e) => e.textContent);
+        const rows = [...document.querySelectorAll('.tt-md-row .tt-md-row-label')].map((e) => e.textContent);
         expect(rows).toEqual(['Chart type', 'Layout', 'Replay', 'Data window', 'Tool']);
         drawer.destroy();
     });

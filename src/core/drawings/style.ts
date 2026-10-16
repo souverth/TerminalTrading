@@ -38,7 +38,7 @@ export interface DrawingText {
     side?: 'above' | 'below';
 }
 
-/** The default drawing accent — the Vela logo blue. */
+/** The default drawing accent — the Terminal Trading logo blue. */
 export const DEFAULT_DRAWING_COLOR = ACCENT_BRIGHT;
 
 /** A neutral default style — concrete tools override via their `defaultStyle`. */

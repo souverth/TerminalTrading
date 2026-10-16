@@ -1,5 +1,5 @@
 // Tooltip VIEW — thin vanilla DOM projection over the controller. Floating layer mounts
-// into `host` (default: the trigger's nearest `.vela-ui` ancestor, else <body>) so the
+// into `host` (default: the trigger's nearest `.tt-ui` ancestor, else <body>) so the
 // design tokens inherit; positioning is handled by the machine (floating-ui) regardless.
 import { runMachine, spreadProps, type HandleOf } from '../../zag';
 import { injectStyles } from '../../styles';
@@ -13,7 +13,7 @@ export interface TooltipOptions extends TooltipControllerOptions {
 }
 
 function resolveHost(trigger: HTMLElement, host?: HTMLElement): HTMLElement {
-    return host ?? (trigger.closest('.vela-ui') as HTMLElement | null) ?? trigger.ownerDocument.body;
+    return host ?? (trigger.closest('.tt-ui') as HTMLElement | null) ?? trigger.ownerDocument.body;
 }
 
 export class Tooltip {
@@ -28,9 +28,9 @@ export class Tooltip {
         injectStyles(TOOLTIP_STYLE_ID, TOOLTIP_CSS, doc);
 
         this.positioner = doc.createElement('div');
-        this.positioner.className = 'vela-ui-layer';
+        this.positioner.className = 'tt-ui-layer';
         this.content = doc.createElement('div');
-        this.content.className = 'vela-tooltip';
+        this.content.className = 'tt-tooltip';
         this.positioner.appendChild(this.content);
         resolveHost(trigger, opts.host).appendChild(this.positioner);
         this.setContent(opts.content);

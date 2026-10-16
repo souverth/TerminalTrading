@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { TypedEventBus } from '../src/core/events/EventBus';
-import type { VelaEventMap } from '../src/core/events/types';
+import type { TerminalTradingEventMap } from '../src/core/events/types';
 import { DrawingController } from '../src/core/drawings/DrawingController';
 import { DrawingsControl } from '../src/core/DrawingsControl';
 import { buildToolbar } from '../src/core/drawings';
@@ -74,7 +74,7 @@ function fakeRenderer(userDrawings: boolean, port?: IDrawingsRendererPort): ICha
 
 function setup(userDrawings = true, option?: Parameters<typeof buildToolbar>[0]) {
     const port = new FakePort();
-    const events = new TypedEventBus<VelaEventMap>();
+    const events = new TypedEventBus<TerminalTradingEventMap>();
     const seen: Array<[string, string | null]> = [];
     for (const ev of ['drawing:created', 'drawing:edited', 'drawing:selected', 'drawing:removed', 'drawing:settings'] as const) {
         events.on(ev, (e) => seen.push([ev, e.id]));

@@ -9,7 +9,7 @@ export type MarkShape = 'circle' | 'square' | 'diamond' | 'pin';
 
 /**
  * How a mark looks on the lane: a colored token carrying either a short letter or a
- * registered icon (`registerIcon` from `vela/ui` — an id, never inline markup, so a mark
+ * registered icon (`registerIcon` from `terminal-trading/ui` — an id, never inline markup, so a mark
  * payload can come from data without ever carrying SVG). `icon` wins over `letter`
  * when both are given; the symbol's ink is auto-contrasted against `color`.
  */

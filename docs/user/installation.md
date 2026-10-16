@@ -1,44 +1,44 @@
 # Installation
 
-Vela™ is published on npm as [`@luxalgo/vela`](https://www.npmjs.com/package/@luxalgo/vela).
+Terminal Trading is not published on npm yet. Install it from the repository, which builds the package on install.
 
-## Install from npm
+## Install from the repository
 
 ```bash
-npm install @luxalgo/vela
+npm install github:souverth/TerminalTrading
 ```
 
 The package ships ESM, CJS, and type declarations. Import the headless chart from the
 root entry, and the other layers from their subpaths:
 
 ```js
-import { Vela } from '@luxalgo/vela';
-import { VelaWorkspace } from '@luxalgo/vela/workspace';
-import { BinanceProvider } from '@luxalgo/vela/providers/binance';
+import { TerminalTrading } from 'terminal-trading';
+import { TerminalTradingWorkspace } from 'terminal-trading/workspace';
+import { BinanceProvider } from 'terminal-trading/providers/binance';
 ```
 
 | Entry | What it exports |
 |---|---|
-| `@luxalgo/vela` | The headless chart core, native renderer, drawings, ports, plugin SDK re-exports. |
-| `@luxalgo/vela/workspace` | The full chart app (one chart or a multi-chart grid). |
-| `@luxalgo/vela/ui` | The component kit and `KeymapManager`. |
-| `@luxalgo/vela/plugin` | The extension SDK (chart types, renderer layers, widget contributions). |
-| `@luxalgo/vela/providers/binance` · `/coinbase` · `/hyperliquid` | Ready-made data providers. |
+| `terminal-trading` | The headless chart core, native renderer, drawings, ports, plugin SDK re-exports. |
+| `terminal-trading/workspace` | The full chart app (one chart or a multi-chart grid). |
+| `terminal-trading/ui` | The component kit and `KeymapManager`. |
+| `terminal-trading/plugin` | The extension SDK (chart types, renderer layers, widget contributions). |
+| `terminal-trading/providers/binance` · `/coinbase` · `/hyperliquid` | Ready-made data providers. |
 
 ## Browser bundle (script tag)
 
 For script-tag usage without a bundler, the package ships self-contained browser builds:
 
-- `dist/vela.global.js` is the readable development build.
-- `dist/vela.global.min.js` is the minified build to reference in production.
+- `dist/terminal-trading.global.js` is the readable development build.
+- `dist/terminal-trading.global.min.js` is the minified build to reference in production.
 
 Either file attaches the library's public API, including the bundled providers, to
-`window.Vela`. Scripting-engine addons (e.g. `vela-pinets.global.js`) load after it and
-resolve `@luxalgo/vela` to that same global, so the library is never loaded twice.
+`window.TerminalTrading`. Scripting-engine addons (e.g. `vela-pinets.global.js`) load after it and
+resolve `terminal-trading` to that same global, so the library is never loaded twice.
 
 ## What you install vs. what you supply
 
-Vela™ is built around swappable **layers**. The core is small; you opt into the parts you need.
+Terminal Trading is built around swappable **layers**. The core is small; you opt into the parts you need.
 
 | Piece | Status | Notes |
 |---|---|---|

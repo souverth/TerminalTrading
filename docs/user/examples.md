@@ -1,18 +1,18 @@
 # Examples
 
-These snippets cover the two ways to run Vela™: **static**, over offline OHLCV you pass as `data` — no network, no API key, so it runs anywhere out of the box — and **live**, over a provider-backed market.
+These snippets cover the two ways to run Terminal Trading: **static**, over offline OHLCV you pass as `data` — no network, no API key, so it runs anywhere out of the box — and **live**, over a provider-backed market.
 
-> These snippets import from the npm package `@luxalgo/vela` (see [installation.md](./installation.md)).
+> These snippets import from the npm package `terminal-trading` (see [installation.md](./installation.md)).
 
 ## Orientation snippet
 
-The shape of every example is the same: create a chart over offline data, register a scripting engine, add an indicator. Vela™ ships no engine — these examples use the Pine addon (`npm i @luxalgo/vela-pinets pinets`; see [Scripting engines](./scripting-engines.md)).
+The shape of every example is the same: create a chart over offline data, register a scripting engine, add an indicator. Terminal Trading ships no engine — these examples use the Pine addon (`npm i @luxalgo/vela-pinets pinets`; see [Scripting engines](./scripting-engines.md)).
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 import { PineEngine } from '@luxalgo/vela-pinets';
 
-const chart = new Vela('#chart', { data: myBars, timeframe: '1h', live: false, theme: 'dark' });
+const chart = new TerminalTrading('#chart', { data: myBars, timeframe: '1h', live: false, theme: 'dark' });
 chart.registerEngine('pine', new PineEngine());
 
 chart.addIndicator(`//@version=5
@@ -29,9 +29,9 @@ Everything in one place — a provider-backed, live chart with a custom theme, t
 **Construct** with the full option set:
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 import { PineEngine } from '@luxalgo/vela-pinets';
-import { BinanceProvider } from '@luxalgo/vela/providers/binance';
+import { BinanceProvider } from 'terminal-trading/providers/binance';
 
 // A full custom theme — all seven fields are required.
 const theme = {
@@ -44,7 +44,7 @@ const theme = {
   fontFamily:  'Inter, system-ui, sans-serif',
 };
 
-const chart = new Vela('#chart', {
+const chart = new TerminalTrading('#chart', {
   // market — provider-backed; the `binance:` prefix pins the venue (use `data: myBars` instead to run offline)
   symbol: 'binance:BTCUSDT',
   timeframe: '1h',
@@ -124,7 +124,7 @@ Every option above is documented in [options.md](./options.md); every method and
 | **Static** | History only: candles plus indicators over the offline bars you pass as `data`. Nothing moves after the first paint. |
 | **Live** | A provider-backed `symbol` with `live: true`: the forming candle updates on each real tick, a new candle appends when the interval rolls over, and indicators recompute. Observe ticks with `chart.on('bar', …)`. |
 
-> **Bars you pass as `data` never move on their own**, even with `live: true` — Vela shows them exactly as given. To stream real updates onto your own bars, register a [data provider](./data-providers.md) that implements `subscribe`, and load its symbol instead of passing `data`.
+> **Bars you pass as `data` never move on their own**, even with `live: true` — Terminal Trading shows them exactly as given. To stream real updates onto your own bars, register a [data provider](./data-providers.md) that implements `subscribe`, and load its symbol instead of passing `data`.
 
 ## Adding drawings from code
 

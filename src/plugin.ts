@@ -1,4 +1,4 @@
-// The Vela PLUGIN SDK — the public extension surface a plugin package (e.g. Vela-Pro)
+// The Terminal Trading PLUGIN SDK — the public extension surface a plugin package (e.g. Vela-Pro)
 // builds against. Everything here is framework-free and side-effect-free to import.
 //
 // Extension seams:
@@ -9,7 +9,7 @@
 //  - NATIVE INDICATORS (`registerNativeIndicator`): core-computed indicators with renderer
 //    layers driven through the same native-data channels (volume and VPVR are built on it).
 //  - SCRIPTING ENGINES (`chart.registerEngine`): a language runtime executing indicator
-//    scripts against Vela-owned bars through the `ScriptingEngine` port — see the section
+//    scripts against Terminal Trading-owned bars through the `ScriptingEngine` port — see the section
 //    at the bottom for the port plus the model/identity/palette vocabulary it builds with.
 //
 // UI contributions (style-picker entries, settings sections, shortcuts) arrive with the
@@ -122,9 +122,9 @@ export type { DataProvider, ProviderInfo, ProviderCapabilities, SymbolDescriptor
 
 // SCRIPTING ENGINES (`chart.registerEngine` / the widget's `engines` option): a language
 // runtime implementing the `ScriptingEngine` port — prepare/execute sessions over bars
-// Vela owns and passes in. Engines are per-chart instances rather than a global registry,
+// Terminal Trading owns and passes in. Engines are per-chart instances rather than a global registry,
 // but the port, the model vocabulary engine output is built from, and the series-identity
-// contract all live here so an engine package builds against `vela/plugin` alone.
+// contract all live here so an engine package builds against `terminal-trading/plugin` alone.
 export type {
     ScriptingEngine,
     EngineCapabilities,

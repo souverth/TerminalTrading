@@ -276,16 +276,16 @@ describe('localStorageAdapter (pinned-key mode)', () => {
         };
         try {
             const pinned = localStorageAdapter('my-app-state');
-            pinned.set('vela-widget', 'DOC');
+            pinned.set('tt-widget', 'DOC');
             expect(store.get('my-app-state')).toBe('DOC'); // landed on the pinned entry
-            expect(store.has('vela-widget')).toBe(false);
+            expect(store.has('tt-widget')).toBe(false);
             expect(pinned.get('anything-at-all')).toBe('DOC');
             void pinned.remove?.('whatever');
             expect(store.size).toBe(0);
             // omitted → the logical key is used as-is (historical behavior)
             const plain = localStorageAdapter();
-            plain.set('vela-widget', 'X');
-            expect(store.get('vela-widget')).toBe('X');
+            plain.set('tt-widget', 'X');
+            expect(store.get('tt-widget')).toBe('X');
         } finally {
             g.localStorage = prev;
         }

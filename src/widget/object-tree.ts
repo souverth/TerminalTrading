@@ -9,7 +9,7 @@
 // The layout itself lives in `object-tree-model.ts` — this file pulls a snapshot off the
 // chart, hands it over, and paints the result. Kept in sync via the chart's event bus, and
 // rebound to each new chart instance after a widget rebuild.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { IndicatorHandle } from '../core/IndicatorHandle';
 import type { SerializedDrawing } from '../core/drawings/Drawing';
 import { injectStyles } from '../ui/styles';
@@ -48,30 +48,30 @@ import {
 } from './object-tree-model';
 import { SidePanel } from './side-panel';
 
-const STYLE_ID = 'vela-widget-objtree';
+const STYLE_ID = 'tt-widget-objtree';
 const CSS = `
 /* One pane's block. The transparent border reserves the drop-target outline. */
-.vela-ot-pane {
+.tt-ot-pane {
     border: 1px solid transparent;
     border-radius: 6px;
     margin: 2px 0;
 }
-.vela-ot-panehead { display: flex; align-items: center; gap: 2px; padding: 5px 6px; }
-.vela-ot-panename {
+.tt-ot-panehead { display: flex; align-items: center; gap: 2px; padding: 5px 6px; }
+.tt-ot-panename {
     flex: 1;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
-.vela-ot-panesep { height: 1px; background: var(--vela-border); margin: 6px 8px; }
+.tt-ot-panesep { height: 1px; background: var(--tt-border); margin: 6px 8px; }
 
-.vela-ot-row {
+.tt-ot-row {
     display: flex;
     align-items: center;
     gap: 9px;
@@ -79,19 +79,19 @@ const CSS = `
     border-radius: 6px;
     cursor: default;
 }
-.vela-ot-row:hover { background: var(--vela-hover); }
-.vela-ot-row > .vela-icon { color: var(--vela-fg-muted); width: 14px; height: 14px; font-size: 14px; justify-content: center; flex: none; }
+.tt-ot-row:hover { background: var(--tt-hover); }
+.tt-ot-row > .tt-icon { color: var(--tt-fg-muted); width: 14px; height: 14px; font-size: 14px; justify-content: center; flex: none; }
 /* Drawing glyphs come from the type registry at toolbar scale — bring them down to row size. */
-.vela-ot-row > .vela-icon svg { width: 14px; height: 14px; }
-.vela-ot-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-ot-row[data-hidden] .vela-ot-name,
-.vela-ot-row[data-hidden] > .vela-icon { opacity: 0.45; }
+.tt-ot-row > .tt-icon svg { width: 14px; height: 14px; }
+.tt-ot-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-ot-row[data-hidden] .tt-ot-name,
+.tt-ot-row[data-hidden] > .tt-icon { opacity: 0.45; }
 /* Two different states, and both can be true at once: "picked" is what the panel has selected
    (the group/duplicate candidates), "selected" mirrors what the CHART has selected. */
-.vela-ot-row[data-picked] { background: var(--vela-active); }
-.vela-ot-row[data-picked] .vela-ot-name { color: var(--vela-fg-bright); }
-.vela-ot-row[data-selected] { box-shadow: inset 2px 0 0 var(--vela-accent); }
-.vela-ot-avatar {
+.tt-ot-row[data-picked] { background: var(--tt-active); }
+.tt-ot-row[data-picked] .tt-ot-name { color: var(--tt-fg-bright); }
+.tt-ot-row[data-selected] { box-shadow: inset 2px 0 0 var(--tt-accent); }
+.tt-ot-avatar {
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -99,26 +99,26 @@ const CSS = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--vela-fg-on-fill);
+    color: var(--tt-fg-on-fill);
     font-size: 10px;
     font-weight: 700;
 }
 /* "scale": this indicator draws against its own price scale, not the pane's. */
-.vela-ot-tag {
+.tt-ot-tag {
     flex: none;
     font-size: 9px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--vela-fg-muted);
-    background: var(--vela-hover);
+    color: var(--tt-fg-muted);
+    background: var(--tt-hover);
     border-radius: 3px;
     padding: 1px 4px;
 }
 /* One row's actions, kept in a tight cluster: they read as one control group, and the row's
    own wider gap stays between the label and them. */
-.vela-ot-acts { display: flex; align-items: center; gap: 0; flex: none; }
-.vela-ot-btn {
+.tt-ot-acts { display: flex; align-items: center; gap: 0; flex: none; }
+.tt-ot-btn {
     all: unset;
     cursor: pointer;
     flex: none;
@@ -128,44 +128,44 @@ const CSS = `
     align-items: center;
     justify-content: center;
     border-radius: 3px;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     font-size: 12px;
     visibility: hidden;
 }
-.vela-ot-row:hover .vela-ot-btn,
-.vela-ot-panehead:hover .vela-ot-btn { visibility: visible; }
+.tt-ot-row:hover .tt-ot-btn,
+.tt-ot-panehead:hover .tt-ot-btn { visibility: visible; }
 /* An engaged action stays out: hidden and locked are states, and a state the user can only
    see by hovering is a state they will not find. */
-.vela-ot-row .vela-ot-btn[data-engaged] { visibility: visible; color: var(--vela-fg); }
-.vela-ot-btn:hover:not(:disabled) { background: var(--vela-active); color: var(--vela-fg-bright); }
-.vela-ot-btn:disabled { opacity: 0.35; cursor: default; }
-.vela-ot-empty { padding: 20px 10px; text-align: center; color: var(--vela-fg-muted); font-size: 12px; }
+.tt-ot-row .tt-ot-btn[data-engaged] { visibility: visible; color: var(--tt-fg); }
+.tt-ot-btn:hover:not(:disabled) { background: var(--tt-active); color: var(--tt-fg-bright); }
+.tt-ot-btn:disabled { opacity: 0.35; cursor: default; }
+.tt-ot-empty { padding: 20px 10px; text-align: center; color: var(--tt-fg-muted); font-size: 12px; }
 
 /* ── drawing groups ── */
 /* One top-level entry in a pane's drawing list: a lone drawing, or a whole group block. No
    border of its own — units stack flush, so consecutive highlighted rows read as one block; the
    drop-into-group outline is drawn inside the box instead (see the drag-and-drop rules). */
-.vela-ot-unit { border-radius: 6px; }
+.tt-ot-unit { border-radius: 6px; }
 /* Adjacent picked rows merge into one contiguous highlight: the shared edge loses its rounding. */
-.vela-ot-unit:has(> .vela-ot-row[data-picked]) + .vela-ot-unit > .vela-ot-row[data-picked] { border-top-left-radius: 0; border-top-right-radius: 0; }
-.vela-ot-unit:has(+ .vela-ot-unit > .vela-ot-row[data-picked]) > .vela-ot-row[data-picked] { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.vela-ot-row[data-row-kind='group'] > .vela-icon { width: 12px; font-size: 11px; }
+.tt-ot-unit:has(> .tt-ot-row[data-picked]) + .tt-ot-unit > .tt-ot-row[data-picked] { border-top-left-radius: 0; border-top-right-radius: 0; }
+.tt-ot-unit:has(+ .tt-ot-unit > .tt-ot-row[data-picked]) > .tt-ot-row[data-picked] { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.tt-ot-row[data-row-kind='group'] > .tt-icon { width: 12px; font-size: 11px; }
 /* A member sits indented under its group's header. */
-.vela-ot-subrow { padding-left: 26px; }
-.vela-ot-rename {
+.tt-ot-subrow { padding-left: 26px; }
+.tt-ot-rename {
     flex: 1;
     min-width: 0;
     padding: 1px 4px;
-    border: 1px solid var(--vela-accent);
-    border-radius: var(--vela-radius-sm);
-    background: var(--vela-surface-elev);
-    color: var(--vela-fg-bright);
+    border: 1px solid var(--tt-accent);
+    border-radius: var(--tt-radius-sm);
+    background: var(--tt-surface-elev);
+    color: var(--tt-fg-bright);
     font: inherit;
 }
 /* The selection bar. Always there — the actions it holds are the panel's, not a row's, so they
    stay in place and simply go dim until a drawing is selected. It stays put at the top of the
    list while the list scrolls under it, so they never scroll out of reach. */
-.vela-ot-selbar {
+.tt-ot-selbar {
     position: sticky;
     top: -8px;
     z-index: 2;
@@ -174,56 +174,56 @@ const CSS = `
     gap: 2px;
     margin: -8px -8px 6px;
     padding: 6px 8px;
-    border-bottom: 1px solid var(--vela-border);
-    background: var(--vela-bg);
+    border-bottom: 1px solid var(--tt-border);
+    background: var(--tt-bg);
 }
-.vela-ot-selcount { flex: 1; min-width: 0; color: var(--vela-fg-muted); font-size: 11px; }
-.vela-ot-selbar .vela-ot-btn { visibility: visible; width: 24px; height: 22px; }
-.vela-ot-selbar .vela-ot-btn[data-icon='group'] .vela-icon { width: 16px; height: 16px; font-size: 16px; }
+.tt-ot-selcount { flex: 1; min-width: 0; color: var(--tt-fg-muted); font-size: 11px; }
+.tt-ot-selbar .tt-ot-btn { visibility: visible; width: 24px; height: 22px; }
+.tt-ot-selbar .tt-ot-btn[data-icon='group'] .tt-icon { width: 16px; height: 16px; font-size: 16px; }
 
 /* ── drag-and-drop ── */
-.vela-ot-row[data-drag] { cursor: grab; }
-.vela-ot .vela-panel-body[data-dragging] .vela-ot-row[data-drag] { cursor: grabbing; }
+.tt-ot-row[data-drag] { cursor: grab; }
+.tt-ot .tt-panel-body[data-dragging] .tt-ot-row[data-drag] { cursor: grabbing; }
 /* The row in flight fades: the ghost under the pointer is the thing being moved. */
-.vela-ot-row[data-source] { opacity: 0.4; }
+.tt-ot-row[data-source] { opacity: 0.4; }
 /* Buttons would only invite a click that a drag is about to swallow. */
-.vela-ot .vela-panel-body[data-dragging] .vela-ot-btn { visibility: hidden; }
+.tt-ot .tt-panel-body[data-dragging] .tt-ot-btn { visibility: hidden; }
 
 /* The band between two pane blocks: a hairline at rest, a bright bar when dropping there
    would open a new pane. Doubles as the plain separator when dragging isn't available. */
-.vela-ot-gap { position: relative; height: 11px; border-radius: 3px; margin: 0 8px; }
-.vela-ot-gap::before {
+.tt-ot-gap { position: relative; height: 11px; border-radius: 3px; margin: 0 8px; }
+.tt-ot-gap::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     top: 50%;
     height: 1px;
-    background: var(--vela-border);
+    background: var(--tt-border);
     transform: translateY(-50%);
 }
-.vela-ot-gap[data-drop] { height: 4px; background: var(--vela-fg-bright); }
-.vela-ot-gap[data-drop]::before { display: none; }
+.tt-ot-gap[data-drop] { height: 4px; background: var(--tt-fg-bright); }
+.tt-ot-gap[data-drop]::before { display: none; }
 /* A whole container accepts the drop: merging into a pane, or a pane with no drawings yet.
    The pane block's transparent border reserves the room for this outline; a group unit has no
    border to color, so it draws the same line as an inset outline (no layout footprint). */
-.vela-ot [data-drop='target'] { border-color: var(--vela-fg-bright); background: var(--vela-hover); }
-.vela-ot-unit[data-drop='target'] { outline: 1px solid var(--vela-fg-bright); outline-offset: -1px; }
+.tt-ot [data-drop='target'] { border-color: var(--tt-fg-bright); background: var(--tt-hover); }
+.tt-ot-unit[data-drop='target'] { outline: 1px solid var(--tt-fg-bright); outline-offset: -1px; }
 /* Where a reorder would insert. */
-.vela-ot [data-drop='before'] { box-shadow: inset 0 2px 0 var(--vela-fg-bright); }
-.vela-ot [data-drop='after'] { box-shadow: inset 0 -2px 0 var(--vela-fg-bright); }
+.tt-ot [data-drop='before'] { box-shadow: inset 0 2px 0 var(--tt-fg-bright); }
+.tt-ot [data-drop='after'] { box-shadow: inset 0 -2px 0 var(--tt-fg-bright); }
 
-.vela-ot-ghost {
+.tt-ot-ghost {
     position: fixed;
     z-index: 9999;
     pointer-events: none;
     max-width: 220px;
     padding: 3px 10px;
-    border: 1px solid var(--vela-fg-bright);
-    border-radius: var(--vela-radius-sm);
-    background: var(--vela-surface-overlay);
-    color: var(--vela-fg);
-    box-shadow: var(--vela-shadow);
+    border: 1px solid var(--tt-fg-bright);
+    border-radius: var(--tt-radius-sm);
+    background: var(--tt-surface-overlay);
+    color: var(--tt-fg);
+    box-shadow: var(--tt-shadow);
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -304,7 +304,7 @@ interface RowAction {
 
 /** What a single render pass needs: the chart plus the lookups it would otherwise redo per row. */
 interface Pass {
-    chart: Vela;
+    chart: TerminalTrading;
     handle: (id: string) => IndicatorHandle | undefined;
     /** Whether the main pane's stacking can be reordered on this renderer. */
     stackable: boolean;
@@ -342,7 +342,7 @@ class MenuBuilder {
 }
 
 export class ObjectTree extends SidePanel {
-    private chart: Vela | null = null;
+    private chart: TerminalTrading | null = null;
     /** What the CHART has selected — every member of a multi-selection, mirrored as rows. */
     private selectedDrawings = new Set<string>();
     private symbolName = '';
@@ -351,7 +351,7 @@ export class ObjectTree extends SidePanel {
     /** Drawing bundles — a view-side grouping, held for the panel's lifetime and never persisted.
      *  Kept per chart because a workspace points this one panel at whichever chart is active, and
      *  each chart's bundles have to survive the switch. */
-    private readonly groupsPerChart = new WeakMap<Vela, DrawGroup[]>();
+    private readonly groupsPerChart = new WeakMap<TerminalTrading, DrawGroup[]>();
     /** Group ids currently folded shut. Ids are never reused, so entries left behind by a group
      *  that is gone are inert and can outlive it. */
     private collapsed = new Set<string>();
@@ -384,7 +384,7 @@ export class ObjectTree extends SidePanel {
          *  owning provider's `resolveSymbolIcon`. Absent ⇒ the initials badge. */
         private readonly iconFor?: (symbol: string) => string | undefined,
     ) {
-        super(host, 'Object tree', 'vela-ot');
+        super(host, 'Object tree', 'tt-ot');
         injectStyles(STYLE_ID, CSS, host.ownerDocument);
 
         this.body.addEventListener('contextmenu', (e) => this.onContextMenu(e));
@@ -404,7 +404,7 @@ export class ObjectTree extends SidePanel {
     }
 
     /** (Re)bind to a chart instance — called after every widget rebuild. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         this.detach();
         this.chart = chart;
         for (const ev of REFRESH_EVENTS) {
@@ -440,7 +440,7 @@ export class ObjectTree extends SidePanel {
     }
 
     /** Read the chart into the layout's input. Every chart query happens here, once a pass. */
-    private snapshot(chart: Vela, handle: (id: string) => IndicatorHandle | undefined): TreeSnapshot {
+    private snapshot(chart: TerminalTrading, handle: (id: string) => IndicatorHandle | undefined): TreeSnapshot {
         const stackable = chart.renderer.supports('seriesOrder') && chart.renderer.supports('candleZOrder');
         return {
             panes: chart.panes.list(),
@@ -491,7 +491,7 @@ export class ObjectTree extends SidePanel {
 
         if (treeIsEmpty(panes)) {
             const empty = doc.createElement('div');
-            empty.className = 'vela-ot-empty';
+            empty.className = 'tt-ot-empty';
             empty.textContent = 'Add an indicator or a drawing to populate the tree';
             this.body.appendChild(empty);
         }
@@ -502,7 +502,7 @@ export class ObjectTree extends SidePanel {
     private selectionBar(pass: Pass): HTMLElement {
         const doc = this.el.ownerDocument;
         const bar = doc.createElement('div');
-        bar.className = 'vela-ot-selbar';
+        bar.className = 'tt-ot-selbar';
         const ids = [...this.picked];
         const groupable = canGroup(ids, this.groups);
         bar.appendChild(
@@ -525,7 +525,7 @@ export class ObjectTree extends SidePanel {
             }),
         );
         const count = doc.createElement('span');
-        count.className = 'vela-ot-selcount';
+        count.className = 'tt-ot-selcount';
         count.textContent = ids.length > 1 ? `${ids.length} selected` : '';
         bar.appendChild(count);
         return bar;
@@ -537,10 +537,10 @@ export class ObjectTree extends SidePanel {
     private gapEl(pass: Pass, after: string | undefined, before: string | undefined): HTMLElement {
         const el = this.el.ownerDocument.createElement('div');
         if (!pass.repanable) {
-            el.className = 'vela-ot-panesep';
+            el.className = 'tt-ot-panesep';
             return el;
         }
-        el.className = 'vela-ot-gap';
+        el.className = 'tt-ot-gap';
         if (before !== undefined) el.dataset.before = before;
         if (after !== undefined) el.dataset.after = after;
         return el;
@@ -554,12 +554,12 @@ export class ObjectTree extends SidePanel {
     private paneBlock(pass: Pass, pane: TreePane): HTMLElement {
         const doc = this.el.ownerDocument;
         const block = doc.createElement('div');
-        block.className = 'vela-ot-pane';
+        block.className = 'tt-ot-pane';
         block.dataset.pane = pane.id;
         block.dataset.kind = pane.kind;
         block.appendChild(this.paneHead(pass, pane));
         const stack = doc.createElement('div');
-        stack.className = 'vela-ot-stack';
+        stack.className = 'tt-ot-stack';
         for (const item of pane.items) {
             stack.appendChild(item.kind === 'row' ? this.rowEl(pass, pane, item.row) : this.unitEl(pass, pane, item.unit));
         }
@@ -572,7 +572,7 @@ export class ObjectTree extends SidePanel {
     private unitEl(pass: Pass, pane: TreePane, unit: DrawUnit): HTMLElement {
         const doc = this.el.ownerDocument;
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-ot-unit';
+        wrap.className = 'tt-ot-unit';
         if (unit.kind === 'draw') {
             wrap.appendChild(this.drawRow(pass, unit.drawing));
         } else {
@@ -591,15 +591,15 @@ export class ObjectTree extends SidePanel {
         const doc = this.el.ownerDocument;
         const { chart } = pass;
         const head = doc.createElement('div');
-        head.className = 'vela-ot-panehead';
+        head.className = 'tt-ot-panehead';
         const name = doc.createElement('span');
-        name.className = 'vela-ot-panename';
+        name.className = 'tt-ot-panename';
         name.textContent = pane.label;
         name.title = pane.label;
         head.appendChild(name);
         if (!chart.panes.supported) return head;
         const acts = doc.createElement('span');
-        acts.className = 'vela-ot-acts';
+        acts.className = 'tt-ot-acts';
         head.appendChild(acts);
         const op = (icon: string, title: string, run: () => void): void => {
             acts.appendChild(this.btn({ icon, title, run }));
@@ -618,7 +618,7 @@ export class ObjectTree extends SidePanel {
         const { chart } = pass;
         if (row.kind === 'price') {
             const base = this.symbolName.replace(/[-_/]?(USDT|USDC|USD1|USDS|BUSD|USD|EUR|PERP)$/i, '') || this.symbolName;
-            const icon = tickerIconEl(doc, base || 'P', this.symbolName || 'Price', 'vela-ot-avatar', this.symbolRaw ? this.iconFor?.(this.symbolRaw) : undefined);
+            const icon = tickerIconEl(doc, base || 'P', this.symbolName || 'Price', 'tt-ot-avatar', this.symbolRaw ? this.iconFor?.(this.symbolRaw) : undefined);
             const el = this.row(icon, row.label, row.visible, [
                 {
                     icon: row.visible ? 'eye' : 'eye-off',
@@ -709,9 +709,9 @@ export class ObjectTree extends SidePanel {
         if (this.renaming === g.id) {
             // A row being renamed is a text field, not a handle: dragging it would leave the
             // rename open with the tree frozen behind it.
-            const name = el.querySelector('.vela-ot-name');
+            const name = el.querySelector('.tt-ot-name');
             const input = doc.createElement('input');
-            input.className = 'vela-ot-rename';
+            input.className = 'tt-ot-rename';
             input.value = g.name;
             name?.replaceWith(input);
             // Focus after the row is in the document, or the caret has nothing to land in.
@@ -748,7 +748,7 @@ export class ObjectTree extends SidePanel {
         let icon: HTMLElement;
         if (markup) {
             icon = doc.createElement('span');
-            icon.className = 'vela-icon';
+            icon.className = 'tt-icon';
             icon.setAttribute('aria-hidden', 'true');
             icon.innerHTML = markup;
         } else {
@@ -787,7 +787,7 @@ export class ObjectTree extends SidePanel {
         el.dataset.pane = d.paneId;
         el.dataset.drag = '1';
         el.title = 'Drag to restack, or onto another pane to move it there';
-        if (inGroup) el.classList.add('vela-ot-subrow');
+        if (inGroup) el.classList.add('tt-ot-subrow');
         if (this.selectedDrawings.has(d.id)) el.dataset.selected = '1';
         if (this.picked.has(d.id)) el.dataset.picked = '1';
         el.addEventListener('click', (e) => this.onDrawClick(e, d.id));
@@ -826,22 +826,22 @@ export class ObjectTree extends SidePanel {
     private row(icon: HTMLElement, label: string, visible: boolean, actions: readonly RowAction[], tag?: string): HTMLElement {
         const doc = this.el.ownerDocument;
         const el = doc.createElement('div');
-        el.className = 'vela-ot-row';
+        el.className = 'tt-ot-row';
         if (!visible) el.dataset.hidden = '1';
         const name = doc.createElement('span');
-        name.className = 'vela-ot-name';
+        name.className = 'tt-ot-name';
         name.textContent = label;
         name.title = label;
         el.append(icon, name);
         if (tag) {
             const t = doc.createElement('span');
-            t.className = 'vela-ot-tag';
+            t.className = 'tt-ot-tag';
             t.textContent = tag;
             t.title = 'Draws against its own price scale';
             el.appendChild(t);
         }
         const acts = doc.createElement('span');
-        acts.className = 'vela-ot-acts';
+        acts.className = 'tt-ot-acts';
         for (const a of actions) acts.appendChild(this.btn(a));
         el.appendChild(acts);
         return el;
@@ -850,7 +850,7 @@ export class ObjectTree extends SidePanel {
     private btn(a: RowAction): HTMLButtonElement {
         const doc = this.el.ownerDocument;
         const b = doc.createElement('button');
-        b.className = 'vela-ot-btn';
+        b.className = 'tt-ot-btn';
         b.dataset.icon = a.icon;
         if (a.engaged) b.dataset.engaged = '1';
         if (a.disabled) b.disabled = true;
@@ -925,11 +925,11 @@ export class ObjectTree extends SidePanel {
         if (e.button !== 0 || this.drag) return;
         const target = e.target as HTMLElement;
         // Row and pane-head buttons are controls, not drag handles.
-        if (target.closest('.vela-ot-btn')) return;
-        const rowEl = target.closest<HTMLElement>('.vela-ot-row[data-drag]');
+        if (target.closest('.tt-ot-btn')) return;
+        const rowEl = target.closest<HTMLElement>('.tt-ot-row[data-drag]');
         if (!rowEl) return;
         // The rename field is a text field, not a drag handle.
-        if (target.closest('.vela-ot-rename')) return;
+        if (target.closest('.tt-ot-rename')) return;
         const kind = rowEl.dataset.rowKind;
         if (kind !== 'price' && kind !== 'indicator' && kind !== 'drawing' && kind !== 'group') return;
         const win = this.el.ownerDocument.defaultView;
@@ -938,7 +938,7 @@ export class ObjectTree extends SidePanel {
             kind,
             id: rowEl.dataset.id ?? null,
             fromPane: rowEl.dataset.pane ?? PRICE_PANE_ID,
-            label: rowEl.querySelector('.vela-ot-name')?.textContent ?? 'object',
+            label: rowEl.querySelector('.tt-ot-name')?.textContent ?? 'object',
             startX: e.clientX,
             startY: e.clientY,
             active: false,
@@ -976,7 +976,7 @@ export class ObjectTree extends SidePanel {
         const src = this.sourceRow(drag);
         if (src) src.dataset.source = '1';
         const ghost = this.el.ownerDocument.createElement('div');
-        ghost.className = 'vela-ot-ghost';
+        ghost.className = 'tt-ot-ghost';
         ghost.textContent = drag.label;
         // Inside the theme host: a ghost parked on <body> resolves its tokens to nothing.
         this.uiHost().appendChild(ghost);
@@ -986,7 +986,7 @@ export class ObjectTree extends SidePanel {
     /** The rendered row a session started from — scanned rather than selected, so an id
      *  carrying CSS-special characters needs no escaping. */
     private sourceRow(drag: DragSession): HTMLElement | null {
-        for (const el of this.body.querySelectorAll<HTMLElement>('.vela-ot-row')) {
+        for (const el of this.body.querySelectorAll<HTMLElement>('.tt-ot-row')) {
             if (el.dataset.rowKind !== drag.kind) continue;
             if (drag.id === null || el.dataset.id === drag.id) return el;
         }
@@ -1001,14 +1001,14 @@ export class ObjectTree extends SidePanel {
         // The new-pane bands win: they are deliberately thin and sit between the blocks, so
         // testing them first keeps them reachable.
         if (drag.kind === 'indicator') {
-            for (const gap of this.body.querySelectorAll<HTMLElement>('.vela-ot-gap')) {
+            for (const gap of this.body.querySelectorAll<HTMLElement>('.tt-ot-gap')) {
                 const r = gap.getBoundingClientRect();
                 if (y >= r.top - 4 && y <= r.bottom + 4 && x >= r.left && x <= r.right) {
                     return { kind: 'newPane', before: gap.dataset.before, after: gap.dataset.after, el: gap };
                 }
             }
         }
-        for (const block of this.body.querySelectorAll<HTMLElement>('.vela-ot-pane')) {
+        for (const block of this.body.querySelectorAll<HTMLElement>('.tt-ot-pane')) {
             const r = block.getBoundingClientRect();
             if (y < r.top || y > r.bottom) continue;
             const paneId = block.dataset.pane ?? PRICE_PANE_ID;
@@ -1018,7 +1018,7 @@ export class ObjectTree extends SidePanel {
             if (drag.kind === 'indicator' && !pass.stackable) {
                 return paneId === drag.fromPane ? null : { kind: 'merge', paneId, el: block };
             }
-            const els = [...(block.querySelector<HTMLElement>(':scope > .vela-ot-stack')?.children ?? [])] as HTMLElement[];
+            const els = [...(block.querySelector<HTMLElement>(':scope > .tt-ot-stack')?.children ?? [])] as HTMLElement[];
             // A lone drawing held over a group's block joins that group — anywhere else in the
             // column it stays (or becomes) loose. A whole group only ever drops at the top level.
             if (drag.kind === 'drawing') {
@@ -1027,7 +1027,7 @@ export class ObjectTree extends SidePanel {
                     if (groupId === undefined) continue;
                     const ur = unit.getBoundingClientRect();
                     if (y < ur.top || y > ur.bottom) continue;
-                    const subrows = [...unit.querySelectorAll<HTMLElement>(':scope > .vela-ot-subrow')];
+                    const subrows = [...unit.querySelectorAll<HTMLElement>(':scope > .tt-ot-subrow')];
                     return { kind: 'intoGroup', paneId, groupId, memberSlot: insertionSlot(subrows, y), subrows, el: unit };
                 }
             }
@@ -1223,7 +1223,7 @@ export class ObjectTree extends SidePanel {
     private onContextMenu(e: MouseEvent): void {
         const pass = this.pass;
         if (!pass) return;
-        const rowEl = (e.target as HTMLElement).closest<HTMLElement>('.vela-ot-row');
+        const rowEl = (e.target as HTMLElement).closest<HTMLElement>('.tt-ot-row');
         if (!rowEl) return;
         e.preventDefault();
         const b = new MenuBuilder();
@@ -1261,7 +1261,7 @@ export class ObjectTree extends SidePanel {
     /** The nearest kit host, which is where anything floating has to mount: outside it the
      *  theme's custom properties don't resolve and the surface renders unstyled. */
     private uiHost(): HTMLElement {
-        return (this.el.closest('.vela-ui') as HTMLElement | null) ?? this.el;
+        return (this.el.closest('.tt-ui') as HTMLElement | null) ?? this.el;
     }
 
     /** The menu, built on first use — by then the panel is mounted, so the theme host resolves. */
@@ -1469,7 +1469,7 @@ export class ObjectTree extends SidePanel {
 
     /** Forget everything that refers to a drawing or group the chart no longer has — otherwise a
      *  deleted drawing would keep a group alive, or stay counted in the selection bar. */
-    private prune(chart: Vela): void {
+    private prune(chart: TerminalTrading): void {
         const live = new Set((chart.drawings.supported ? chart.drawings.all() : []).map((d) => d.id));
         for (const id of [...this.picked]) if (!live.has(id)) this.picked.delete(id);
         if (this.groups.length === 0) {

@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type {
     Drawing,
     DrawingIntent,
@@ -47,7 +47,7 @@ function isInlineEditable(d: Drawing | null | undefined): d is InlineEditable {
 export interface UserDrawingDeps {
     projector(): Projector;
     dpr(): number;
-    theme(): VelaTheme;
+    theme(): TerminalTradingTheme;
     /** Ask the renderer to recompute per-pane autoscale (series + Pine drawings; user drawings do not fold in). */
     requestScaleUpdate(): void;
     /** The pane's series z keys (candles + indicators), ascending — the boundaries a drawing's
@@ -906,7 +906,7 @@ export class UserDrawingController implements IDrawingsRendererPort {
     }
 
     // ── lifecycle ──
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.popup.setTheme(theme);
         this.toolbar.setTheme(theme);
         this.render();

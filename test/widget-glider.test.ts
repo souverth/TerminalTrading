@@ -6,7 +6,7 @@
 // every frame, overriding all later wheel/drag gestures).
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Glider } from '../src/widget/glide';
-import type { Vela } from '../src/Vela';
+import type { TerminalTrading } from '../src/TerminalTrading';
 
 // ── manual rAF pump (node has no requestAnimationFrame) ──
 let frameQueue: FrameRequestCallback[] = [];
@@ -44,7 +44,7 @@ function clampingChart(from: number, to: number, minSpanMs = 0) {
             state.to = r.to;
             applied.push({ ...r });
         },
-    } as unknown as Vela;
+    } as unknown as TerminalTrading;
     return { chart, applied };
 }
 

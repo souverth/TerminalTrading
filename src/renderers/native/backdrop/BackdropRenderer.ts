@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { CoordinateSystem } from '../core/CoordinateSystem';
 import type { SceneGraph } from '../core/SceneGraph';
 import { timeTicks } from '../chrome/ticks';
@@ -53,7 +53,7 @@ export class BackdropRenderer {
 
     /** Paint one frame: highlight bands first, gridlines on top (the order they had inside
      *  the data canvas). `gridAlpha` fades the gridlines as a reveal-under layer opens. */
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, gridAlpha: number): void {
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, gridAlpha: number): void {
         const ctx = this.ctx;
         const canvas = this.canvas;
         if (!ctx || !canvas) return;
@@ -102,7 +102,7 @@ export class BackdropRenderer {
     // ── grid ── vert/horz gate on `scene.showGrid` AND their own per-axis visibility
     // (style); each uses its own color. Pane separators are drawn on the chrome layer
     // (full-width, above the data) so series never overpaint them.
-    private drawGrid(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, dataW: number, gridAlpha: number): void {
+    private drawGrid(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, dataW: number, gridAlpha: number): void {
         const panes = scene.orderedPanes();
         const { gridVert, gridHorz } = scene.style;
         const vertColor = gridVert.color ?? theme.gridColor;

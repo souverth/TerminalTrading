@@ -12,7 +12,7 @@ function make() {
     document.body.appendChild(host);
     const wm = new Watermark(host, 'BTCUSDT', '60');
     wm.setLoading(false);
-    const line = wm.el.querySelector<HTMLElement>('.vela-watermark-replay')!;
+    const line = wm.el.querySelector<HTMLElement>('.tt-watermark-replay')!;
     const symbol = wm.el.firstElementChild as HTMLElement;
     const shown = (): boolean => wm.el.style.display !== 'none';
     return { wm, line, symbol, shown };
@@ -23,7 +23,7 @@ describe('Watermark replay line', () => {
         const { wm, line, symbol, shown } = make();
         expect(symbol.textContent).toBe('BTCUSDT · 1h');
         expect(line.textContent).toBe('Replay');
-        expect(line.querySelector('.vela-icon svg')).not.toBeNull();
+        expect(line.querySelector('.tt-icon svg')).not.toBeNull();
         expect(line.hidden).toBe(true);
         wm.setReplaying(true);
         expect(line.hidden).toBe(false);

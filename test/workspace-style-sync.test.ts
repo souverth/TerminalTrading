@@ -12,7 +12,7 @@ import { describe, it, expect, beforeAll, afterEach } from 'vitest';
     disconnect() {}
 };
 
-import { VelaWorkspace } from '../src/workspace/VelaWorkspace';
+import { TerminalTradingWorkspace } from '../src/workspace/TerminalTradingWorkspace';
 import { registerChartType, unregisterChartType } from '../src/chart-types/registry';
 import type { ChartConfig } from '../src/renderers/native/core/chartConfig';
 
@@ -20,21 +20,21 @@ beforeAll(() => {
     Element.prototype.animate ??= (() => ({ cancel() {}, finish() {}, addEventListener() {} })) as unknown as Element['animate'];
 });
 
-const live: VelaWorkspace[] = [];
+const live: TerminalTradingWorkspace[] = [];
 afterEach(() => {
     for (const ws of live.splice(0)) ws.destroy();
     unregisterChartType('sync-flow');
 });
 
-function mountWorkspace(opts: Record<string, unknown>): VelaWorkspace {
+function mountWorkspace(opts: Record<string, unknown>): TerminalTradingWorkspace {
     const host = document.createElement('div');
     document.body.append(host);
-    const ws = new VelaWorkspace(host, opts as never);
+    const ws = new TerminalTradingWorkspace(host, opts as never);
     live.push(ws);
     return ws;
 }
 
-function config(ws: VelaWorkspace, id: string): ChartConfig {
+function config(ws: TerminalTradingWorkspace, id: string): ChartConfig {
     return ws.cell(id)!.chart.renderer.getConfig() as ChartConfig;
 }
 

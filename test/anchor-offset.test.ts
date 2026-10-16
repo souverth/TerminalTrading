@@ -6,7 +6,7 @@ import type { IndicatorModel } from '../src/core/model/indicator';
 import type { OHLCV } from '../src/core/model/ohlcv';
 import type { SeriesPoint } from '../src/core/model/series';
 import type { DrawingLine } from '../src/core/model/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /**
  * The anchor-offset seam: models computed over a SUFFIX of the chart bars carry an
@@ -106,7 +106,7 @@ describe('autoscale with an anchored model', () => {
 });
 
 describe('bar_index drawings with an anchored model', () => {
-    const theme = { textColor: '#fff' } as VelaTheme;
+    const theme = { textColor: '#fff' } as TerminalTradingTheme;
     const line = (x1: number, x2: number): DrawingLine => ({
         id: 'ln',
         paneId: 'price',

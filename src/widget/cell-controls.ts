@@ -7,7 +7,7 @@
 import { icon } from '../core/icons';
 import { injectStyles } from '../ui/styles';
 import { Glider, ZOOM_IN, ZOOM_OUT } from './glide';
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 
 /** Cursor distance (px, from the cluster center) that reveals the cluster —
  *  mirrors the scroll-to-realtime button's proximity radius. */
@@ -26,20 +26,20 @@ const CLUSTER_PILL = 'rgba(0,0,0,0.65)';
 
 /**
  * CSS `left` that centers the cluster on the plot (candles), not the full cell.
- * `--vela-toolbar-gutter` / `--vela-scale-gutter` are published on the mount
+ * `--tt-toolbar-gutter` / `--tt-scale-gutter` are published on the mount
  * container (the cell host) by the renderer.
  */
 export const CLUSTER_LEFT_CSS =
-    'calc((100% + var(--vela-toolbar-gutter, 0px) - var(--vela-scale-gutter, 0px)) / 2)';
+    'calc((100% + var(--tt-toolbar-gutter, 0px) - var(--tt-scale-gutter, 0px)) / 2)';
 
-const STYLE_ID = 'vela-cell-controls';
+const STYLE_ID = 'tt-cell-controls';
 const CSS = `
-.vela-cc-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;border:none;border-radius:var(--vela-radius-sm);background:transparent;line-height:0;font-size:12px;color:var(--vela-fg-muted);cursor:pointer;}
-.vela-cc-btn svg{display:block;}
-.vela-cc-btn:hover{background:var(--vela-active);color:var(--vela-fg-bright);}
-.vela-cc-on,.vela-cc-on:hover{background:var(--vela-selected-bg);color:var(--vela-selected-fg);}
-.vela-cc-grip{cursor:grab;touch-action:none;}
-.vela-cc-grip:active{cursor:grabbing;}
+.tt-cc-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;border:none;border-radius:var(--tt-radius-sm);background:transparent;line-height:0;font-size:12px;color:var(--tt-fg-muted);cursor:pointer;}
+.tt-cc-btn svg{display:block;}
+.tt-cc-btn:hover{background:var(--tt-active);color:var(--tt-fg-bright);}
+.tt-cc-on,.tt-cc-on:hover{background:var(--tt-selected-bg);color:var(--tt-selected-fg);}
+.tt-cc-grip{cursor:grab;touch-action:none;}
+.tt-cc-grip:active{cursor:grabbing;}
 `;
 
 /** Horizontal center of the plot (candles) in cell-local x — the scale gutter
@@ -69,7 +69,7 @@ export function nearBottomCenter(
 
 export interface CellControlsDeps {
     /** The cell's LIVE chart (null once the cell is destroyed). */
-    chart(): Vela | null;
+    chart(): TerminalTrading | null;
     /** Reset the cell's view — the context menu's "Reset view" action. */
     reset(): void;
     /** Whether the grid holds more than one cell — gates maximize (a lone chart has
@@ -121,7 +121,7 @@ export class CellControls {
             display: 'none', // revealed by cursor proximity (onHostMove)
             gap: '2px',
             padding: '2px',
-            borderRadius: 'var(--vela-radius-md)',
+            borderRadius: 'var(--tt-radius-md)',
             background: CLUSTER_PILL,
             pointerEvents: 'auto',
         });
@@ -165,7 +165,7 @@ export class CellControls {
         b.type = 'button';
         b.title = title;
         b.setAttribute('aria-label', title);
-        b.className = opts.selected === true ? 'vela-cc-btn vela-cc-on' : 'vela-cc-btn';
+        b.className = opts.selected === true ? 'tt-cc-btn tt-cc-on' : 'tt-cc-btn';
         b.innerHTML = icon(iconId);
         b.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -182,7 +182,7 @@ export class CellControls {
         b.type = 'button';
         b.title = 'Drag to move chart';
         b.setAttribute('aria-label', 'Drag to move chart');
-        b.className = 'vela-cc-btn vela-cc-grip';
+        b.className = 'tt-cc-btn tt-cc-grip';
         b.innerHTML = icon('grip');
         b.addEventListener('pointerdown', (e) => this.onGripDown(b, e));
         return b;
@@ -230,8 +230,8 @@ export class CellControls {
         if (!view) return { toolbar: 0, scale: 0 };
         const cs = view.getComputedStyle(this.host);
         return {
-            toolbar: Number.parseFloat(cs.getPropertyValue('--vela-toolbar-gutter')) || 0,
-            scale: Number.parseFloat(cs.getPropertyValue('--vela-scale-gutter')) || 0,
+            toolbar: Number.parseFloat(cs.getPropertyValue('--tt-toolbar-gutter')) || 0,
+            scale: Number.parseFloat(cs.getPropertyValue('--tt-scale-gutter')) || 0,
         };
     }
 

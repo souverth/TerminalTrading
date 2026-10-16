@@ -1,6 +1,6 @@
 # Settings rows — the declarative row kinds and how to add one
 
-Chart types registered through `@luxalgo/vela/plugin` can declare a **settings section** that the
+Chart types registered through `terminal-trading/plugin` can declare a **settings section** that the
 chart-settings dialog renders as its own tab:
 
 ```ts
@@ -103,7 +103,7 @@ Prefer the sugar for the common shapes (it reads better); reach for `row` when t
 combination has no sugar — never add a new one-off attachment field for it.
 
 Two registry helpers keep every consumer on the same contract, both exported from
-`@luxalgo/vela/plugin` (an alternate settings view — React, native menus — should render from
+`terminal-trading/plugin` (an alternate settings view — React, native menus — should render from
 them, not re-interpret the union):
 
 - **`normalizeSettingsRow(row)`** — the canonical composite shape of any value row.
@@ -214,7 +214,7 @@ value — a new kind needs no changes on their side.
 
 ## The visibility policy (host-hidden settings)
 
-Hosts can hide any dialog entry via `VelaOptions.settings.hidden` /
+Hosts can hide any dialog entry via `TerminalTradingOptions.settings.hidden` /
 `renderer.setSettingsVisibility` (see [options.md](../user/options.md)). For sections
 declared here the ids are **implicit** — nothing to declare, nothing to wire:
 

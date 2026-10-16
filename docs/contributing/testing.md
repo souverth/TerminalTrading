@@ -1,6 +1,8 @@
 # Testing
 
-Vela™ is tested in **two tiers**. They cover different things; a change that affects what users see needs both.
+> **Status:** Stable · **Verified against code:** 2026-10-16 · **Audience:** contributors and AI agents
+
+Terminal Trading is tested in **two tiers**. They cover different things; a change that affects what users see needs both.
 
 - **Tier 1 — unit tests** (vitest, `npm test`): the bulk of the suite. Pure logic, port contracts, and DOM behavior under jsdom.
 - **Tier 2 — browser verification** (the playground): the real renderer, the real widget chrome, and the real event paths.
@@ -21,7 +23,7 @@ The ports exist so the core runs without real backends. Substitute test doubles 
 
 - a **fake renderer** instead of the native one,
 - an **injected feed** (`deps.dataFeed`) or a fake `DataProvider` that hands the core the bars a scenario needs,
-- a **fake engine** implementing `ScriptingEngine`, since Vela™ bundles none.
+- a **fake engine** implementing `ScriptingEngine`, since Terminal Trading bundles none.
 
 A double only has to honor the contract. It never needs backend-specific behavior, because the only thing crossing a port is the neutral model.
 
@@ -37,7 +39,7 @@ Workspace and drawing-settings tests mount whole workspaces and can exceed vites
 
 Anything you need to *see* or *click* belongs here: a renderer change, a drawing tool, a widget interaction.
 
-1. Run `npm run playground` (`http://localhost:5190`). It imports Vela™ straight from `src/`, so edits are live on save, with no build step.
+1. Run `npm run playground` (`http://localhost:5190`). It imports Terminal Trading straight from `src/`, so edits are live on save, with no build step.
 2. Exercise the change end to end through the UI.
 3. Assert what a user would see, not that an element exists:
     - **Computed visibility** — `display`, resolved `backgroundColor` inside the themed host, and a non-empty bounding rect.

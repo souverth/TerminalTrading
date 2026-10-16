@@ -1,6 +1,6 @@
 # Options
 
-The second argument to `new Vela(container, options, deps?)` configures market data, display, and behavior. Everything here is optional — `new Vela('#chart', { data: myBars })` is enough to render candles.
+The second argument to `new TerminalTrading(container, options, deps?)` configures market data, display, and behavior. Everything here is optional — `new TerminalTrading('#chart', { data: myBars })` is enough to render candles.
 
 This vocabulary is shared with the [workspace](./workspace.md), which accepts every
 option below except `height` (plus its shell options) — there, each one is the DEFAULT
@@ -30,10 +30,10 @@ How the chart obtains its candles.
 A fetching chart pairs these market options with a registered provider — the display flags ride along in the same object, and registering the provider fires the parked initial load.
 
 ```js
-import { Vela } from '@luxalgo/vela';
-import { BinanceProvider } from '@luxalgo/vela/providers/binance';
+import { TerminalTrading } from 'terminal-trading';
+import { BinanceProvider } from 'terminal-trading/providers/binance';
 
-const chart = new Vela('#chart', {
+const chart = new TerminalTrading('#chart', {
   symbol: 'BTCUSDT',        // bare = first registered provider that lists it; 'binance:BTCUSDT' pins
   timeframe: '1h',
   bars: 500,                // how many bars of history to load
@@ -86,10 +86,10 @@ the bar while still driving drawings from code, or an object to customize which 
 
 ```js
 // hide the bar but keep the programmatic API:
-new Vela('#chart', { data: bars, drawings: false });
+new TerminalTrading('#chart', { data: bars, drawings: false });
 
 // only a few tools:
-new Vela('#chart', { data: bars, drawings: { tools: ['trendline', 'hline', 'box'] } });
+new TerminalTrading('#chart', { data: bars, drawings: { tools: ['trendline', 'hline', 'box'] } });
 ```
 
 See [Drawing tools](./drawing-tools.md) for the full catalogue and the `chart.drawings` API.
@@ -112,7 +112,7 @@ capped at 1000 ms.
 | `intro` | `true` (`'settle'`, 650 ms) | The first-load reveal: candles draw themselves in left to right. `'settle'` overshoots and eases back, `'grow'` eases out; `false` skips it; `{ style?, duration? }` sets the style and/or the sweep duration in ms (capped at 5000). |
 
 ```js
-new Vela('#chart', {
+new TerminalTrading('#chart', {
   animations: {
     zoom: 150,          // a slower, softer zoom glide
     pan: false,         // …but a drag release stops dead (and panBy is instant)
@@ -138,14 +138,14 @@ By default the chart-settings dialog shows everything. `settings.hidden` lists s
 from the rail:
 
 ```js
-new VelaWorkspace('#chart', {
+new TerminalTradingWorkspace('#chart', {
   layout: false,
   bars: 1000,                                  // force the fetch depth…
   settings: { hidden: ['advanced'] },          // …and remove the tab that would change it
 });
 
 // or a finer cut: one group, one row
-new Vela('#chart', { data: bars, settings: { hidden: ['canvas.grid', 'scales.price-scale.countdown'] } });
+new TerminalTrading('#chart', { data: bars, settings: { hidden: ['canvas.grid', 'scales.price-scale.countdown'] } });
 ```
 
 Hiding is **display-only**: hidden values keep being stored, delivered, and applied —
@@ -162,7 +162,7 @@ The complete catalog — every id, at every depth. Any subset works; a parent id
 its children redundant:
 
 ```js
-new VelaWorkspace('#chart', {
+new TerminalTradingWorkspace('#chart', {
   settings: {
     hidden: [
       // ══ Symbol tab ════════════════════════════════════════════════
@@ -292,7 +292,7 @@ to draw. The axis labels and the horizontal gridlines both follow the same ticks
 always line up.
 
 ```js
-new Vela('#chart', {
+new TerminalTrading('#chart', {
   data: bars,
   priceAxis: {
     // Emphasize the built-in levels and add a muted level between two of them
@@ -371,7 +371,7 @@ const midnight = {
   fontFamily:  'Inter, system-ui, sans-serif',
 };
 
-new Vela('#chart', { data: bars, theme: midnight });
+new TerminalTrading('#chart', { data: bars, theme: midnight });
 ```
 
 The theme can also be swapped at runtime — `chart.setTheme('light')` (or a full theme
@@ -391,7 +391,7 @@ Some options only take effect when the active backend supports them. **`glow` is
 A native-renderer styling combo: draw price as a glowing line on the GPU backend and make panning instant while keeping the eased zoom.
 
 ```js
-new Vela('#chart', {
+new TerminalTrading('#chart', {
   data: bars,
   priceStyle: 'line',                 // candles | bars | line | area | baseline
   nativeBackend: 'webgl2',            // force the GPU backend

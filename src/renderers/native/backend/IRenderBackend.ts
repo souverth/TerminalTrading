@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { CoordinateSystem } from '../core/CoordinateSystem';
 import type { SceneGraph } from '../core/SceneGraph';
 
@@ -33,6 +33,6 @@ export interface IRenderBackend {
     /** Bind to the (already DOM-sized) data canvas. */
     mount(canvas: HTMLCanvasElement): void;
     /** Paint the data layer for the current frame. */
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme): void;
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme): void;
     destroy(): void;
 }

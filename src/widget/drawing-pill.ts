@@ -5,15 +5,15 @@
 // follows the drawing:* events, so any path that arms/disarms a tool (drawer, keyboard
 // shortcut, API) keeps it truthful. Only shown in the mobile size class — desktop keeps
 // the docked toolbar.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import { iconEl, iconMarkup } from '../ui/icons';
 import { injectStyles } from '../ui/styles';
 import { getDrawingType, type SnapMode } from '../core/drawings';
 
-const STYLE_ID = 'vela-widget-drawing-pill';
+const STYLE_ID = 'tt-widget-drawing-pill';
 const CSS = `
-.vela-drawpill { display: none; }
-[data-layout='mobile'] .vela-drawpill {
+.tt-drawpill { display: none; }
+[data-layout='mobile'] .tt-drawpill {
     position: absolute;
     left: 50%;
     bottom: 10px;
@@ -23,25 +23,25 @@ const CSS = `
     align-items: center;
     gap: 2px;
     padding: 4px;
-    border: 1px solid var(--vela-border-strong);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 999px;
-    background: var(--vela-surface);
-    box-shadow: var(--vela-shadow-dialog);
-    color: var(--vela-fg);
+    background: var(--tt-surface);
+    box-shadow: var(--tt-shadow-dialog);
+    color: var(--tt-fg);
 }
-[data-layout='mobile'] .vela-drawpill[hidden] { display: none !important; }
-.vela-drawpill-tool {
+[data-layout='mobile'] .tt-drawpill[hidden] { display: none !important; }
+.tt-drawpill-tool {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
     border-radius: 999px;
-    background: var(--vela-hover);
-    color: var(--vela-accent);
+    background: var(--tt-hover);
+    color: var(--tt-accent);
 }
-.vela-drawpill-tool svg { width: 22px; height: 22px; }
-.vela-drawpill-btn {
+.tt-drawpill-tool svg { width: 22px; height: 22px; }
+.tt-drawpill-btn {
     all: unset;
     width: 36px;
     height: 36px;
@@ -49,21 +49,21 @@ const CSS = `
     align-items: center;
     justify-content: center;
     border-radius: 999px;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     position: relative;
 }
-.vela-drawpill-btn:active { background: var(--vela-hover); }
-.vela-drawpill-btn[data-on='1'] { color: var(--vela-accent); background: var(--vela-hover); }
-.vela-drawpill-btn .vela-icon { font-size: 17px; width: 17px; height: 17px; }
-.vela-drawpill-badge {
+.tt-drawpill-btn:active { background: var(--tt-hover); }
+.tt-drawpill-btn[data-on='1'] { color: var(--tt-accent); background: var(--tt-hover); }
+.tt-drawpill-btn .tt-icon { font-size: 17px; width: 17px; height: 17px; }
+.tt-drawpill-badge {
     position: absolute;
     top: 2px;
     right: 2px;
     font-size: 8px;
     font-weight: 700;
-    color: var(--vela-accent);
+    color: var(--tt-accent);
 }
 `;
 
@@ -74,21 +74,21 @@ export class DrawingPill {
     private readonly magnetBadge: HTMLElement;
     private readonly stayBtn: HTMLButtonElement;
     private readonly eraserBtn: HTMLButtonElement;
-    private chart: Vela | null = null;
+    private chart: TerminalTrading | null = null;
 
     constructor(host: HTMLElement) {
         const doc = host.ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
         this.el = doc.createElement('div');
-        this.el.className = 'vela-drawpill';
+        this.el.className = 'tt-drawpill';
         this.el.hidden = true;
 
         this.toolGlyph = doc.createElement('span');
-        this.toolGlyph.className = 'vela-drawpill-tool';
+        this.toolGlyph.className = 'tt-drawpill-tool';
 
         const btn = (icon: string, label: string, onClick: () => void): HTMLButtonElement => {
             const b = doc.createElement('button');
-            b.className = 'vela-drawpill-btn';
+            b.className = 'tt-drawpill-btn';
             b.setAttribute('aria-label', label);
             b.appendChild(iconEl(icon, doc));
             b.addEventListener('click', onClick);
@@ -101,7 +101,7 @@ export class DrawingPill {
             this.chart?.drawings.setSnapMode(order[(order.indexOf(cur) + 1) % order.length]!);
         });
         this.magnetBadge = doc.createElement('span');
-        this.magnetBadge.className = 'vela-drawpill-badge';
+        this.magnetBadge.className = 'tt-drawpill-badge';
         this.magnetBtn.appendChild(this.magnetBadge);
         this.stayBtn = btn(iconMarkup('pen-lock') ? 'pen-lock' : 'pen', 'Stay in drawing mode', () => {
             this.chart?.drawings.setStayMode(!this.chart.drawings.getStayMode());
@@ -122,7 +122,7 @@ export class DrawingPill {
 
     /** Rebind to another chart (a rebuild, or the workspace's active cell changing) —
      *  the previous chart's subscriptions are dropped so only one chart drives the pill. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         for (const off of this.chartSubs) off();
         this.chart = chart;
         this.chartSubs = [

@@ -1,4 +1,4 @@
-// VelaWorkspace — the multi-chart shell: a CSS-Grid of ChartCells behind ONE shared
+// TerminalTradingWorkspace — the multi-chart shell: a CSS-Grid of ChartCells behind ONE shared
 // data feed, wrapped in ONE shared chrome (topbar + layout dropdown, pickers, object
 // tree, bottombar, keymap, alerts) that PROJECTS the ACTIVE cell and acts on it.
 //
@@ -9,8 +9,8 @@
 // undo-history are per-cell; everything else is shared.
 import type { DataProvider } from '../core/ports/DataProvider';
 import type { ScriptingEngine } from '../core/ports/ScriptingEngine';
-import type { VelaTheme, NativeBackend, VelaOptions } from '../core/options';
-import type { VelaShellOptions } from '../widget/shell-options';
+import type { TerminalTradingTheme, NativeBackend, TerminalTradingOptions } from '../core/options';
+import type { TerminalTradingShellOptions } from '../widget/shell-options';
 import { resolveTheme } from '../core/theme';
 import { TypedEventBus } from '../core/events/EventBus';
 import { MultiProviderFeed } from '../data/MultiProviderFeed';
@@ -18,7 +18,7 @@ import { sharedBarStore } from '../data/BarStore';
 import { ensureUIHost, injectStyles, registerIcon, svg16 } from '../ui';
 import { isEditableTarget, KeymapManager } from '../ui/keymap';
 import { Menu } from '../ui/components/menu';
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import { Topbar, priceStyleLabel, priceStyleIcon } from '../widget/topbar';
 import { Bottombar, RANGE_PRESETS } from '../widget/bottombar';
 import { SecondClock } from '../core/util/wall-clock';
@@ -83,7 +83,7 @@ import { compositeLayoutScreenshot, tilesFromCellRects, triggerPngDownload, type
  * per cell with the same words. `height` is the one chart option a grid cannot honor
  * (the layout sizes cells), so it is omitted from the type.
  */
-export interface VelaWorkspaceOptions extends Omit<VelaOptions, 'height'>, VelaShellOptions {
+export interface TerminalTradingWorkspaceOptions extends Omit<TerminalTradingOptions, 'height'>, TerminalTradingShellOptions {
     /** Initial layout — a registered id (`'1'`, `'2h'`, `'2v'`, `'4'`, `'8'`, or a
      *  plugin-registered one) or an inline definition. Default `'4'`.
      *
@@ -162,48 +162,48 @@ const POOL_CAP = 16; // dormant slot states kept across layout shrinks
 const TIME_AXIS_H = 22; // px the renderer reserves for a time axis (mirrors NativeRenderer's)
 const ALERT_CAP = 50;
 
-const STYLE_ID = 'vela-workspace';
+const STYLE_ID = 'tt-workspace';
 const CSS = `
-.vela-workspace { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--vela-bg); }
-.vela-ws-main { position: relative; display: flex; flex-direction: row; flex: 1 1 auto; min-height: 0; }
-.vela-ws-toolbar { position: relative; flex: none; }
-.vela-ws-strips { position: relative; flex: none; display: flex; flex-direction: column; min-width: 0; }
-.vela-ws-strips:empty { display: none; }
-.vela-ws-grid { position: relative; flex: 1 1 auto; min-width: 0; display: grid; gap: ${GAP_PX}px; background: var(--vela-border-soft); }
-.vela-cell { background: var(--vela-bg); position: relative; }
+.tt-workspace { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--tt-bg); }
+.tt-ws-main { position: relative; display: flex; flex-direction: row; flex: 1 1 auto; min-height: 0; }
+.tt-ws-toolbar { position: relative; flex: none; }
+.tt-ws-strips { position: relative; flex: none; display: flex; flex-direction: column; min-width: 0; }
+.tt-ws-strips:empty { display: none; }
+.tt-ws-grid { position: relative; flex: 1 1 auto; min-width: 0; display: grid; gap: ${GAP_PX}px; background: var(--tt-border-soft); }
+.tt-cell { background: var(--tt-bg); position: relative; }
 /* Active-cell highlight: an overlay ring ABOVE the chart's own canvas stack (a plain
    outline on the cell is painted under them) — inert to the pointer. Scoped to
    multi-cell grids ([data-multi]): a single-cell layout always has an active cell,
    and ringing the only chart would just be noise. */
-.vela-ws-grid[data-multi='1'] .vela-cell[data-active='1']::after {
+.tt-ws-grid[data-multi='1'] .tt-cell[data-active='1']::after {
     content: '';
     position: absolute;
     inset: 0;
-    border: 2px solid var(--vela-fg-bright);
+    border: 2px solid var(--tt-fg-bright);
     pointer-events: none;
     z-index: 10;
 }
 /* Splitter hover mirrors the in-chart pane separator hover (CrosshairRenderer):
    a soft band over the whole grab target + a solid 2px line on the seam center. */
-.vela-ws-splitter:hover { background: var(--vela-separator-hover-band); }
-.vela-ws-splitter:hover::after { content: ''; position: absolute; background: var(--vela-separator-hover-line); }
-.vela-ws-splitter[data-axis='cols']:hover::after { left: calc(50% - 1px); top: 0; width: 2px; height: 100%; }
-.vela-ws-splitter[data-axis='rows']:hover::after { top: calc(50% - 1px); left: 0; height: 2px; width: 100%; }
+.tt-ws-splitter:hover { background: var(--tt-separator-hover-band); }
+.tt-ws-splitter:hover::after { content: ''; position: absolute; background: var(--tt-separator-hover-line); }
+.tt-ws-splitter[data-axis='cols']:hover::after { left: calc(50% - 1px); top: 0; width: 2px; height: 100%; }
+.tt-ws-splitter[data-axis='rows']:hover::after { top: calc(50% - 1px); left: 0; height: 2px; width: 100%; }
 /* Mobile: the docked drawing-toolbar column would eat a phone-width grid — the shell's
    drawings drawer + on-chart pill replace it (same policy as the widget's in-chart bar). */
-[data-layout='mobile'] .vela-ws-toolbar { display: none; }
+[data-layout='mobile'] .tt-ws-toolbar { display: none; }
 /* A maximized cell owns the whole grid: the splitter strips have no seams to grab and
    the active ring would just outline the only visible chart — both are noise here. */
-.vela-ws-grid[data-maximized='1'] .vela-ws-splitter { display: none; }
-.vela-ws-grid[data-maximized='1'] .vela-cell[data-active='1']::after { display: none; }
+.tt-ws-grid[data-maximized='1'] .tt-ws-splitter { display: none; }
+.tt-ws-grid[data-maximized='1'] .tt-cell[data-active='1']::after { display: none; }
 /* Drop-target preview while a cell's drag handle is held: a dashed ring + the same
    soft wash the splitter hover uses, over the chart, inert to the pointer. */
-.vela-cell[data-drop-target='1']::before {
+.tt-cell[data-drop-target='1']::before {
     content: '';
     position: absolute;
     inset: 0;
-    border: 2px dashed var(--vela-fg-bright);
-    background: var(--vela-separator-hover-band);
+    border: 2px dashed var(--tt-fg-bright);
+    background: var(--tt-separator-hover-band);
     pointer-events: none;
     z-index: 11;
 }
@@ -223,7 +223,7 @@ export function declaredOrder(cells: Record<string, unknown> | undefined): strin
     const names = Object.keys(cells ?? {});
     for (const n of names) {
         if (/^\d+$/.test(n)) {
-            console.warn(`[vela] workspace cell "${n}" ignored — a purely-numeric name cannot keep its declaration order (JS object key semantics); use e.g. "cell${n}"`);
+            console.warn(`[terminal-trading] workspace cell "${n}" ignored — a purely-numeric name cannot keep its declaration order (JS object key semantics); use e.g. "cell${n}"`);
         }
     }
     return names.filter((n) => !/^\d+$/.test(n));
@@ -263,7 +263,7 @@ export function resolveTyping(key: string, open: TypingState): { target: 'symbol
     return null;
 }
 
-export class VelaWorkspace {
+export class TerminalTradingWorkspace {
     readonly root: HTMLElement;
     /** The shortcut system — one manager for the whole workspace, routed to the active cell. */
     readonly keymap: KeymapManager;
@@ -282,7 +282,7 @@ export class VelaWorkspace {
     private readonly trackSizes = new Map<string, TrackSizes>(); // per layout id (splitter drags)
     private readonly splitters: SplitterLayer;
     private readonly resizeObserver: ResizeObserver | null = null;
-    private readonly opts: VelaWorkspaceOptions;
+    private readonly opts: TerminalTradingWorkspaceOptions;
     private def: LayoutDefinition;
     /** Cell identities by SLOT POSITION — `order[i]` lives in the layout's i-th slot.
      *  Names come from the `cells` declaration order (then the persisted document);
@@ -412,11 +412,11 @@ export class VelaWorkspace {
     private attributionMark: HTMLElement | null = null;
     private readonly onRootKeydown = (ev: KeyboardEvent): void => this.routeTyping(ev);
 
-    constructor(container: HTMLElement | string, opts: VelaWorkspaceOptions = {}) {
+    constructor(container: HTMLElement | string, opts: TerminalTradingWorkspaceOptions = {}) {
         registerBuiltinLayouts(); // idempotent — pickers and `layout` ids resolve from the registry
         registerBuiltinChartTypes(); // ditto — the topbar style menu resolves before the first cell builds
         const hostEl = typeof container === 'string' ? document.querySelector<HTMLElement>(container) : container;
-        if (!hostEl) throw new Error(`VelaWorkspace: container not found: ${String(container)}`);
+        if (!hostEl) throw new Error(`TerminalTradingWorkspace: container not found: ${String(container)}`);
         this.opts = opts;
         // Before any cell exists: the replay watches every cell from its creation on.
         this.replay = new WorkspaceReplay({
@@ -435,7 +435,7 @@ export class VelaWorkspace {
         });
         // ── persistence boot: a SYNC storage restores before the first build (no flash
         // of defaults); an async adapter resolves later and late-applies via applyState.
-        this.persistKey = opts.persist === undefined || opts.persist === false ? null : opts.persist === true ? 'vela-workspace' : opts.persist;
+        this.persistKey = opts.persist === undefined || opts.persist === false ? null : opts.persist === true ? 'tt-workspace' : opts.persist;
         this.storage = opts.storage ?? localStorageAdapter();
         let boot: WorkspaceState | null = null;
         if (this.persistKey !== null) {
@@ -477,7 +477,7 @@ export class VelaWorkspace {
         const doc = hostEl.ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
         this.root = doc.createElement('div');
-        this.root.className = 'vela-workspace';
+        this.root.className = 'tt-workspace';
         ensureUIHost(this.root, resolveTheme(opts.theme));
 
         // ONE shared feed: providers registered once; every cell's `chart.data` operates
@@ -579,7 +579,7 @@ export class VelaWorkspace {
 
         // ── main row: the shared drawing toolbar + the grid + the docked side panels ──
         const main = doc.createElement('div');
-        main.className = 'vela-ws-main';
+        main.className = 'tt-ws-main';
         // The `drawings` option drives the SHARED drawing surface the way it drives a
         // lone chart's own bar: `false` removes the whole feature (the headless
         // `chart.drawings` API stays), `{ toolbar: false }` hides the bar,
@@ -591,11 +591,11 @@ export class VelaWorkspace {
         let toolbarHost: HTMLElement | null = null;
         if (this.drawingsEnabled && toolbar.visible && opts.drawingToolbar !== false) {
             toolbarHost = doc.createElement('div');
-            toolbarHost.className = 'vela-ws-toolbar';
+            toolbarHost.className = 'tt-ws-toolbar';
             main.appendChild(toolbarHost);
         }
         this.gridEl = doc.createElement('div');
-        this.gridEl.className = 'vela-ws-grid';
+        this.gridEl.className = 'tt-ws-grid';
         main.appendChild(this.gridEl);
         // One dock for the WHOLE grid (the panels follow the active cell), owning the built-ins,
         // the contributed panels, the single-open rule and the topbar's toggle group.
@@ -616,7 +616,7 @@ export class VelaWorkspace {
         this.root.appendChild(main);
         // Docked strips (`ctx.dockStrip`) — before the bottom bar, which appends itself next.
         this.stripsEl = doc.createElement('div');
-        this.stripsEl.className = 'vela-ws-strips';
+        this.stripsEl.className = 'tt-ws-strips';
         this.root.appendChild(this.stripsEl);
         this.toastHost = new Toast(this.gridEl);
 
@@ -639,11 +639,11 @@ export class VelaWorkspace {
                     ? createCustomMark(doc, attribution, background)
                     : createAttributionMark(doc, background);
             Object.assign(mark.style, {
-                left: 'calc(var(--vela-toolbar-gutter, 0px) + 12px)',
-                bottom: `calc(var(--vela-bottom-gutter, ${TIME_AXIS_H}px) + 10px)`,
+                left: 'calc(var(--tt-toolbar-gutter, 0px) + 12px)',
+                bottom: `calc(var(--tt-bottom-gutter, ${TIME_AXIS_H}px) + 10px)`,
                 zIndex: '11',
             });
-            mark.dataset.velaScreenshot = '1';
+            mark.dataset.ttScreenshot = '1';
             this.gridEl.appendChild(mark); // pre-cells fallback host; re-parented by mountAttributionMark
             this.attributionMark = mark; // kept so a live theme swap re-inks it
         }
@@ -816,13 +816,13 @@ export class VelaWorkspace {
     /** The ACTIVE cell — the one the shared chrome reflects and acts on. */
     get active(): ChartCell {
         const cell = this.activeId ? this.cellsById.get(this.activeId) : undefined;
-        if (!cell) throw new Error('VelaWorkspace has no active cell (destroyed?)');
+        if (!cell) throw new Error('TerminalTradingWorkspace has no active cell (destroyed?)');
         return cell;
     }
 
     /** Shortcut for `active.chart` — the same habit as `widget.chart`. LIVE: read it at
      *  the point of use; the durable identity to hold is the cell (or its id). */
-    get chart(): Vela {
+    get chart(): TerminalTrading {
         return this.active.chart;
     }
 
@@ -999,7 +999,7 @@ export class VelaWorkspace {
                 if (value === undefined) delete ext[h.key];
                 else ext[h.key] = value;
             } catch (err) {
-                console.warn(`[vela] state persistence "${h.key}" serialize failed:`, err);
+                console.warn(`[terminal-trading] state persistence "${h.key}" serialize failed:`, err);
             }
         }
         this.extState = ext;
@@ -1128,7 +1128,7 @@ export class VelaWorkspace {
             try {
                 h.restore(this.extState[h.key], this.context());
             } catch (err) {
-                console.warn(`[vela] state persistence "${h.key}" restore failed:`, err);
+                console.warn(`[terminal-trading] state persistence "${h.key}" restore failed:`, err);
             }
         }
     }
@@ -1158,7 +1158,7 @@ export class VelaWorkspace {
      * Also reached from any cell's chart settings → Canvas → Theme. The choice sticks:
      * cells rebuilt by later layout switches reconstruct with it.
      */
-    setTheme(theme: NonNullable<VelaWorkspaceOptions['theme']>): void {
+    setTheme(theme: NonNullable<TerminalTradingWorkspaceOptions['theme']>): void {
         if (this.destroyed) return;
         const t = resolveTheme(theme);
         this.opts.theme = theme;
@@ -1326,7 +1326,7 @@ export class VelaWorkspace {
             try {
                 this.poolSet(id, cell.dehydrate());
             } catch (err) {
-                console.warn(`[vela] could not snapshot cell "${id}" while destroying:`, err);
+                console.warn(`[terminal-trading] could not snapshot cell "${id}" while destroying:`, err);
             }
             cell.destroy();
             this.cellsById.delete(id);
@@ -1519,7 +1519,7 @@ export class VelaWorkspace {
         // Registered ids first, then the picker's self-describing dynamic ids
         // (`g3x2`) — those synthesize without touching the registry.
         const def = ensureLayout(layout);
-        if (!def) throw new Error(`[vela] unknown workspace layout "${layout}" — register it with registerLayout().`);
+        if (!def) throw new Error(`[terminal-trading] unknown workspace layout "${layout}" — register it with registerLayout().`);
         return def;
     }
 
@@ -1630,8 +1630,8 @@ export class VelaWorkspace {
     }
 
     /** Keep the shared attribution mark inside the BOTTOM-LEFT visible cell: its
-     *  offsets ride that cell's renderer-published `--vela-bottom-gutter` /
-     *  `--vela-toolbar-gutter`, so collapsed pane strips push the mark up without any
+     *  offsets ride that cell's renderer-published `--tt-bottom-gutter` /
+     *  `--tt-toolbar-gutter`, so collapsed pane strips push the mark up without any
      *  bookkeeping here. Re-run after anything that changes which host that is
      *  (layout switch, maximize, cell rebuild); a destroyed host drops the mark from
      *  the DOM, and this re-mount brings it back. */
@@ -1863,7 +1863,7 @@ export class VelaWorkspace {
             // A renderer without the seam silently never shows ghosts — warn only when
             // enabling while NO cell can display one (e.g. minimal custom renderers).
             if (setting && ![...this.cellsById.values()].some((c) => c.chart.renderer.supportsExternalCrosshair)) {
-                console.warn('[vela] crosshair sync: no cell renderer supports an external crosshair — nothing will show.');
+                console.warn('[terminal-trading] crosshair sync: no cell renderer supports an external crosshair — nothing will show.');
             }
             // Refresh the layout dropdown's switch state (absent during constructor boot).
             if (this.topbar && this.def) this.topbar.setLayout(this.def.id);
@@ -2401,7 +2401,7 @@ export class VelaWorkspace {
             try {
                 this.attachmentDisposers.set(att.id, att.mount(this.context()));
             } catch (err) {
-                console.warn(`[vela] workspace attachment "${att.id}" failed to mount:`, err);
+                console.warn(`[terminal-trading] workspace attachment "${att.id}" failed to mount:`, err);
             }
         }
     }
@@ -2466,7 +2466,7 @@ export class VelaWorkspace {
         this.keymap.register({ id: 'history.redo', keys: ['mod+y', 'mod+shift+z'], label: 'Redo (active chart)', category: 'Edit', run: () => this.active.history.redo() });
         this.keymap.register({ id: 'view.zoom-in', keys: 'mod+arrowup', label: 'Zoom in', category: 'Chart', run: () => this.glider.zoom(ZOOM_IN) });
         this.keymap.register({ id: 'view.zoom-out', keys: 'mod+arrowdown', label: 'Zoom out', category: 'Chart', run: () => this.glider.zoom(ZOOM_OUT) });
-        // Pan keys mirror a drag exactly (same clamp, same easing) — see Vela.panBy.
+        // Pan keys mirror a drag exactly (same clamp, same easing) — see Terminal Trading.panBy.
         this.keymap.register({ id: 'view.pan-left', keys: 'mod+arrowleft', label: 'Pan toward history', category: 'Chart', run: () => this.active.chart.panBy(-PAN_FAST) });
         this.keymap.register({ id: 'view.pan-right', keys: 'mod+arrowright', label: 'Pan toward now', category: 'Chart', run: () => this.active.chart.panBy(PAN_FAST) });
         // `/` belongs to the indicators SLOT: it opens the built-in picker, or routes

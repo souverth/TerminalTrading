@@ -24,7 +24,7 @@ This guide covers the browser-facing code: the widget and workspace shells, the 
 | Drawing interaction and the drawing toolbar | `src/renderers/native/drawings/` |
 | The indicator inputs dialog | `src/renderers/shared/InputsUI.ts`, `IndicatorInputsDialog.ts` |
 
-Large files: `VelaWorkspace.ts` (2420 lines), `ChartCell.ts` (1469), `object-tree.ts` (1404), `SettingsDialog.ts` (1299), `UserDrawingController.ts` (1235). Search them; do not read them top to bottom.
+Large files: `TerminalTradingWorkspace.ts` (2420 lines), `ChartCell.ts` (1469), `object-tree.ts` (1404), `SettingsDialog.ts` (1299), `UserDrawingController.ts` (1235). Search them; do not read them top to bottom.
 
 ## Split logic from view
 
@@ -42,7 +42,7 @@ When you add behavior, ask whether it can live in the model half. If it can, tes
 
 ### Add a topbar button or context-menu item
 
-1. Register a `WidgetActionDescriptor` with `registerWidgetAction` (exported from `@luxalgo/vela/plugin`). Give it a stable `id`, a `label` (required, even for an icon-only button), and a `target`.
+1. Register a `WidgetActionDescriptor` with `registerWidgetAction` (exported from `terminal-trading/plugin`). Give it a stable `id`, a `label` (required, even for an icon-only button), and a `target`.
 2. Take everything inside `when` and `run` from the `WidgetContext` argument. Never close over an outer widget or chart.
 3. Mount any dialog or tooltip with `ctx.host` as the host.
 4. Register at import time, before the widget is constructed.
@@ -89,7 +89,7 @@ Tests: `state-persistence.test.ts`, `workspace-persist.test.ts`.
 
 ### Change the grid layout, links, or dividers
 
-Edit the pure modules (`layouts.ts`, `sync.ts`, `splitters.ts`) and test them without a DOM. Touch `VelaWorkspace.ts` only for wiring. Tests: `workspace-core.test.ts`.
+Edit the pure modules (`layouts.ts`, `sync.ts`, `splitters.ts`) and test them without a DOM. Touch `TerminalTradingWorkspace.ts` only for wiring. Tests: `workspace-core.test.ts`.
 
 ## Verification checklist
 

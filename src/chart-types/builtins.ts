@@ -8,7 +8,7 @@ import type { BarTransform } from '../core/price-styles/BarTransform';
 /** Singleton so the orchestrator can compare transforms by identity across style flips. */
 const HEIKIN_ASHI: BarTransform = { full: heikinAshiFull, next: heikinAshiNext };
 
-/** Register the built-in chart types (idempotent — called by the Vela constructor). */
+/** Register the built-in chart types (idempotent — called by the Terminal Trading constructor). */
 export function registerBuiltinChartTypes(): void {
     registerChartType({ id: 'heikinashi', label: 'Heikin Ashi', barTransform: HEIKIN_ASHI });
 }

@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { Projector } from '../../../core/drawings';
 import { formatDuration } from '../../../core/drawings';
 import { BEARISH, BULLISH } from '../../../core/palette';
@@ -83,7 +83,7 @@ export class MeasureOverlay {
         this.end = null;
     }
 
-    paint(ctx: CanvasRenderingContext2D, proj: Projector, theme: VelaTheme): void {
+    paint(ctx: CanvasRenderingContext2D, proj: Projector, theme: TerminalTradingTheme): void {
         if (!this.start || !this.end) return;
         const { x: x1, y: y1 } = this.start;
         const { x: x2, y: y2 } = this.end;
@@ -140,7 +140,7 @@ export class MeasureOverlay {
     private paintLabel(
         ctx: CanvasRenderingContext2D,
         proj: Projector,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         midX: number,
         boxTop: number,
         boxBot: number,

@@ -1,7 +1,7 @@
 // Pine script library for the playground: browse / search / create / edit / delete scripts,
 // favorites, compile check, thumbnails, and "Add to chart". Backed by the trading server
 // (`/api/scripts`, see ~/code/trading/src/routes/scripts.ts).
-import type { VelaWorkspace } from "../src/workspace";
+import type { TerminalTradingWorkspace } from "../src/workspace";
 import type { ChartCell } from "../src/workspace/ChartCell";
 import { API_BASE, api, notifyLibraryChange, onLibraryChange, toManifest, type ApiError, type CheckResult, type LibraryScript } from "./library-api";
 import { openInEditor, setLibraryOpener } from "./pine-editor";
@@ -12,7 +12,7 @@ interface ManifestHolder {
 }
 
 // ── keyboard shield ───────────────────────────────────────────────────────────
-// Vela binds single-letter shortcuts on the window (symbol search, timeframe entry…).
+// Terminal Trading binds single-letter shortcuts on the window (symbol search, timeframe entry…).
 // Registered at import time — before the workspace boots — so, in the capture phase,
 // it runs first and keeps typing inside the library from reaching those shortcuts.
 const ROOT_ID = "script-library";
@@ -132,7 +132,7 @@ function confirmDialog(host: HTMLElement, message: string, okLabel: string, dang
   });
 }
 
-export function installScriptLibrary(ws: VelaWorkspace): void {
+export function installScriptLibrary(ws: TerminalTradingWorkspace): void {
   const style = el("style");
   style.textContent = STYLE;
   document.head.append(style);

@@ -4,7 +4,7 @@ import type { IndicatorModel } from '../model/indicator';
 import type { ScenePatch } from '../model/patch';
 import type { InputValue, SymbolPickerFn } from '../model/inputs';
 import type { Millis } from '../model/time';
-import type { VelaTheme, ThemeName, MoveTarget, PriceStyle } from '../options';
+import type { TerminalTradingTheme, ThemeName, MoveTarget, PriceStyle } from '../options';
 import type { Unsubscribe } from '../util/types';
 import type { WallClock } from '../util/wall-clock';
 import type { IDrawingsRendererPort } from '../drawings/port';
@@ -226,8 +226,8 @@ export interface IChartRenderer {
     /** Read a feature's current value (`undefined` if unsupported). */
     readFeature(key: string): unknown;
 
-    mount(container: HTMLElement, theme: VelaTheme): void;
-    setTheme(theme: VelaTheme): void;
+    mount(container: HTMLElement, theme: TerminalTradingTheme): void;
+    setTheme(theme: TerminalTradingTheme): void;
     resize(): void;
     destroy(): void;
 

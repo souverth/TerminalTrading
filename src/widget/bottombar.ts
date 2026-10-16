@@ -43,20 +43,20 @@ export const RANGE_PRESETS: readonly RangePreset[] = [
     { id: 'ALL', tf: 'W', preset: 'ALL', bars: 5000 }, // everything the provider serves
 ];
 
-const STYLE_ID = 'vela-widget-bottombar';
+const STYLE_ID = 'tt-widget-bottombar';
 const CSS = `
-.vela-widget-bottombar {
+.tt-widget-bottombar {
     display: flex;
     align-items: center;
     gap: 2px;
     height: 38px;
     padding: 0 8px;
-    border-top: 1px solid var(--vela-border);
-    color: var(--vela-fg-muted);
+    border-top: 1px solid var(--tt-border);
+    color: var(--tt-fg-muted);
     font-size: 12px;
     flex: none;
 }
-.vela-bb-range {
+.tt-bb-range {
     all: unset;
     height: 24px;
     display: inline-flex;
@@ -66,11 +66,11 @@ const CSS = `
     font-weight: 600;
     cursor: pointer;
 }
-.vela-bb-range:hover { background: var(--vela-hover); color: var(--vela-fg-bright); }
-.vela-bb-range[data-active='1'] { color: var(--vela-fg-bright); background: var(--vela-hover); }
-.vela-bb-spacer { flex: 1 1 auto; }
-.vela-bb-clock { font-variant-numeric: tabular-nums; color: var(--vela-fg-bright); font-weight: 600; }
-.vela-bb-tz {
+.tt-bb-range:hover { background: var(--tt-hover); color: var(--tt-fg-bright); }
+.tt-bb-range[data-active='1'] { color: var(--tt-fg-bright); background: var(--tt-hover); }
+.tt-bb-spacer { flex: 1 1 auto; }
+.tt-bb-clock { font-variant-numeric: tabular-nums; color: var(--tt-fg-bright); font-weight: 600; }
+.tt-bb-tz {
     all: unset;
     height: 26px;
     display: inline-flex;
@@ -79,27 +79,27 @@ const CSS = `
     padding: 0 8px;
     border-radius: 4px;
     font-weight: 600;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
     cursor: pointer;
 }
-.vela-bb-tz:hover { background: var(--vela-hover); }
-.vela-bb-session { display: inline-flex; border: 1px solid var(--vela-border-strong); border-radius: 4px; overflow: hidden; margin-left: 6px; }
-.vela-bb-session-btn {
+.tt-bb-tz:hover { background: var(--tt-hover); }
+.tt-bb-session { display: inline-flex; border: 1px solid var(--tt-border-strong); border-radius: 4px; overflow: hidden; margin-left: 6px; }
+.tt-bb-session-btn {
     all: unset;
     height: 24px;
     display: inline-flex;
     align-items: center;
     padding: 0 8px;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
 }
-.vela-bb-session-btn:disabled { cursor: not-allowed; opacity: 0.55; }
-.vela-bb-session-btn:not(:disabled):hover { background: var(--vela-hover); color: var(--vela-fg-bright); }
-.vela-bb-session-btn.is-active { color: var(--vela-fg); background: var(--vela-surface-elev); }
-.vela-bb-session-btn.is-active:disabled { opacity: 0.8; }
-.vela-bb-settings {
+.tt-bb-session-btn:disabled { cursor: not-allowed; opacity: 0.55; }
+.tt-bb-session-btn:not(:disabled):hover { background: var(--tt-hover); color: var(--tt-fg-bright); }
+.tt-bb-session-btn.is-active { color: var(--tt-fg); background: var(--tt-surface-elev); }
+.tt-bb-session-btn.is-active:disabled { opacity: 0.8; }
+.tt-bb-settings {
     all: unset;
     display: inline-flex;
     align-items: center;
@@ -109,10 +109,10 @@ const CSS = `
     margin-left: 6px;
     border-radius: 4px;
     cursor: pointer;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     font-size: 14px;
 }
-.vela-bb-settings:hover { background: var(--vela-hover); color: var(--vela-fg-bright); }
+.tt-bb-settings:hover { background: var(--tt-hover); color: var(--tt-fg-bright); }
 `;
 
 export interface BottombarOptions {
@@ -152,10 +152,10 @@ export class Bottombar {
         injectStyles(STYLE_ID, CSS, doc);
 
         this.el = doc.createElement('div');
-        this.el.className = 'vela-widget-bottombar';
+        this.el.className = 'tt-widget-bottombar';
         for (const preset of RANGE_PRESETS) {
             const b = doc.createElement('button');
-            b.className = 'vela-bb-range';
+            b.className = 'tt-bb-range';
             b.textContent = preset.id;
             b.addEventListener('click', () => {
                 this.setActiveRange(preset.id);
@@ -165,19 +165,19 @@ export class Bottombar {
             this.el.appendChild(b);
         }
         const spacer = doc.createElement('span');
-        spacer.className = 'vela-bb-spacer';
+        spacer.className = 'tt-bb-spacer';
         // The clock lives INSIDE the timezone trigger: clicking the time opens the same
         // zone dropdown as clicking the zone label (one affordance, reference behavior).
         this.tzButton = doc.createElement('button');
-        this.tzButton.className = 'vela-bb-tz';
+        this.tzButton.className = 'tt-bb-tz';
         this.tzButton.setAttribute('aria-label', 'Time zone');
         this.clockEl = doc.createElement('span');
-        this.clockEl.className = 'vela-bb-clock';
+        this.clockEl.className = 'tt-bb-clock';
         this.tzLabelEl = doc.createElement('span');
         this.tzLabelEl.textContent = tzButtonLabel(this.displayZone);
         this.tzButton.append(this.clockEl, this.tzLabelEl);
         const session = doc.createElement('span');
-        session.className = 'vela-bb-session';
+        session.className = 'tt-bb-session';
         this.sessionEl = session;
         // Boots HIDDEN (sessions only apply to markets that have them); the host reveals
         // it per active chart via `setSession` once symbol metadata declares sessions.
@@ -185,7 +185,7 @@ export class Bottombar {
         session.title = 'Session — regular (RTH) vs extended (ETH) hours';
         for (const [key, label] of [['regular', 'RTH'], ['extended', 'ETH']] as const) {
             const b = doc.createElement('button');
-            b.className = 'vela-bb-session-btn' + (key === 'regular' ? ' is-active' : '');
+            b.className = 'tt-bb-session-btn' + (key === 'regular' ? ' is-active' : '');
             b.textContent = label;
             b.disabled = true;
             b.addEventListener('click', () => {
@@ -197,17 +197,17 @@ export class Bottombar {
             session.appendChild(b);
         }
         const settingsBtn = doc.createElement('button');
-        settingsBtn.className = 'vela-bb-settings';
+        settingsBtn.className = 'tt-bb-settings';
         settingsBtn.appendChild(iconEl('gear', doc));
         settingsBtn.setAttribute('aria-label', 'Chart settings');
         if (opts.onSettingsClick) settingsBtn.addEventListener('click', opts.onSettingsClick);
-        this.settingsTip = new Tooltip(settingsBtn, { content: 'Chart settings', triggerId: 'vela-bb-settings', host });
+        this.settingsTip = new Tooltip(settingsBtn, { content: 'Chart settings', triggerId: 'tt-bb-settings', host });
         this.el.append(spacer, this.tzButton, session, settingsBtn);
         host.appendChild(this.el);
 
         this.tzMenu = new Menu({
             trigger: this.tzButton,
-            triggerId: 'vela-bb-tz',
+            triggerId: 'tt-bb-tz',
             host,
             placement: 'top-end',
             items: this.tzItems(),

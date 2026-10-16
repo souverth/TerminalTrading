@@ -13,7 +13,7 @@ export interface SymbolInfo {
 }
 
 /**
- * The market-data abstraction. Vela OWNS the candles: it loads history and
+ * The market-data abstraction. Terminal Trading OWNS the candles: it loads history and
  * streams live ticks through this port, holds the one canonical bar array, and
  * hands it to whichever engine executes. Decoupled from scripting so every
  * registered engine shares the same dataset (no per-engine re-fetch).

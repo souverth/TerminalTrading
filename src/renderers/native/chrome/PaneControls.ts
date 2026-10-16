@@ -1,5 +1,5 @@
 import { icon } from '../../../core/icons';
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 
 /** A pane as seen by the hover controls (a thin projection of the renderer's PaneNode). */
 export interface PaneControlView {
@@ -32,7 +32,7 @@ const ICONS = {
     restore: icon('restore'),
 };
 
-const STYLE_ID = 'vela-pane-controls';
+const STYLE_ID = 'tt-pane-controls';
 
 /** The cluster's glyph size. Icons inherit it from the slot, so it is set once in CSS. */
 const ICON_PX = 12;
@@ -48,10 +48,10 @@ function ensureStyles(): void {
     const st = document.createElement('style');
     st.id = STYLE_ID;
     st.textContent = `
-.vela-pc-btn{display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:var(--vela-radius-sm);background:transparent;line-height:0;font-size:${ICON_PX}px;color:var(--vela-fg-muted);}
-.vela-pc-btn svg{display:block;}
-.vela-pc-btn:not(:disabled):hover{opacity:1 !important;background:var(--vela-active);color:var(--vela-fg-bright);}
-.vela-pc-on,.vela-pc-on:not(:disabled):hover{background:var(--vela-selected-bg);color:var(--vela-selected-fg);}
+.tt-pc-btn{display:inline-flex;align-items:center;justify-content:center;padding:0;border:none;border-radius:var(--tt-radius-sm);background:transparent;line-height:0;font-size:${ICON_PX}px;color:var(--tt-fg-muted);}
+.tt-pc-btn svg{display:block;}
+.tt-pc-btn:not(:disabled):hover{opacity:1 !important;background:var(--tt-active);color:var(--tt-fg-bright);}
+.tt-pc-on,.tt-pc-on:not(:disabled):hover{background:var(--tt-selected-bg);color:var(--tt-selected-fg);}
 `;
     document.head.appendChild(st);
 }
@@ -71,7 +71,7 @@ export class PaneControls {
      *  collapsed pane's standalone expand chip stays (the only way back up). */
     private suspended = false;
 
-    constructor(private readonly plot: HTMLElement, private theme: VelaTheme, private readonly deps: PaneControlsDeps) {
+    constructor(private readonly plot: HTMLElement, private theme: TerminalTradingTheme, private readonly deps: PaneControlsDeps) {
         ensureStyles();
         this.root = document.createElement('div');
         Object.assign(this.root.style, { position: 'absolute', inset: '0', pointerEvents: 'none', zIndex: '6' });
@@ -98,7 +98,7 @@ export class PaneControls {
 
     private readonly onPlotLeave = (): void => this.setHoverPane(null);
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         this.refresh();
     }
@@ -117,7 +117,7 @@ export class PaneControls {
                     display: 'flex',
                     gap: '2px',
                     padding: '2px',
-                    borderRadius: 'var(--vela-radius-md)',
+                    borderRadius: 'var(--tt-radius-md)',
                     background: CLUSTER_PILL,
                     pointerEvents: 'auto',
                 });
@@ -178,7 +178,7 @@ export class PaneControls {
         // opaque — it must read on its own, without the cluster's dark pill behind it.
         // Ink lives in the stylesheet (muted at rest, bright on hover, inverse when selected);
         // only the disabled fade stays inline.
-        b.className = selected ? 'vela-pc-btn vela-pc-on' : 'vela-pc-btn';
+        b.className = selected ? 'tt-pc-btn tt-pc-on' : 'tt-pc-btn';
         Object.assign(b.style, {
             cursor: disabled ? 'default' : 'pointer',
             width: '20px',

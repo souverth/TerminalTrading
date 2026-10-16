@@ -1,4 +1,4 @@
-// Vela data provider backed by the local TradingView API server (~/code/trading):
+// Terminal Trading data provider backed by the local TradingView API server (~/code/trading):
 // REST `/api/candles` for history and WebSocket `/ws/candles` for the live bar.
 // Serves anything TradingView does — forex, metals, indices, stocks — as `EXCHANGE:SYMBOL`.
 import type { OHLCV } from "../src/core/model/ohlcv";
@@ -86,7 +86,7 @@ export class TradingViewServerProvider implements DataProvider {
         // Timeframe TradingView doesn't serve (e.g. 10m): fetch a divisor and aggregate.
         const sub = NATIVE_MINUTES.filter((m) => m < minutes && minutes % m === 0).pop();
         if (!sub) {
-          console.warn(`[vela] TradingView: timeframe "${timeframe}" is not supported.`);
+          console.warn(`[terminal-trading] TradingView: timeframe "${timeframe}" is not supported.`);
           return [];
         }
         const ratio = minutes / sub;
@@ -96,7 +96,7 @@ export class TradingViewServerProvider implements DataProvider {
       }
       return await this.fetchBars(ticker, timeframe, range);
     } catch (e) {
-      console.warn(`[vela] TradingView: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
+      console.warn(`[terminal-trading] TradingView: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
       return [];
     }
   }

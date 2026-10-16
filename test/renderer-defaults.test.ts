@@ -5,7 +5,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { registerRendererDefaults, unregisterRendererDefaults, rendererDefaults } from '../src/core/renderer-defaults';
 import { NativeRenderer } from '../src/renderers/native/NativeRenderer';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import type { IChartRenderer } from '../src/core/ports/IChartRenderer';
 
 afterEach(() => unregisterRendererDefaults());
@@ -38,13 +38,13 @@ describe('defaults reach the charts built afterwards', () => {
     it('a chart applies every registered default at construction', () => {
         registerRendererDefaults({ attribution: false, gridlines: false });
         const { renderer, applied } = recordingRenderer();
-        new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [] });
+        new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [] });
         expect(applied).toEqual(expect.arrayContaining([['attribution', false], ['gridlines', false]]));
     });
 
     it('a chart built BEFORE the registration is untouched, and an empty registry pushes nothing', () => {
         const before = recordingRenderer();
-        new Vela({} as unknown as HTMLElement, { live: false }, { renderer: before.renderer, engines: [] });
+        new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer: before.renderer, engines: [] });
         expect(before.applied).toEqual([]); // nothing registered yet
 
         registerRendererDefaults({ attribution: false });
@@ -54,7 +54,7 @@ describe('defaults reach the charts built afterwards', () => {
     it('they are defaults, not locks: an explicit set afterwards wins', () => {
         registerRendererDefaults({ attribution: false });
         const { renderer, applied } = recordingRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [] });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [] });
         chart.renderer.set('attribution', '<b>ACME</b>');
         expect(applied).toEqual([['attribution', false], ['attribution', '<b>ACME</b>']]);
     });
@@ -108,7 +108,7 @@ describe('the attribution feature takes host content', () => {
         r.applyFeature('attribution', '<img src="/acme.svg">');
         expect(r.readFeature('attribution')).toBe('<img src="/acme.svg">');
 
-        r.applyFeature('attribution', true); // back to Vela's own mark
+        r.applyFeature('attribution', true); // back to TerminalTrading's own mark
         expect(r.readFeature('attribution')).toBe(true);
     });
 

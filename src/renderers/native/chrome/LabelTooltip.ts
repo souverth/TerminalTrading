@@ -3,12 +3,12 @@
 // pointer on the plot, hit-tests the label rects the chrome layer collected while
 // painting, and shows a themed tip near the cursor after a short hover. The tip carries
 // its own tokens (like the rest of the in-chart chrome) so it works on a bare chart.
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { applyChromeTokens } from '../../shared/theme-tokens';
 
 export interface LabelTooltipDeps {
     /** Live theme — read at open time, so a theme switch never shows a stale tip. */
-    theme: () => VelaTheme;
+    theme: () => TerminalTradingTheme;
     /** Tooltip text under a plot-space point (the chrome layer's label hit-rects). */
     lookup: (x: number, y: number) => string | null;
 }
@@ -62,10 +62,10 @@ export class LabelTooltip {
         const tip = doc.createElement('div');
         tip.textContent = text;
         tip.style.cssText =
-            'position:absolute;z-index:var(--vela-z-tooltip);pointer-events:none;' +
-            'background:var(--vela-bg);border:1px solid var(--vela-border);color:var(--vela-fg);' +
-            'border-radius:var(--vela-radius-md);padding:4px 9px;box-shadow:var(--vela-shadow);' +
-            'font:var(--vela-font-size-md) var(--vela-font);max-width:260px;';
+            'position:absolute;z-index:var(--tt-z-tooltip);pointer-events:none;' +
+            'background:var(--tt-bg);border:1px solid var(--tt-border);color:var(--tt-fg);' +
+            'border-radius:var(--tt-radius-md);padding:4px 9px;box-shadow:var(--tt-shadow);' +
+            'font:var(--tt-font-size-md) var(--tt-font);max-width:260px;';
         applyChromeTokens(tip, this.deps.theme());
         this.plot.appendChild(tip);
         // Below-right of the cursor, clamped so the tip never spills out of the plot.

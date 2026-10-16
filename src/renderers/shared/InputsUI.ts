@@ -1,6 +1,6 @@
 import type { InputSchema, InputValue, SymbolPickerFn } from '../../core/model/inputs';
 import type { LegendActionView, LegendCalloutView } from '../../core/ports/IChartRenderer';
-import type { VelaTheme, MoveTarget } from '../../core/options';
+import type { TerminalTradingTheme, MoveTarget } from '../../core/options';
 import { withAlpha } from '../../core/color';
 import { iconAt } from '../../core/icons';
 import { applyChromeTokens } from './theme-tokens';
@@ -28,7 +28,7 @@ export {
  *  edge — the price pane normally, or a maximized study pane filling the plot. Host
  *  overlays anchored to the plot's top-left (the widget status line) key on it to shift
  *  the colliding legend below themselves, whichever pane owns the top. */
-export const LEGEND_AT_TOP_ATTR = 'data-vela-pane-at-top';
+export const LEGEND_AT_TOP_ATTR = 'data-tt-pane-at-top';
 
 /** A pane as the legend move UI sees it (id + label + vertical bounds, top-to-bottom order). */
 export interface LegendPaneView {
@@ -92,7 +92,7 @@ interface LegendRow {
 /** Keyframes for the legend-row live pulse, injected once into the document (the load
  *  dots animate through the Web Animations API and need no stylesheet). */
 const STATUS_KEYFRAMES =
-    '@keyframes vela-ind-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}';
+    '@keyframes tt-ind-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}';
 
 /** Legend glyph size — the row's own font belongs to the indicator title beside them. */
 const LEGEND_ICON_PX = 16;
@@ -219,7 +219,7 @@ export class InputsUI {
 
     constructor(
         private readonly container: HTMLElement,
-        private theme: VelaTheme,
+        private theme: TerminalTradingTheme,
         /** `rightAxis` is the full price-scale width (merged scale columns included) — the legend never extends under it. */
         private readonly paneBoundsOf?: (paneId: string) => { top: number; height: number; rightAxis?: number },
     ) {
@@ -302,7 +302,7 @@ export class InputsUI {
         this.onToggleVisible = cb;
     }
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         // Legend containers carry the CHART theme tokens (not the wrapper's stable chrome
         // surface): row fills and action-button hovers sit on the plot background, which can
@@ -348,7 +348,7 @@ export class InputsUI {
             btn.setAttribute('aria-label', action.tooltip);
             this.tip(this.extrasTips, id, btn, action.tooltip);
             btn.innerHTML = iconAt(action.icon, LEGEND_ICON_PX);
-            btn.className = 'vela-ind-ctl';
+            btn.className = 'tt-ind-ctl';
             btn.dataset.legendAction = action.id;
             btn.style.cssText = LEGEND_CTL_CSS;
             btn.addEventListener('click', (e) => {
@@ -386,7 +386,7 @@ export class InputsUI {
                 label: view.tooltip,
                 ...(view.content !== undefined ? { panel: view.content } : {}),
                 // The panel portals into the plot host and self-tokens: it must work on
-                // a bare chart, where no `.vela-ui` token ancestor exists.
+                // a bare chart, where no `.tt-ui` token ancestor exists.
                 host: this.container,
                 theme: () => this.theme,
             });
@@ -573,7 +573,7 @@ export class InputsUI {
             lg = document.createElement('div');
             // Tag with the pane id so a host app can locate each pane's legend (and thus
             // its on-screen bounds) — e.g. to re-anchor its own per-pane overlays.
-            lg.dataset.velaPane = paneId;
+            lg.dataset.ttPane = paneId;
             lg.style.cssText =
                 `position:absolute;left:${LEGEND_LEFT_PX}px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:0;pointer-events:none;font:12px -apple-system,Segoe UI,sans-serif;`;
             // Chart-theme tokens so action-button hovers wash against the plot surface the
@@ -658,7 +658,7 @@ export class InputsUI {
         if (!btn) {
             btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'vela-ind-fold';
+            btn.className = 'tt-ind-fold';
             this.tip(this.rowTips, 'fold', btn, () => (this.overviewAction !== null ? 'Indicators' : this.legendFolded ? 'Show indicator legend' : 'Hide indicator legend'));
             btn.addEventListener('click', () => {
                 if (this.overviewAction !== null) {
@@ -821,7 +821,7 @@ export class InputsUI {
             eye.setAttribute('aria-label', 'Hide');
             this.tip(this.rowTips, id, eye, () => (this.rows.get(id)?.hidden ? 'Show' : 'Hide'));
             eye.innerHTML = EYE_SVG;
-            eye.className = 'vela-ind-ctl';
+            eye.className = 'tt-ind-ctl';
             eye.style.cssText = LEGEND_CTL_CSS;
             eye.addEventListener('click', () => {
                 const row = this.rows.get(id);
@@ -836,7 +836,7 @@ export class InputsUI {
             gear.setAttribute('aria-label', 'Settings');
             this.tip(this.rowTips, id, gear, 'Settings');
             gear.innerHTML = GEAR_SVG;
-            gear.className = 'vela-ind-ctl';
+            gear.className = 'tt-ind-ctl';
             gear.style.cssText = LEGEND_CTL_CSS;
             gear.addEventListener('click', () => this.openDialog(id));
             controlsEl.appendChild(gear);
@@ -849,7 +849,7 @@ export class InputsUI {
             mv.setAttribute('aria-label', 'Move to pane');
             this.tip(this.rowTips, id, mv, 'Move to pane');
             mv.innerHTML = iconAt('move', LEGEND_ICON_PX);
-            mv.className = 'vela-ind-ctl';
+            mv.className = 'tt-ind-ctl';
             mv.style.cssText = LEGEND_CTL_CSS;
             mv.addEventListener('click', (e) => { e.stopPropagation(); this.openMoveMenu(id, mv); });
             controlsEl.appendChild(mv);
@@ -865,7 +865,7 @@ export class InputsUI {
         close.setAttribute('aria-label', 'Remove indicator');
         this.tip(this.rowTips, id, close, 'Remove indicator');
         close.innerHTML = CLOSE_SVG;
-        close.className = 'vela-ind-close';
+        close.className = 'tt-ind-close';
         close.style.cssText = LEGEND_CTL_CSS;
         close.addEventListener('click', () => this.onRemove?.(id));
         controlsEl.appendChild(close);
@@ -927,14 +927,14 @@ export class InputsUI {
         el.style.cssText =
             `display:inline-block;box-sizing:border-box;flex:none;width:8px;height:8px;border-radius:50%;` +
             `margin-left:${LEGEND_TITLE_STATUS_GAP_PX}px;transform:translateY(1px);` +
-            `background:${this.theme.upColor};animation:vela-ind-pulse 1.2s ease-in-out infinite;`;
+            `background:${this.theme.upColor};animation:tt-ind-pulse 1.2s ease-in-out infinite;`;
     }
 
     /** Inject the status keyframes once (idempotent). */
     private ensureStatusKeyframes(): void {
-        if (typeof document === 'undefined' || document.getElementById('vela-ind-status-kf')) return;
+        if (typeof document === 'undefined' || document.getElementById('tt-ind-status-kf')) return;
         const style = document.createElement('style');
-        style.id = 'vela-ind-status-kf';
+        style.id = 'tt-ind-status-kf';
         style.textContent = STATUS_KEYFRAMES;
         document.head.appendChild(style);
     }
@@ -1081,6 +1081,6 @@ export class InputsUI {
 
     /** Neutral field/separator border — the shared chrome border token. */
     private neutralBorder(): string {
-        return 'var(--vela-border)';
+        return 'var(--tt-border)';
     }
 }

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 const SANCTIONED = [
     'src/core/palette.ts', // the semantic palette
     'src/core/theme.ts', // the swappable chart themes
-    'src/core/tokens.ts', // the --vela-* token derivation
+    'src/core/tokens.ts', // the --tt-* token derivation
     'src/core/drawings/levelPalette.ts', // the fib/gann level convention
 ];
 

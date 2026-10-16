@@ -1,10 +1,10 @@
-export const GLYPH_SELECT_STYLE_ID = 'vela-ui-glyph-select';
+export const GLYPH_SELECT_STYLE_ID = 'tt-ui-glyph-select';
 
 export const GLYPH_SELECT_CSS = `
-.vela-glyph-select {
+.tt-glyph-select {
     height: 34px;
     padding: 0 26px 0 8px;
-    border: 1px solid var(--vela-border-strong);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 6px;
     background: transparent;
     cursor: pointer;
@@ -13,16 +13,16 @@ export const GLYPH_SELECT_CSS = `
     gap: 8px;
     flex: none;
     justify-self: start;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
     font-size: 14px;
     font-family: inherit;
     outline: none;
     position: relative;
     transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
-.vela-glyph-select:hover { border-color: var(--vela-fg-muted); }
-.vela-glyph-select:focus { border-color: var(--vela-focus); box-shadow: 0 0 0 3px var(--vela-focus-soft); }
-.vela-glyph-select-caret {
+.tt-glyph-select:hover { border-color: var(--tt-fg-muted); }
+.tt-glyph-select:focus { border-color: var(--tt-focus); box-shadow: 0 0 0 3px var(--tt-focus-soft); }
+.tt-glyph-select-caret {
     position: absolute;
     right: 8px;
     top: 50%;
@@ -33,19 +33,19 @@ export const GLYPH_SELECT_CSS = `
     line-height: 0;
     pointer-events: none;
 }
-.vela-glyph-select-pop {
-    background: var(--vela-bg);
+.tt-glyph-select-pop {
+    background: var(--tt-bg);
     border: none;
     border-radius: 6px;
-    box-shadow: var(--vela-shadow);
+    box-shadow: var(--tt-shadow);
     padding: 4px;
     display: flex;
     flex-direction: column;
     gap: 1px;
-    color: var(--vela-fg);
-    font: 14px var(--vela-font);
+    color: var(--tt-fg);
+    font: 14px var(--tt-font);
 }
-.vela-glyph-select-item {
+.tt-glyph-select-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -59,6 +59,6 @@ export const GLYPH_SELECT_CSS = `
     text-align: left;
     font: inherit;
 }
-.vela-glyph-select-item:hover { background: var(--vela-hover); }
-.vela-glyph-select-item[data-active='1'] { background: var(--vela-hover-strong); color: var(--vela-fg-bright); }
+.tt-glyph-select-item:hover { background: var(--tt-hover); }
+.tt-glyph-select-item[data-active='1'] { background: var(--tt-hover-strong); color: var(--tt-fg-bright); }
 `;

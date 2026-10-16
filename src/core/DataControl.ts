@@ -30,7 +30,7 @@ export class DataControl {
     registerProvider(name: string, provider: DataProvider): this {
         if (!this.registry) {
             console.warn(
-                `[vela] chart.data.registerProvider("${name}") ignored — the active data feed ` +
+                `[terminal-trading] chart.data.registerProvider("${name}") ignored — the active data feed ` +
                     `is a custom feed (deps.dataFeed), not the default provider registry.`,
             );
             return this;

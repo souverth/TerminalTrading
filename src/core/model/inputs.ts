@@ -1,5 +1,5 @@
 /**
- * Renderer-neutral indicator input schema — Vela's own shape, owned here so no
+ * Renderer-neutral indicator input schema — Terminal Trading's own shape, owned here so no
  * scripting language's own input model leaks into core (each engine maps its
  * declarations onto this at its boundary). Drives the renderer's settings dialog
  * (the gear settings UI).

@@ -86,20 +86,20 @@ function setup(drawing: Drawing, opts: { barMs?: number } = {}) {
     popup.open([drawing], null, c.actions);
     const $ = <T extends Element = HTMLElement>(sel: string): T | null => host.querySelector<T>(sel);
     const $$ = <T extends Element = HTMLElement>(sel: string): T[] => [...host.querySelectorAll<T>(sel)];
-    const panel = (): HTMLElement | null => $('.vela-dsp');
+    const panel = (): HTMLElement | null => $('.tt-dsp');
     const openPanel = async (): Promise<void> => {
-        $<HTMLButtonElement>('.vela-dpop [data-tip="Settings"]')!.click();
+        $<HTMLButtonElement>('.tt-dpop [data-tip="Settings"]')!.click();
         await settled();
     };
-    const fold = (title: string): HTMLElement => $$('.vela-dsp-fold').find((f) => f.querySelector('.vela-dsp-fold-t')?.textContent === title)!;
+    const fold = (title: string): HTMLElement => $$('.tt-dsp-fold').find((f) => f.querySelector('.tt-dsp-fold-t')?.textContent === title)!;
     const openFold = (title: string): HTMLElement => {
         const f = fold(title);
-        if (!f.hasAttribute('data-open')) f.querySelector<HTMLButtonElement>('.vela-dsp-fold-h')!.click();
+        if (!f.hasAttribute('data-open')) f.querySelector<HTMLButtonElement>('.tt-dsp-fold-h')!.click();
         return f;
     };
     const segButton = (group: string, label: string): HTMLButtonElement =>
-        $$<HTMLButtonElement>(`.vela-dsp-seg[aria-label="${group}"] button`).find((b) => b.textContent === label || b.getAttribute('aria-label') === label)!;
-    const footer = (label: string): HTMLButtonElement => $$<HTMLButtonElement>('.vela-dsp .vela-dialog-footer button').find((b) => b.textContent === label)!;
+        $$<HTMLButtonElement>(`.tt-dsp-seg[aria-label="${group}"] button`).find((b) => b.textContent === label || b.getAttribute('aria-label') === label)!;
+    const footer = (label: string): HTMLButtonElement => $$<HTMLButtonElement>('.tt-dsp .tt-dialog-footer button').find((b) => b.textContent === label)!;
     return { host, popup, ...c, $, $$, panel, openPanel, fold, openFold, segButton, footer };
 }
 
@@ -118,9 +118,9 @@ describe('the drawing settings panel', () => {
     it("every tool's toolbar has a settings button that opens the tool's full settings", () => {
         for (const meta of drawingTypes()) {
             const s = setup(createDrawing(meta.type, { id: meta.type, paneId: 'price', anchors: ANCHORS })!);
-            s.$<HTMLButtonElement>('.vela-dpop [data-tip="Settings"]')!.click();
+            s.$<HTMLButtonElement>('.tt-dpop [data-tip="Settings"]')!.click();
             expect(s.panel(), meta.type).not.toBeNull();
-            expect(s.$('.vela-dsp .vela-dialog-title')?.textContent).toBe(meta.label);
+            expect(s.$('.tt-dsp .tt-dialog-title')?.textContent).toBe(meta.label);
             expect(s.fold('Show on'), meta.type).toBeDefined();
             s.popup.destroy();
             document.body.replaceChildren();
@@ -131,11 +131,11 @@ describe('the drawing settings panel', () => {
         const s = setup(make('trendline'));
         await s.openPanel();
         s.openFold('Label');
-        const place = (): HTMLElement => s.segButton('Position along the line', 'End').closest('.vela-dsp-row')!;
+        const place = (): HTMLElement => s.segButton('Position along the line', 'End').closest('.tt-dsp-row')!;
         expect(place().hidden).toBe(true);
 
         const edits = s.edits.length;
-        type(s.$<HTMLTextAreaElement>('.vela-dsp textarea')!, 'Weekly support');
+        type(s.$<HTMLTextAreaElement>('.tt-dsp textarea')!, 'Weekly support');
         expect(s.live().text?.value).toBe('Weekly support');
         expect(s.edits.length - edits).toBe(1); // one undo step for the label, not one per key
         expect(place().hidden).toBe(false);
@@ -150,15 +150,15 @@ describe('the drawing settings panel', () => {
         const s = setup(make('hline', { anchors: ANCHORS.slice(0, 1) }));
         await s.openPanel();
         const show = s.openFold('Show on');
-        const grid = (): HTMLElement => show.querySelector('.vela-dsp-tf')!;
+        const grid = (): HTMLElement => show.querySelector('.tt-dsp-tf')!;
         expect(grid().hidden).toBe(true);
-        expect(show.querySelector('.vela-dsp-fold-s')?.textContent).toBe('All timeframes');
+        expect(show.querySelector('.tt-dsp-fold-s')?.textContent).toBe('All timeframes');
 
         s.segButton('Show on', '1H and up').click();
         expect(s.live().showOn).toEqual(['60', '240', 'D', 'W', 'M']);
         expect(grid().hidden).toBe(true);
         // The chart is on 5 minutes: the drawing is now hidden here, and the panel says so.
-        expect(show.querySelector<HTMLElement>('.vela-dsp-note')!.hidden).toBe(false);
+        expect(show.querySelector<HTMLElement>('.tt-dsp-note')!.hidden).toBe(false);
 
         s.segButton('Show on', 'Custom').click();
         expect(grid().hidden).toBe(false);
@@ -183,12 +183,12 @@ describe('the drawing settings panel', () => {
         s.actions.patch({ showOn: undefined });
         s.popup.syncPanel();
         expect(s.segButton('Show on', 'All').getAttribute('aria-pressed')).toBe('true');
-        expect(show.querySelector('.vela-dsp-fold-s')?.textContent).toBe('All timeframes');
+        expect(show.querySelector('.tt-dsp-fold-s')?.textContent).toBe('All timeframes');
 
         s.actions.patch({ showOn: ['D', 'W'] });
         s.popup.syncPanel();
         expect(s.segButton('Show on', 'Custom').getAttribute('aria-pressed')).toBe('true');
-        expect(show.querySelector('.vela-dsp-fold-s')?.textContent).toBe('D, W');
+        expect(show.querySelector('.tt-dsp-fold-s')?.textContent).toBe('D, W');
         s.popup.destroy();
     });
 
@@ -196,12 +196,12 @@ describe('the drawing settings panel', () => {
         const s = setup(make('trendline'));
         await s.openPanel();
         const points = s.openFold('Points');
-        expect(points.querySelector('.vela-dsp-pt-t')?.textContent).toBe("Mon 5 Jan '26 10:00");
+        expect(points.querySelector('.tt-dsp-pt-t')?.textContent).toBe("Mon 5 Jan '26 10:00");
         const price = points.querySelector<HTMLInputElement>('input')!;
         price.value = '101.5';
         price.dispatchEvent(new Event('blur'));
         expect(s.live().anchors[0]!.price).toBe(101.5);
-        expect(points.querySelector('.vela-dsp-fold-s')?.textContent).toBe('101.5 → 120');
+        expect(points.querySelector('.tt-dsp-fold-s')?.textContent).toBe('101.5 → 120');
         s.popup.destroy();
     });
 
@@ -241,8 +241,8 @@ describe('the drawing settings panel', () => {
     it('hovering a style previews it without an edit, and clicking it applies it', async () => {
         const s = setup(make('trendline'));
         await s.openPanel();
-        s.$<HTMLButtonElement>('.vela-dsp-style')!.click();
-        const item = (name: string): HTMLElement => s.$$('.vela-dsp-mi').find((m) => m.textContent?.includes(name))!;
+        s.$<HTMLButtonElement>('.tt-dsp-style')!.click();
+        const item = (name: string): HTMLElement => s.$$('.tt-dsp-mi').find((m) => m.textContent?.includes(name))!;
         const edits = s.edits.length;
         item('Resistance').dispatchEvent(new Event('pointerenter'));
         expect(s.previews[s.previews.length - 1]?.style?.lineWidth).toBe(2);
@@ -252,48 +252,48 @@ describe('the drawing settings panel', () => {
 
         item('Resistance').click();
         expect(s.applied).toHaveLength(1);
-        expect(s.$('.vela-dsp-style')?.textContent).toContain('Resistance');
+        expect(s.$('.tt-dsp-style')?.textContent).toContain('Resistance');
         s.popup.destroy();
     });
 
     it('the current look saved as a style is offered in the style menu', async () => {
         const s = setup(make('trendline', { style: { lineColor: '#ff8800', lineWidth: 2, lineStyle: 'solid' } }));
         await s.openPanel();
-        s.$<HTMLButtonElement>('.vela-dsp-style')!.click();
-        s.$$<HTMLButtonElement>('.vela-dsp-mi').find((m) => m.textContent === 'Save as style…')!.click();
-        const name = s.$<HTMLInputElement>('.vela-dsp-mname input')!;
+        s.$<HTMLButtonElement>('.tt-dsp-style')!.click();
+        s.$$<HTMLButtonElement>('.tt-dsp-mi').find((m) => m.textContent === 'Save as style…')!.click();
+        const name = s.$<HTMLInputElement>('.tt-dsp-mname input')!;
         name.value = 'Weekly';
         name.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-        const names = s.$$('.vela-dsp-mi .vela-dsp-mi-t').map((n) => n.textContent);
+        const names = s.$$('.tt-dsp-mi .tt-dsp-mi-t').map((n) => n.textContent);
         expect(names).toContain('Weekly');
-        expect(s.$('.vela-dsp-style')?.textContent).toContain('Weekly');
+        expect(s.$('.tt-dsp-style')?.textContent).toContain('Weekly');
         s.popup.destroy();
     });
 
     it("a fib's settings list every level in two columns, the ones that are off included", async () => {
         const s = setup(make('fibretracement'));
         await s.openPanel();
-        const cells = s.$$('.vela-dsp-lv-c');
+        const cells = s.$$('.tt-dsp-lv-c');
         expect(cells.length).toBe((s.live() as FibRetracement).levels.length);
         expect(cells.filter((c) => !c.hasAttribute('data-off')).length).toBe(7);
-        expect(getComputedStyle(s.$('.vela-dsp-lv')!).gridTemplateColumns).toContain('repeat(2');
+        expect(getComputedStyle(s.$('.tt-dsp-lv')!).gridTemplateColumns).toContain('repeat(2');
         s.popup.destroy();
     });
 
     it('choosing OTE swaps which levels are on, and editing a level clears the choice', async () => {
         const s = setup(make('fibretracement'));
         await s.openPanel();
-        const pressed = (): string[] => s.$$('.vela-dsp-seg[aria-label="Level set"] button[aria-pressed="true"]').map((b) => b.textContent ?? '');
+        const pressed = (): string[] => s.$$('.tt-dsp-seg[aria-label="Level set"] button[aria-pressed="true"]').map((b) => b.textContent ?? '');
         expect(pressed()).toEqual(['Classic']);
 
         s.segButton('Level set', 'OTE').click();
         expect(pressed()).toEqual(['OTE']);
         const on = (): number[] => (s.live() as FibRetracement).levels.filter((l) => l.enabled).map((l) => l.ratio);
         expect(on()).toContain(0.705);
-        expect(s.$$('.vela-dsp-lv-c').filter((c) => !c.hasAttribute('data-off')).length).toBe(on().length);
+        expect(s.$$('.tt-dsp-lv-c').filter((c) => !c.hasAttribute('data-off')).length).toBe(on().length);
 
         // Switch a level off from the grid: the set is no longer the ready-made one.
-        s.$<HTMLButtonElement>('.vela-dsp-lv-c:not([data-off]) .vela-switch')!.click();
+        s.$<HTMLButtonElement>('.tt-dsp-lv-c:not([data-off]) .tt-switch')!.click();
         expect(pressed()).toEqual([]);
         s.popup.destroy();
     });
@@ -301,24 +301,24 @@ describe('the drawing settings panel', () => {
     it('a level edited in the grid keeps its controls, so a color picker open on one stays put', async () => {
         const s = setup(make('fibretracement'));
         await s.openPanel();
-        const first = s.$('.vela-dsp-lv-c')!;
-        first.querySelector<HTMLButtonElement>('.vela-color-field')!.click();
-        const pick = document.querySelector<HTMLButtonElement>('.vela-color-field-pop button[data-c]')!;
+        const first = s.$('.tt-dsp-lv-c')!;
+        first.querySelector<HTMLButtonElement>('.tt-color-field')!.click();
+        const pick = document.querySelector<HTMLButtonElement>('.tt-color-field-pop button[data-c]')!;
         pick.focus(); // the picker portals outside the grid
         pick.click();
         expect((s.live() as FibRetracement).levels[0]!.color.toLowerCase()).toBe(pick.dataset.c!.toLowerCase());
-        expect(s.$('.vela-dsp-lv-c')).toBe(first);
+        expect(s.$('.tt-dsp-lv-c')).toBe(first);
         expect(first.isConnected).toBe(true);
 
         s.segButton('Level set', 'OTE').click(); // a change from outside the grid rebuilds it
-        expect(s.$('.vela-dsp-lv-c')).not.toBe(first);
+        expect(s.$('.tt-dsp-lv-c')).not.toBe(first);
         s.popup.destroy();
     });
 
     it('a retracement level can be set beyond the swing, as a negative ratio', async () => {
         const s = setup(make('fibretracement'));
         await s.openPanel();
-        const input = s.$$<HTMLInputElement>('.vela-dsp-lv-c input')[1]!;
+        const input = s.$$<HTMLInputElement>('.tt-dsp-lv-c input')[1]!;
         input.value = '-0.5';
         input.dispatchEvent(new Event('blur'));
         expect((s.live() as FibRetracement).levels[1]!.ratio).toBe(-0.5);
@@ -328,7 +328,7 @@ describe('the drawing settings panel', () => {
     it('an option that matters only in one mode appears only in that mode', async () => {
         const s = setup(make('fairvaluegap', { anchors: ANCHORS.slice(0, 1) }));
         await s.openPanel();
-        const flip = (): HTMLElement => s.$$('.vela-dsp-row').find((r) => r.querySelector('.vela-dsp-lab')?.textContent === 'Flip on close')!;
+        const flip = (): HTMLElement => s.$$('.tt-dsp-row').find((r) => r.querySelector('.tt-dsp-lab')?.textContent === 'Flip on close')!;
         expect(flip().hidden).toBe(false);
         s.actions.patch({ 'gap.extend': 'half' });
         s.popup.syncPanel();
@@ -347,7 +347,7 @@ describe('the drawing settings panel', () => {
         const a = make('trendline');
         const b = createDrawing('trendline', { id: 'e', paneId: 'price', anchors: ANCHORS.slice(0, 2) })!;
         popup.open([a, b], null, chart(a).actions);
-        expect(host.querySelector('.vela-dpop [data-tip="Settings"]')).toBeNull();
+        expect(host.querySelector('.tt-dpop [data-tip="Settings"]')).toBeNull();
         expect(popup.openPanel()).toBe(false);
         popup.destroy();
     });

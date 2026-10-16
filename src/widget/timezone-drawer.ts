@@ -6,10 +6,10 @@ import { iconEl } from '../ui/icons';
 import { injectStyles } from '../ui/styles';
 import { timezoneMenuRows } from './timezones';
 
-const STYLE_ID = 'vela-widget-timezone-drawer';
+const STYLE_ID = 'tt-widget-timezone-drawer';
 const CSS = `
-.vela-tzd-list { padding: 2px 0 4px; }
-.vela-tzd-row {
+.tt-tzd-list { padding: 2px 0 4px; }
+.tt-tzd-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -19,9 +19,9 @@ const CSS = `
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-tzd-row:active { background: var(--vela-hover); }
-.vela-tzd-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--vela-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-tzd-row .vela-icon { flex: none; color: var(--vela-fg-bright); }
+.tt-tzd-row:active { background: var(--tt-hover); }
+.tt-tzd-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--tt-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-tzd-row .tt-icon { flex: none; color: var(--tt-fg-bright); }
 `;
 
 export interface TimezoneDrawerOptions {
@@ -57,12 +57,12 @@ export class TimezoneDrawer {
         const doc = this.drawer.body.ownerDocument;
         this.drawer.body.replaceChildren();
         const list = doc.createElement('div');
-        list.className = 'vela-tzd-list';
+        list.className = 'tt-tzd-list';
         for (const tz of timezoneMenuRows(this.opts.timezone())) {
             const row = doc.createElement('div');
-            row.className = 'vela-tzd-row';
+            row.className = 'tt-tzd-row';
             const label = doc.createElement('span');
-            label.className = 'vela-tzd-row-label';
+            label.className = 'tt-tzd-row-label';
             label.textContent = tz.label;
             row.appendChild(label);
             if (tz.checked) row.appendChild(iconEl('check', doc));

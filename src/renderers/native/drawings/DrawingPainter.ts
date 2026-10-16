@@ -1,6 +1,6 @@
 import type { Drawing, Projector, DrawingStyle } from '../../../core/drawings';
 import { SegmentDrawing, TrendLine, FibRatios, RadialFib, FibSpiral, GannSquare, GANN_SQUARE_ARCS, DedekindTessellation, MachFigure, MeasureBox, PositionTool, PatternDrawing, CalloutBase, Callout, Comment, PriceNote, Signpost, Note, PriceLabel, ArrowMark, GlyphStamp, RegressionChannel, AnchoredVwap, FixedRangeVolumeProfile, Magnifier, PriceActionZone, Liquidity, magnifierTimeframeLabel, lineSegmentIntersection, effectiveFillColor, VALID_FILL, INVALID_FILL, DEFAULT_DRAWING_COLOR } from '../../../core/drawings';
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { contrastColor, dashPattern, extendEndpoints, namedFontSize, labelLineHeight, TEXT_FRAME_INSET, TEXT_FRAME_RISE, uprightLineAngle } from '../../shared/drawing-geometry';
 import { BEARISH, BULLISH, NEUTRAL, SLATE, SLATE_DEEP } from '../../../core/palette';
 import { toHex6, withAlpha } from '../../../core/color';
@@ -73,7 +73,7 @@ export class DrawingPainter {
         ctx: CanvasRenderingContext2D,
         drawings: readonly Drawing[],
         proj: Projector,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         targets: PaintTargets = {},
     ): void {
         this.targets = targets;
@@ -111,7 +111,7 @@ export class DrawingPainter {
     }
 
     /** Paint the in-progress drawing (during placing) at reduced opacity. */
-    paintGhost(ctx: CanvasRenderingContext2D, ghost: Drawing, proj: Projector, theme: VelaTheme): void {
+    paintGhost(ctx: CanvasRenderingContext2D, ghost: Drawing, proj: Projector, theme: TerminalTradingTheme): void {
         ctx.globalAlpha = GHOST_ALPHA;
         // Two-time-anchor tools (regression channel, fixed-range VP) preview their TIME SPAN while
         // placing (two vertical guides + a connecting line) rather than the finished shape.
@@ -182,7 +182,7 @@ export class DrawingPainter {
     }
 
     /** A hollow ring marking the candle point the magnet (Ctrl) will snap the next anchor to. */
-    paintSnapRing(ctx: CanvasRenderingContext2D, x: number, y: number, theme: VelaTheme): void {
+    paintSnapRing(ctx: CanvasRenderingContext2D, x: number, y: number, theme: TerminalTradingTheme): void {
         ctx.setLineDash([]);
         ctx.globalAlpha = 0.9;
         ctx.beginPath();
@@ -193,7 +193,7 @@ export class DrawingPainter {
         ctx.globalAlpha = 1;
     }
 
-    private paintOne(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: VelaTheme): void {
+    private paintOne(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: TerminalTradingTheme): void {
         if (d.type === 'highlighter' && d instanceof SegmentDrawing) {
             this.paintHighlighter(ctx, d, proj);
             this.paintLabel(ctx, d, proj, theme);
@@ -465,7 +465,7 @@ export class DrawingPainter {
 
     /** Draw a drawing's optional text label at a type-appropriate anchor (multi-line aware).
      *  Two-point line tools rotate the glyphs to follow the segment, kept upright. */
-    private paintLabel(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: VelaTheme): void {
+    private paintLabel(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: TerminalTradingTheme): void {
         const text = d.text;
         if (!text || !text.value || d.id === this.targets.mutedLabel) return;
         const layout = labelLayout(d, proj);
@@ -499,7 +499,7 @@ export class DrawingPainter {
     /** Frame a plain text label while it is the target, so the text reads as a clickable object even
      *  though it has no shape of its own: a firm frame once selected, a fainter one under the cursor.
      *  Placed to coincide with the inline editor's frame — clicking into the text doesn't shift it. */
-    private paintTextFrame(ctx: CanvasRenderingContext2D, id: string, x: number, top: number, lines: readonly string[], fs: number, theme: VelaTheme): void {
+    private paintTextFrame(ctx: CanvasRenderingContext2D, id: string, x: number, top: number, lines: readonly string[], fs: number, theme: TerminalTradingTheme): void {
         const t = this.targets;
         const alpha = t.selected?.has(id) ? TEXT_FRAME_ALPHA.selected : t.hovered === id ? TEXT_FRAME_ALPHA.hovered : 0;
         if (alpha === 0) return;
@@ -516,7 +516,7 @@ export class DrawingPainter {
 
     /** Paint any Fibonacci tool from its resolved entry lines: optional fill bands, then each
      *  colored line with its auto-number + optional centered custom label (both per-tool sized). */
-    private paintFibRatios(ctx: CanvasRenderingContext2D, d: FibRatios, proj: Projector, theme: VelaTheme): void {
+    private paintFibRatios(ctx: CanvasRenderingContext2D, d: FibRatios, proj: Projector, theme: TerminalTradingTheme): void {
         const lines = d.entryLines(proj);
         if (!lines || lines.length === 0) return;
         for (const band of d.fillBands(proj)) {
@@ -551,7 +551,7 @@ export class DrawingPainter {
     /** Paint a price-action zone (fair value gap, order block): the box and its halfway line,
      *  quieter once it has run its course, a dot where it stopped, and — once price flips it —
      *  the dashed box it carries on as. With no zone under the anchor, a faint tick marks it. */
-    private paintPriceZone(ctx: CanvasRenderingContext2D, d: PriceActionZone, proj: Projector, theme: VelaTheme): void {
+    private paintPriceZone(ctx: CanvasRenderingContext2D, d: PriceActionZone, proj: Projector, theme: TerminalTradingTheme): void {
         const z = d.zone(proj);
         if (!z) {
             const a = d.anchors[0];
@@ -624,7 +624,7 @@ export class DrawingPainter {
 
     /** Paint a concentric-ring fib tool (circles / arcs / wedge): each enabled level as an arc of
      *  radius R0·ratio over the tool's angular sweep, plus any bounding lines + a ratio label per ring. */
-    private paintRadialFib(ctx: CanvasRenderingContext2D, d: RadialFib, proj: Projector, theme: VelaTheme): void {
+    private paintRadialFib(ctx: CanvasRenderingContext2D, d: RadialFib, proj: Projector, theme: TerminalTradingTheme): void {
         const g = d.radial(proj);
         if (g && g.R0 >= 1) {
             const font = `${namedFontSize(d.numbersSize)}px ${theme.fontFamily}`;
@@ -687,7 +687,7 @@ export class DrawingPainter {
     }
 
     /** Paint a Mach wavefront figure (sonic wall or supersonic cone) + the Huygens circles. */
-    private paintMachFigure(ctx: CanvasRenderingContext2D, d: MachFigure, proj: Projector, theme: VelaTheme): void {
+    private paintMachFigure(ctx: CanvasRenderingContext2D, d: MachFigure, proj: Projector, theme: TerminalTradingTheme): void {
         const g = d.geom(proj);
         if (!g) return;
         for (const c of g.circles) {
@@ -762,7 +762,7 @@ export class DrawingPainter {
 
     /** Paint a measurement box: a direction-tinted (green up / red down) shaded rect with a
      *  centered, multi-line label of the computed price/time deltas. */
-    private paintMeasureBox(ctx: CanvasRenderingContext2D, d: MeasureBox, proj: Projector, theme: VelaTheme): void {
+    private paintMeasureBox(ctx: CanvasRenderingContext2D, d: MeasureBox, proj: Projector, theme: TerminalTradingTheme): void {
         const pts = d.handlePoints(proj);
         if (pts.length < 2) return;
         const x = Math.min(pts[0]![0], pts[1]![0]);
@@ -796,7 +796,7 @@ export class DrawingPainter {
     /** Paint a position tool: a reward zone (entry↔target) + risk zone (entry↔stop) in the
      *  tool's own zone colors, the three level lines, and the direction / R:R / % / loss+size
      *  labels (styled by `text`, hidden wholesale by showText). */
-    private paintPosition(ctx: CanvasRenderingContext2D, d: PositionTool, proj: Projector, theme: VelaTheme): void {
+    private paintPosition(ctx: CanvasRenderingContext2D, d: PositionTool, proj: Projector, theme: TerminalTradingTheme): void {
         const L = d.layout(proj);
         if (!L) return;
         const { x1, x2, ey, sy, ty } = L;
@@ -839,7 +839,7 @@ export class DrawingPainter {
 
     /** Paint a linear-regression channel: the two shaded bands (mid→upper, mid→lower), the three
      *  lines (upper/mid/lower, each with its own color + dash), and the R² readout at the start. */
-    private paintRegressionChannel(ctx: CanvasRenderingContext2D, d: RegressionChannel, proj: Projector, theme: VelaTheme): void {
+    private paintRegressionChannel(ctx: CanvasRenderingContext2D, d: RegressionChannel, proj: Projector, theme: TerminalTradingTheme): void {
         const L = d.layout(proj);
         if (!L) return;
         const s = d.reg;
@@ -890,7 +890,7 @@ export class DrawingPainter {
 
     /** Placement preview for the magnifier: a dashed rectangle outline only — no backdrop and
      *  no series read, so dragging the area open never kicks a fetch per cursor move. */
-    private paintMagnifierGhost(ctx: CanvasRenderingContext2D, d: Magnifier, proj: Projector, theme: VelaTheme): void {
+    private paintMagnifierGhost(ctx: CanvasRenderingContext2D, d: Magnifier, proj: Projector, theme: TerminalTradingTheme): void {
         const r = d.rect(proj);
         if (!r) return;
         ctx.save();
@@ -907,7 +907,7 @@ export class DrawingPainter {
      *  `unavailable` states paint a short notice instead). The lower-timeframe candles shift
      *  half a chart bar LEFT of their raw time pixel so each chart candle's visual cell —
      *  centered on its open time — subdivides in place. */
-    private paintMagnifier(ctx: CanvasRenderingContext2D, d: Magnifier, proj: Projector, theme: VelaTheme): void {
+    private paintMagnifier(ctx: CanvasRenderingContext2D, d: Magnifier, proj: Projector, theme: TerminalTradingTheme): void {
         const r = d.rect(proj);
         const a = d.anchors[0];
         const b = d.anchors[1];
@@ -1133,7 +1133,7 @@ export class DrawingPainter {
         y0: number,
         w: number,
         h: number,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
     ): void {
         if (w < 60 || h < 20) return;
         ctx.save();
@@ -1151,7 +1151,7 @@ export class DrawingPainter {
     /** A bottom-center pill prompting the armed tool's placement gesture (e.g. the magnifier's
      *  "drag an area"). Painted by the drawings layer while the tool is armed and no placement
      *  is in progress; chart-background fill so it reads as chrome over any content. */
-    paintPlacementHint(ctx: CanvasRenderingContext2D, text: string, theme: VelaTheme, width: number, height: number): void {
+    paintPlacementHint(ctx: CanvasRenderingContext2D, text: string, theme: TerminalTradingTheme, width: number, height: number): void {
         ctx.save();
         ctx.font = `11px ${theme.fontFamily}`;
         const tw = ctx.measureText(text).width;
@@ -1176,7 +1176,7 @@ export class DrawingPainter {
     /** Paint a fixed-range volume profile: horizontal histogram rows (up/down split) anchored to
      *  the left or right of the time span, optional VAH / VAL / POC levels across the range, and
      *  optional developing POC / VA polylines. Recomputes from the two anchors on every paint. */
-    private paintFixedRangeVp(ctx: CanvasRenderingContext2D, d: FixedRangeVolumeProfile, proj: Projector, theme: VelaTheme): void {
+    private paintFixedRangeVp(ctx: CanvasRenderingContext2D, d: FixedRangeVolumeProfile, proj: Projector, theme: TerminalTradingTheme): void {
         const L = d.layout(proj);
         if (!L) return;
         const s = d.frvp;
@@ -1274,16 +1274,16 @@ export class DrawingPainter {
 
     /** Paint a callout as a speech bubble: a rounded text box with a tapered triangular tail
      *  flush on the box edge facing the target, its apex at the target point. */
-    private paintCallout(ctx: CanvasRenderingContext2D, d: Callout, proj: Projector, theme: VelaTheme): void {
+    private paintCallout(ctx: CanvasRenderingContext2D, d: Callout, proj: Projector, theme: TerminalTradingTheme): void {
         this.paintBubble(ctx, d, proj, theme, 5); // squared-off corners
     }
 
     /** A Comment is a Callout with fully-rounded (balloon) corners. */
-    private paintComment(ctx: CanvasRenderingContext2D, d: Comment, proj: Projector, theme: VelaTheme): void {
+    private paintComment(ctx: CanvasRenderingContext2D, d: Comment, proj: Projector, theme: TerminalTradingTheme): void {
         this.paintBubble(ctx, d, proj, theme, 999); // clamped to min(w,h)/2 → a rounded balloon
     }
 
-    private paintBubble(ctx: CanvasRenderingContext2D, d: CalloutBase, proj: Projector, theme: VelaTheme, maxRadius: number): void {
+    private paintBubble(ctx: CanvasRenderingContext2D, d: CalloutBase, proj: Projector, theme: TerminalTradingTheme, maxRadius: number): void {
         const p = d.points(proj);
         if (!p) return;
         const tx = p[0][0];
@@ -1346,7 +1346,7 @@ export class DrawingPainter {
 
     /** Shared text-box body for the note/signpost plates: a rounded filled+stroked rect with
      *  multi-line text, anchored at (x, y) top-left. Returns nothing. */
-    private paintTextPlate(ctx: CanvasRenderingContext2D, d: Drawing, theme: VelaTheme, x: number, y: number, w: number, h: number, lines: string[], lh: number, padX: number, padY: number): void {
+    private paintTextPlate(ctx: CanvasRenderingContext2D, d: Drawing, theme: TerminalTradingTheme, x: number, y: number, w: number, h: number, lines: string[], lh: number, padX: number, padY: number): void {
         ctx.save();
         ctx.fillStyle = effectiveFillColor(d, theme) ?? theme.background;
         roundRect(ctx, x, y, w, h, 5);
@@ -1363,7 +1363,7 @@ export class DrawingPainter {
     }
 
     /** Measure a drawing's text into wrapped lines + a box size at its named font. */
-    private measureText(ctx: CanvasRenderingContext2D, d: Drawing, theme: VelaTheme, fallback: string): { lines: string[]; tw: number; fs: number; lh: number } {
+    private measureText(ctx: CanvasRenderingContext2D, d: Drawing, theme: TerminalTradingTheme, fallback: string): { lines: string[]; tw: number; fs: number; lh: number } {
         const text = d.text;
         const fs = namedFontSize(text?.size ?? 'normal');
         ctx.font = `${text?.bold ? 'bold ' : ''}${text?.italic ? 'italic ' : ''}${fs}px ${theme.fontFamily}`;
@@ -1373,7 +1373,7 @@ export class DrawingPainter {
     }
 
     /** A Note: free text on a rounded plate anchored at the point (top-left). */
-    private paintNote(ctx: CanvasRenderingContext2D, d: Note, proj: Projector, theme: VelaTheme): void {
+    private paintNote(ctx: CanvasRenderingContext2D, d: Note, proj: Projector, theme: TerminalTradingTheme): void {
         const pts = d.handlePoints(proj);
         if (!pts.length) return;
         const [ax, ay] = pts[0]!;
@@ -1385,7 +1385,7 @@ export class DrawingPainter {
 
     /** A Price Note: a box joined to the pinned point by a leader + a dot, showing that point's
      *  auto-formatted price (not free text). */
-    private paintPriceNote(ctx: CanvasRenderingContext2D, d: PriceNote, proj: Projector, theme: VelaTheme): void {
+    private paintPriceNote(ctx: CanvasRenderingContext2D, d: PriceNote, proj: Projector, theme: TerminalTradingTheme): void {
         const p = d.points(proj);
         const a = d.anchors[0];
         if (!p || !a) return;
@@ -1425,7 +1425,7 @@ export class DrawingPainter {
     }
 
     /** A Signpost: a sign plate on a pole rising from a pinned level (a base nub). */
-    private paintSignpost(ctx: CanvasRenderingContext2D, d: Signpost, proj: Projector, theme: VelaTheme): void {
+    private paintSignpost(ctx: CanvasRenderingContext2D, d: Signpost, proj: Projector, theme: TerminalTradingTheme): void {
         const p = d.points(proj);
         if (!p) return;
         const [bx, by] = p[0];
@@ -1447,7 +1447,7 @@ export class DrawingPainter {
     }
 
     /** A Price Label: a left-pointing tag at the anchor showing the auto-formatted price. */
-    private paintPriceLabel(ctx: CanvasRenderingContext2D, d: PriceLabel, proj: Projector, theme: VelaTheme): void {
+    private paintPriceLabel(ctx: CanvasRenderingContext2D, d: PriceLabel, proj: Projector, theme: TerminalTradingTheme): void {
         const pts = d.handlePoints(proj);
         const a = d.anchors[0];
         if (!pts.length || !a) return;
@@ -1487,7 +1487,7 @@ export class DrawingPainter {
 
     /** Paint a pattern: optional tinted body triangles, the labelled polyline, an extended
      *  neckline (head & shoulders), and consecutive-leg ratios (harmonic patterns). */
-    private paintPattern(ctx: CanvasRenderingContext2D, d: PatternDrawing, proj: Projector, theme: VelaTheme): void {
+    private paintPattern(ctx: CanvasRenderingContext2D, d: PatternDrawing, proj: Projector, theme: TerminalTradingTheme): void {
         const pts = d.handlePoints(proj);
         if (pts.length < 2) return;
         const valid = d.valid(); // harmonic validity (null for plain patterns)
@@ -1658,7 +1658,7 @@ export class DrawingPainter {
 
     /** Paint a trend angle: the segment + a faint dashed baseline, an arc, and a degree readout at
      *  the start anchor. The angle is the on-screen (pixel) inclination, so it changes with zoom. */
-    private paintTrendAngle(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: VelaTheme): void {
+    private paintTrendAngle(ctx: CanvasRenderingContext2D, d: Drawing, proj: Projector, theme: TerminalTradingTheme): void {
         const pts = d.handlePoints(proj);
         if (pts.length < 2) return;
         const [x1, y1] = pts[0]!;
@@ -1729,7 +1729,7 @@ export class DrawingPainter {
 
     /** A glyph/icon stamp: a fixed-pixel unicode symbol centered on the anchor (tints with the
      *  stamp color; emoji render in their own color). */
-    private paintGlyphStamp(ctx: CanvasRenderingContext2D, d: GlyphStamp, proj: Projector, theme: VelaTheme): void {
+    private paintGlyphStamp(ctx: CanvasRenderingContext2D, d: GlyphStamp, proj: Projector, theme: TerminalTradingTheme): void {
         const c = d.center(proj);
         if (!c) return;
         ctx.save();

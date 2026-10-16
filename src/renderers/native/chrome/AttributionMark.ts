@@ -10,9 +10,9 @@ import { VELA_LETTERS_SVG, VELA_MARK_SVG } from './vela-logos';
 /** Where the mark links — the canonical project page. */
 export const ATTRIBUTION_URL = 'https://velacharts.dev/?utm_source=vela&utm_medium=attribution';
 
-const STYLE_ID = 'vela-attribution-styles';
+const STYLE_ID = 'tt-attribution-styles';
 const CSS = `
-.vela-attribution {
+.tt-attribution {
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -20,18 +20,18 @@ const CSS = `
        where the V's ends, so the kit's own letter spacing comes with them. */
     gap: 0;
 }
-.vela-attribution .vela-attr-symbol {
+.tt-attribution .tt-attr-symbol {
     flex: none;
     display: block;
     line-height: 0;
 }
-.vela-attribution .vela-attr-symbol svg {
+.tt-attribution .tt-attr-symbol svg {
     height: 24px;
     width: auto;
     display: block;
-    filter: drop-shadow(0 1px 2px var(--vela-attr-shadow, rgba(0,0,0,0.45)));
+    filter: drop-shadow(0 1px 2px var(--tt-attr-shadow, rgba(0,0,0,0.45)));
 }
-.vela-attribution .vela-attr-wordmark {
+.tt-attribution .tt-attr-wordmark {
     max-width: 0;
     overflow: hidden;
     opacity: 0;
@@ -42,29 +42,29 @@ const CSS = `
     transition: max-width 0.3s ease, opacity 0.25s ease, transform 0.3s ease;
     flex: none;
 }
-.vela-attribution .vela-attr-wordmark svg {
+.tt-attribution .tt-attr-wordmark svg {
     height: 24px;
     width: auto;
     display: block;
-    filter: drop-shadow(0 1px 2px var(--vela-attr-shadow, rgba(0,0,0,0.45)));
+    filter: drop-shadow(0 1px 2px var(--tt-attr-shadow, rgba(0,0,0,0.45)));
 }
-.vela-attribution:hover .vela-attr-wordmark {
+.tt-attribution:hover .tt-attr-wordmark {
     max-width: 240px;
     opacity: 1;
     transform: translateX(0);
 }
 /* Mobile: a hair smaller so the mark doesn't dominate a phone-width plot. Keyed on the
-   renderer's own container attribute (data-vela-layout) AND the shell root's
+   renderer's own container attribute (data-tt-layout) AND the shell root's
    (data-layout): the workspace's single grid-wide mark lives OUTSIDE any renderer
    container, so only the shell attribute reaches it. */
-[data-vela-layout='mobile'] .vela-attribution .vela-attr-symbol svg,
-[data-layout='mobile'] .vela-attribution .vela-attr-symbol svg { height: 20px; }
-[data-vela-layout='mobile'] .vela-attribution .vela-attr-wordmark,
-[data-layout='mobile'] .vela-attribution .vela-attr-wordmark { transform: translateX(-6px); }
-[data-vela-layout='mobile'] .vela-attribution .vela-attr-wordmark svg,
-[data-layout='mobile'] .vela-attribution .vela-attr-wordmark svg { height: 20px; }
-[data-vela-layout='mobile'] .vela-attribution:hover .vela-attr-wordmark,
-[data-layout='mobile'] .vela-attribution:hover .vela-attr-wordmark { transform: translateX(0); }
+[data-tt-layout='mobile'] .tt-attribution .tt-attr-symbol svg,
+[data-layout='mobile'] .tt-attribution .tt-attr-symbol svg { height: 20px; }
+[data-tt-layout='mobile'] .tt-attribution .tt-attr-wordmark,
+[data-layout='mobile'] .tt-attribution .tt-attr-wordmark { transform: translateX(-6px); }
+[data-tt-layout='mobile'] .tt-attribution .tt-attr-wordmark svg,
+[data-layout='mobile'] .tt-attribution .tt-attr-wordmark svg { height: 20px; }
+[data-tt-layout='mobile'] .tt-attribution:hover .tt-attr-wordmark,
+[data-layout='mobile'] .tt-attribution:hover .tt-attr-wordmark { transform: translateX(0); }
 `;
 
 function ensureStyles(doc: Document): void {
@@ -92,7 +92,7 @@ export function attributionMarkColor(background: string): string {
 export function applyAttributionMarkTheme(el: HTMLElement, background: string): void {
     const dark = isDarkColor(background);
     el.style.color = dark ? '#ffffff' : '#000000';
-    el.style.setProperty('--vela-attr-shadow', dark ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.55)');
+    el.style.setProperty('--tt-attr-shadow', dark ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.55)');
 }
 
 /**
@@ -104,7 +104,7 @@ export function applyAttributionMarkTheme(el: HTMLElement, background: string): 
  */
 export function createCustomMark(doc: Document, html: string, background: string): HTMLElement {
     const el = doc.createElement('div');
-    el.className = 'vela-attribution-custom';
+    el.className = 'tt-attribution-custom';
     Object.assign(el.style, {
         position: 'absolute',
         zIndex: '6',
@@ -116,8 +116,8 @@ export function createCustomMark(doc: Document, html: string, background: string
     el.style.color = attributionMarkColor(background);
     el.innerHTML = html;
     // A mark visible on screen belongs in the PNG export too — the renderer rasterizes
-    // every `data-vela-screenshot` overlay (a hidden mark is skipped by the rasterizer).
-    el.dataset.velaScreenshot = '1';
+    // every `data-tt-screenshot` overlay (a hidden mark is skipped by the rasterizer).
+    el.dataset.ttScreenshot = '1';
     return el;
 }
 
@@ -125,7 +125,7 @@ export function createCustomMark(doc: Document, html: string, background: string
 export function createAttributionMark(doc: Document, background: string): HTMLAnchorElement {
     ensureStyles(doc);
     const a = doc.createElement('a');
-    a.className = 'vela-attribution';
+    a.className = 'tt-attribution';
     a.href = ATTRIBUTION_URL;
     a.target = '_blank';
     a.rel = 'noopener';
@@ -140,13 +140,13 @@ export function createAttributionMark(doc: Document, background: string): HTMLAn
     applyAttributionMarkTheme(a, background);
     // Same screenshot opt-in as the custom mark: the attribution the NOTICE file asks
     // hosts to keep visible must survive into exported PNGs as well.
-    a.dataset.velaScreenshot = '1';
+    a.dataset.ttScreenshot = '1';
     const symbol = doc.createElement('span');
-    symbol.className = 'vela-attr-symbol';
+    symbol.className = 'tt-attr-symbol';
     symbol.setAttribute('aria-hidden', 'true');
     symbol.innerHTML = VELA_MARK_SVG;
     const wordmark = doc.createElement('span');
-    wordmark.className = 'vela-attr-wordmark';
+    wordmark.className = 'tt-attr-wordmark';
     wordmark.innerHTML = VELA_LETTERS_SVG;
     a.append(symbol, wordmark);
     return a;

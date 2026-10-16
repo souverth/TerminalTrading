@@ -1,7 +1,7 @@
-export const CALLOUT_STYLE_ID = 'vela-ui-callout-bubble';
+export const CALLOUT_STYLE_ID = 'tt-ui-callout-bubble';
 
 export const CALLOUT_CSS = `
-.vela-callout {
+.tt-callout {
     display: inline-grid;
     place-items: center;
     border-radius: 50%;
@@ -12,40 +12,40 @@ export const CALLOUT_CSS = `
     user-select: none;
     -webkit-user-select: none;
 }
-.vela-callout[role='button'] { cursor: pointer; }
-.vela-callout svg { display: block; }
+.tt-callout[role='button'] { cursor: pointer; }
+.tt-callout svg { display: block; }
 /* The deployed panel — carries the kit's elevated-card look itself (the popover
    shell is bare positioning chrome). */
-.vela-callout-panel {
+.tt-callout-panel {
     display: flex;
     flex-direction: column;
     gap: 8px;
     padding: 10px 12px;
     max-width: 280px;
     box-sizing: border-box;
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border-strong);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 6px;
-    box-shadow: var(--vela-shadow);
-    color: var(--vela-fg);
-    font: var(--vela-font-size-md) var(--vela-font);
+    box-shadow: var(--tt-shadow);
+    color: var(--tt-fg);
+    font: var(--tt-font-size-md) var(--tt-font);
 }
-.vela-callout-title { font-weight: 600; color: var(--vela-fg-bright); }
-.vela-callout-text { color: var(--vela-fg-muted); line-height: 1.45; white-space: pre-line; }
-.vela-callout-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.vela-callout-btn {
+.tt-callout-title { font-weight: 600; color: var(--tt-fg-bright); }
+.tt-callout-text { color: var(--tt-fg-muted); line-height: 1.45; white-space: pre-line; }
+.tt-callout-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tt-callout-btn {
     cursor: pointer;
     height: 26px;
     padding: 0 10px;
     border-radius: 5px;
-    border: 1px solid var(--vela-border);
+    border: 1px solid var(--tt-border);
     background: transparent;
-    color: var(--vela-fg);
-    font-size: var(--vela-font-size-md);
+    color: var(--tt-fg);
+    font-size: var(--tt-font-size-md);
     font-family: inherit;
-    transition: background var(--vela-dur-fast) ease, color var(--vela-dur-fast) ease, opacity var(--vela-dur-fast) ease, border-color var(--vela-dur-fast) ease;
+    transition: background var(--tt-dur-fast) ease, color var(--tt-dur-fast) ease, opacity var(--tt-dur-fast) ease, border-color var(--tt-dur-fast) ease;
 }
-.vela-callout-btn:hover { background: var(--vela-hover); color: var(--vela-fg-bright); border-color: var(--vela-fg-muted); }
-.vela-callout-btn-primary { border-color: var(--vela-selected-bg); background: var(--vela-selected-bg); color: var(--vela-selected-fg); }
-.vela-callout-btn-primary:hover { background: var(--vela-selected-bg); color: var(--vela-selected-fg); opacity: 0.85; border-color: var(--vela-selected-bg); }
+.tt-callout-btn:hover { background: var(--tt-hover); color: var(--tt-fg-bright); border-color: var(--tt-fg-muted); }
+.tt-callout-btn-primary { border-color: var(--tt-selected-bg); background: var(--tt-selected-bg); color: var(--tt-selected-fg); }
+.tt-callout-btn-primary:hover { background: var(--tt-selected-bg); color: var(--tt-selected-fg); opacity: 0.85; border-color: var(--tt-selected-bg); }
 `;

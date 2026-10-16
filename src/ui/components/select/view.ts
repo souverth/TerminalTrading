@@ -1,5 +1,5 @@
 // Select VIEW — trigger button + portaled themed list (hand-rolled overlay scrollbar).
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { injectStyles } from '../../styles';
 import { iconEl } from '../../icons';
 import { Popover, closeOpenPopovers, openPopoverTrigger, type PopoverBoundary, type PopoverOptions } from '../popover';
@@ -7,7 +7,7 @@ import { selectController, type SelectControllerOptions, type SelectOption, type
 import { SELECT_CSS, SELECT_STYLE_ID } from './styles';
 
 export interface SelectListPopoverOpts {
-    theme?: VelaTheme;
+    theme?: TerminalTradingTheme;
     matchWidth?: boolean;
     boundary?: PopoverBoundary;
     boundaryInset?: number;
@@ -22,7 +22,7 @@ export interface SelectListPopoverOpts {
 
 export interface SelectOptions extends SelectControllerOptions {
     id?: string;
-    theme?: VelaTheme;
+    theme?: TerminalTradingTheme;
     /** Placement for the open list (dialog-rect clamp, etc.). */
     list?: SelectListPopoverOpts;
 }
@@ -50,11 +50,11 @@ export function fillSelectList(
 ): void {
     menu.replaceChildren();
     const list = menu.ownerDocument.createElement('div');
-    list.className = 'vela-select-items';
+    list.className = 'tt-select-items';
     for (const p of options) {
         const item = menu.ownerDocument.createElement('button');
         item.type = 'button';
-        item.className = 'vela-select-item';
+        item.className = 'tt-select-item';
         item.textContent = p.label;
         if (p.value === current) item.dataset.checked = '1';
         item.addEventListener('click', (e) => {
@@ -68,20 +68,20 @@ export function fillSelectList(
 
 /** Overlay scrollbar + scroll-into-view — needs a laid-out list (after the popover is shown). */
 export function decorateSelectScroll(menu: HTMLElement): void {
-    const list = menu.querySelector('.vela-select-items') as HTMLElement | null;
+    const list = menu.querySelector('.tt-select-items') as HTMLElement | null;
     if (!list) return;
     if (list.scrollHeight > 240) {
         menu.classList.add('is-scroll');
         const rail = menu.ownerDocument.createElement('div');
-        rail.className = 'vela-select-rail';
+        rail.className = 'tt-select-rail';
         const thumb = menu.ownerDocument.createElement('div');
-        thumb.className = 'vela-select-thumb';
+        thumb.className = 'tt-select-thumb';
         rail.appendChild(thumb);
         menu.appendChild(rail);
         list.addEventListener('scroll', () => syncThumb(list, thumb));
         syncThumb(list, thumb);
     }
-    menu.querySelector<HTMLElement>('.vela-select-item[data-checked]')?.scrollIntoView({ block: 'nearest' });
+    menu.querySelector<HTMLElement>('.tt-select-item[data-checked]')?.scrollIntoView({ block: 'nearest' });
     list.dispatchEvent(new Event('scroll'));
 }
 
@@ -120,7 +120,7 @@ export function openSelectList(
         host: opts.host,
         position: opts.position,
         zIndex: opts.zIndex,
-        className: 'vela-select-list',
+        className: 'tt-select-list',
         onClose: opts.onClose,
         content: (el) => {
             if (opts.size) el.dataset.size = opts.size;
@@ -151,20 +151,20 @@ export class Select {
         this.listOpts = { ...opts.list, theme: opts.theme ?? opts.list?.theme, size: this.ctrl.size };
 
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-select';
+        wrap.className = 'tt-select';
         wrap.dataset.size = this.ctrl.size;
         if (this.ctrl.fill) wrap.dataset.fill = '';
 
         const btn = doc.createElement('button');
         btn.type = 'button';
         if (opts.id) btn.id = opts.id;
-        btn.className = 'vela-select-trigger';
+        btn.className = 'tt-select-trigger';
         if (this.ctrl.disabled) btn.disabled = true;
         const label = doc.createElement('span');
-        label.className = 'vela-select-label';
+        label.className = 'tt-select-label';
         label.textContent = this.ctrl.labelOf(this.ctrl.value);
         const chevron = doc.createElement('span');
-        chevron.className = 'vela-select-chevron';
+        chevron.className = 'tt-select-chevron';
         chevron.appendChild(iconEl('chevron-down', doc));
         btn.append(label, chevron);
         wrap.appendChild(btn);
@@ -172,7 +172,7 @@ export class Select {
         // column and ellipsizes the trigger; the open list still shows full labels.
         if (this.ctrl.size === 'sm') {
             const sizer = doc.createElement('div');
-            sizer.className = 'vela-select-sizer';
+            sizer.className = 'tt-select-sizer';
             sizer.setAttribute('aria-hidden', 'true');
             for (const o of this.ctrl.options) {
                 const s = doc.createElement('span');

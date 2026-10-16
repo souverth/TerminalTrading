@@ -7,7 +7,7 @@ import type {
     DrawingExtend,
     BoxTextSize,
 } from '../../core/model/drawings';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import { dashPattern, extendEndpoints, contrastColor, namedFontSize, autoFontSize } from './drawing-geometry';
 
 /** The full set of Pine drawings for one indicator, batched into one pass. */
@@ -25,7 +25,7 @@ export interface LayerDeps {
     timeToLogical: (ms: number) => number;
     /** Bar high/low at a (rounded) logical index, for label yloc above/below. */
     barAt: (logical: number) => { high: number; low: number } | null;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
 }
 
 /** Drawing price range over the visible bar window (backend-neutral autoscale geometry). */

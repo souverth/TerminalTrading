@@ -40,9 +40,9 @@ function openCalendar(current = Date.parse(SELECTED)): Harness {
         props: [],
         propValues: {},
     });
-    (document.querySelector('.vela-ind-combo-chevron') as HTMLButtonElement).click();
+    (document.querySelector('.tt-ind-combo-chevron') as HTMLButtonElement).click();
     return {
-        cal: document.querySelector('.vela-ind-cal') as HTMLElement,
+        cal: document.querySelector('.tt-ind-cal') as HTMLElement,
         changes,
         committed: () => changes[changes.length - 1],
         close: () => dialog.close(),
@@ -50,14 +50,14 @@ function openCalendar(current = Date.parse(SELECTED)): Harness {
 }
 
 const all = (cal: HTMLElement, sel: string): HTMLButtonElement[] => [...cal.querySelectorAll(sel)] as HTMLButtonElement[];
-const monthSwitch = (cal: HTMLElement): HTMLButtonElement => all(cal, '.vela-date-picker-switch')[0]!;
-const yearSwitch = (cal: HTMLElement): HTMLButtonElement => all(cal, '.vela-date-picker-switch')[1]!;
-const prev = (cal: HTMLElement): HTMLButtonElement => all(cal, '.vela-date-picker-nav')[0]!;
-const next = (cal: HTMLElement): HTMLButtonElement => all(cal, '.vela-date-picker-nav')[1]!;
-const cells = (cal: HTMLElement): HTMLButtonElement[] => all(cal, '.vela-date-picker-cell');
+const monthSwitch = (cal: HTMLElement): HTMLButtonElement => all(cal, '.tt-date-picker-switch')[0]!;
+const yearSwitch = (cal: HTMLElement): HTMLButtonElement => all(cal, '.tt-date-picker-switch')[1]!;
+const prev = (cal: HTMLElement): HTMLButtonElement => all(cal, '.tt-date-picker-nav')[0]!;
+const next = (cal: HTMLElement): HTMLButtonElement => all(cal, '.tt-date-picker-nav')[1]!;
+const cells = (cal: HTMLElement): HTMLButtonElement[] => all(cal, '.tt-date-picker-cell');
 const labels = (cal: HTMLElement): string[] => cells(cal).map((c) => c.textContent ?? '');
 const day = (cal: HTMLElement, n: number): HTMLButtonElement =>
-    all(cal, '.vela-date-picker-day').find((b) => b.textContent === String(n))!;
+    all(cal, '.tt-date-picker-day').find((b) => b.textContent === String(n))!;
 const pick = (cal: HTMLElement, label: string): void => {
     cells(cal).find((c) => c.textContent === label)!.click();
 };

@@ -4,7 +4,7 @@
 // workspace's maximize presentation are proven in the browser.
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { CellControls, nearBottomCenter, plotCenterX, CELL_CONTROLS_PROXIMITY_PX, CLUSTER_LEFT_CSS, type CellControlsDeps } from '../src/widget/cell-controls';
-import type { Vela } from '../src/Vela';
+import type { TerminalTrading } from '../src/TerminalTrading';
 
 interface StubEl {
     tagName: string;
@@ -145,7 +145,7 @@ describe('CellControls — button set and gating', () => {
         const host = makeHost();
         new CellControls(host as never, makeDeps());
         expect(cluster(host).style.left).toBe(CLUSTER_LEFT_CSS);
-        expect(cluster(host).style.left).toContain('--vela-scale-gutter');
+        expect(cluster(host).style.left).toContain('--tt-scale-gutter');
         expect(cluster(host).style.transform).toBe('translateX(-50%)');
     });
 
@@ -165,13 +165,13 @@ describe('CellControls — button set and gating', () => {
         const host = makeHost();
         let maximized = false;
         const controls = new CellControls(host as never, makeDeps({ isMaximized: () => maximized }));
-        expect(cluster(host).children[3]!.className).toBe('vela-cc-btn'); // resting state — no chip
+        expect(cluster(host).children[3]!.className).toBe('tt-cc-btn'); // resting state — no chip
         maximized = true;
         controls.refresh();
         // No drag handle while this chart covers the grid — there is nowhere to move it.
         expect(titles(host)).toEqual(['Zoom out', 'Zoom in', 'Restore layout', 'Reset chart']);
         // The maximized state reads as the inverse "selected" chip (the collapsed-pane idiom).
-        expect(cluster(host).children[2]!.className).toBe('vela-cc-btn vela-cc-on');
+        expect(cluster(host).children[2]!.className).toBe('tt-cc-btn tt-cc-on');
     });
 });
 
@@ -271,7 +271,7 @@ describe('CellControls — actions', () => {
         const chart = {
             getVisibleRange: () => ({ from: 0, to: 1_000_000 }),
             setVisibleRange: (r: { from: number; to: number }) => applied.push(r),
-        } as unknown as Vela;
+        } as unknown as TerminalTrading;
         new CellControls(host as never, makeDeps({ chart: () => chart }));
         cluster(host).children[2]!.fire('click'); // zoom in
         const last = applied[applied.length - 1]!;

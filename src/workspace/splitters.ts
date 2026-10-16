@@ -156,7 +156,7 @@ export class SplitterLayer {
 
     private makeStrip(): HTMLDivElement {
         const el = document.createElement('div');
-        el.className = 'vela-ws-splitter';
+        el.className = 'tt-ws-splitter';
         el.style.cssText = 'position:absolute;z-index:30;';
         el.addEventListener('pointerdown', (e) => this.onDown(el, e));
         el.addEventListener('dblclick', () => {

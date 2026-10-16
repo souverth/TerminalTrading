@@ -32,7 +32,7 @@ export interface IndicatorSummary {
     forcedOverlay: number;
 }
 
-/** A snapshot of everything the Vela core has generated for the mounted indicators. */
+/** A snapshot of everything the Terminal Trading core has generated for the mounted indicators. */
 export interface SceneInspection {
     indicators: IndicatorSummary[];
     /** Sums across all indicators, for convenient whole-scene assertions. */

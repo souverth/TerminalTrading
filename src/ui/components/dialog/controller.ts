@@ -25,7 +25,7 @@ export function dialogController(opts: DialogControllerOptions = {}): DialogCont
     return {
         machine: dialog.machine,
         props: {
-            id: nextUid('vela-dialog'),
+            id: nextUid('tt-dialog'),
             modal: opts.modal ?? true,
             closeOnEscape: opts.closeOnEscape ?? true,
             closeOnInteractOutside: opts.closeOnInteractOutside ?? false,

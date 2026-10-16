@@ -1,7 +1,7 @@
 // Unified undo/redo timeline — app-level ops (indicator add/remove) and core drawing
 // edits share ONE stack, so Ctrl+Z / Ctrl+Y step through both in the order they happened
 // (the reference behavior). Drawing entries delegate to the core's own drawing history.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 
 export interface HistoryAction {
     undo(): void;
@@ -18,7 +18,7 @@ export class WidgetHistory {
     /** `getChart` late-resolves the CURRENT chart: drawing steps recorded before a chart
      *  rebuild must undo on the chart that exists when the user presses Ctrl+Z, not on a
      *  destroyed instance captured at record time. */
-    constructor(private readonly getChart: () => Vela | null = () => null) {}
+    constructor(private readonly getChart: () => TerminalTrading | null = () => null) {}
 
     /** Record a reversible action (a fresh edit forks history: redo branch clears). */
     push(action: HistoryAction): void {
@@ -64,7 +64,7 @@ export class WidgetHistory {
     }
 
     /** (Re)bind to a chart: drawing edits enter the unified stack as delegate steps. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         for (const u of this.unsubs) u();
         this.unsubs = [
             chart.on('drawing:created', () => this.pushDrawingStep()),

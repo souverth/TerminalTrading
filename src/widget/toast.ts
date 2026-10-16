@@ -2,9 +2,9 @@
 // info / error states, auto-hide). One instance per widget.
 import { injectStyles } from '../ui/styles';
 
-const STYLE_ID = 'vela-widget-toast';
+const STYLE_ID = 'tt-widget-toast';
 const CSS = `
-.vela-toast {
+.tt-toast {
     position: absolute;
     left: 50%;
     bottom: 34px;
@@ -16,19 +16,19 @@ const CSS = `
     max-width: 70%;
     padding: 6px 14px;
     border-radius: 999px;
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
-    color: var(--vela-fg);
-    font-size: var(--vela-font-size-md);
-    box-shadow: var(--vela-shadow);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
+    color: var(--tt-fg);
+    font-size: var(--tt-font-size-md);
+    box-shadow: var(--tt-shadow);
     pointer-events: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.vela-toast[data-open] { display: inline-flex; }
-.vela-toast[data-type='error'] { color: var(--vela-down); border-color: var(--vela-down); }
-.vela-toast[data-type='success'] { color: var(--vela-up); }
+.tt-toast[data-open] { display: inline-flex; }
+.tt-toast[data-type='error'] { color: var(--tt-down); border-color: var(--tt-down); }
+.tt-toast[data-type='success'] { color: var(--tt-up); }
 `;
 
 export class Toast {
@@ -38,7 +38,7 @@ export class Toast {
     constructor(host: HTMLElement) {
         injectStyles(STYLE_ID, CSS, host.ownerDocument);
         this.el = host.ownerDocument.createElement('div');
-        this.el.className = 'vela-toast';
+        this.el.className = 'tt-toast';
         host.appendChild(this.el);
     }
 

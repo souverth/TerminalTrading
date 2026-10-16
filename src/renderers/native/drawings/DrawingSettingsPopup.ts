@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { Drawing, DrawingToolDefaults, DrawingToolTemplate, RegressionStyle, VwapStyle, SerializedDrawing } from '../../../core/drawings';
 import {
     DEFAULT_DRAWING_COLOR,
@@ -91,7 +91,7 @@ export interface PopupAnchor {
 
 const BTN = 30; // icon-button side (px)
 const ICON = 21; // icon glyph side (px)
-const STYLE_ID = 'vela-drawing-popup-styles';
+const STYLE_ID = 'tt-drawing-popup-styles';
 const STYLE_REV = '4';
 
 /** Inject the scoped styles that inline cssText can't reach (`:focus`, scrollbar
@@ -104,17 +104,17 @@ function ensureStyles(): void {
     s.id = STYLE_ID;
     s.dataset.rev = STYLE_REV;
     s.textContent = `
-.vela-dpop-btn{background:transparent;color:var(--vela-fg-muted);transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-dpop-btn:hover{background:var(--vela-hover-strong);color:var(--vela-fg-bright);}
-.vela-dpop-btn[data-active='1']{background:var(--vela-active);color:var(--vela-fg-bright);}
+.tt-dpop-btn{background:transparent;color:var(--tt-fg-muted);transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-dpop-btn:hover{background:var(--tt-hover-strong);color:var(--tt-fg-bright);}
+.tt-dpop-btn[data-active='1']{background:var(--tt-active);color:var(--tt-fg-bright);}
 /* Mixed (a multi-selection disagrees): the active fill at half strength behind a dashed ring. */
-.vela-dpop-btn[data-active='mixed']{background:var(--vela-hover-strong);color:var(--vela-fg-bright);outline:1px dashed var(--vela-fg-muted);outline-offset:-2px;}
-.vela-dpop-item{background:transparent;transition:background var(--vela-dur-fast) ease;}
-.vela-dpop-item:hover{background:var(--vela-hover-strong);}
-.vela-dpop-item[data-active='1']{background:var(--vela-active);}
+.tt-dpop-btn[data-active='mixed']{background:var(--tt-hover-strong);color:var(--tt-fg-bright);outline:1px dashed var(--tt-fg-muted);outline-offset:-2px;}
+.tt-dpop-item{background:transparent;transition:background var(--tt-dur-fast) ease;}
+.tt-dpop-item:hover{background:var(--tt-hover-strong);}
+.tt-dpop-item[data-active='1']{background:var(--tt-active);}
 /* A finger needs a wider grab zone than a cursor — grow the move handle on touch-first
    devices (the glyph stays centered; only the hit target widens). */
-@media (pointer: coarse){.vela-dpop-grip{width:${BTN + 14}px !important;}}`;
+@media (pointer: coarse){.tt-dpop-grip{width:${BTN + 14}px !important;}}`;
     if (!existing) document.head.appendChild(s);
 }
 
@@ -138,12 +138,12 @@ export class DrawingSettingsPopup {
     private colorOwner: HTMLElement | null = null;
     private menuPop: Popover | null = null;
     private menuOwner: HTMLElement | null = null;
-    private theme: VelaTheme;
+    private theme: TerminalTradingTheme;
     private onClose: ((e?: PointerEvent) => void) | null = null;
 
     constructor(
         private readonly host: HTMLElement,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         /** What the chart tells the bar and its settings panel (its timeframe, time zone, price precision). */
         env: Partial<DrawingPanelEnv> = {},
     ) {
@@ -159,7 +159,7 @@ export class DrawingSettingsPopup {
     /** One chart bar in ms — timeframe pickers drop the choices at/above it. */
     private readonly chartBarMs: () => number;
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         this.panel.setTheme(theme);
     }
@@ -223,8 +223,8 @@ export class DrawingSettingsPopup {
         const textOnBar = multi || schema.textIsContent === true || !paths.has('text.value');
 
         const el = document.createElement('div');
-        el.className = 'vela-dpop';
-        el.style.cssText = `position:absolute;z-index:22;background:${t.background};border:1px solid var(--vela-border);border-radius:var(--vela-radius-lg);box-shadow:var(--vela-shadow);color:${t.textColor};font:var(--vela-font-size-md) ${t.fontFamily};display:flex;flex-direction:column;pointer-events:auto;overflow:hidden;`;
+        el.className = 'tt-dpop';
+        el.style.cssText = `position:absolute;z-index:22;background:${t.background};border:1px solid var(--tt-border);border-radius:var(--tt-radius-lg);box-shadow:var(--tt-shadow);color:${t.textColor};font:var(--tt-font-size-md) ${t.fontFamily};display:flex;flex-direction:column;pointer-events:auto;overflow:hidden;`;
         applyChromeTokens(el, t);
         // Engaging any control in the bar dismisses an open color popover / dropdown menu (they live
         // outside `el` and stop their own pointerdowns, so this only fires for the OTHER controls —
@@ -232,7 +232,7 @@ export class DrawingSettingsPopup {
         // Kit Select / ColorField do not stop pointerdown — skip them so a re-click can toggle.
         el.addEventListener('pointerdown', (e) => {
             const t = e.target as HTMLElement | null;
-            if (t?.closest('.vela-select-trigger, .vela-color-field')) return;
+            if (t?.closest('.tt-select-trigger, .tt-color-field')) return;
             closeOpenPopovers();
         });
 
@@ -392,7 +392,7 @@ export class DrawingSettingsPopup {
         if (!multi) bar.appendChild(this.iconBtn('Settings', GEAR_ICON, () => this.openPanel()));
         bar.appendChild(this.toggle('Lock', LOCK_ICON, common((d) => d.locked), (v) => actions.setLocked(v), UNLOCK_ICON));
         const del = this.iconBtn('Delete', TRASH_ICON, () => actions.remove());
-        del.style.color = 'var(--vela-danger)';
+        del.style.color = 'var(--tt-danger)';
         bar.appendChild(del);
         bar.appendChild(this.kebabButton(actions));
 
@@ -450,7 +450,7 @@ export class DrawingSettingsPopup {
         if (this.el?.contains(node) || this.colorPop?.el.contains(node) || this.menuPop?.el.contains(node)) return true;
         const el = node instanceof Element ? node : node.parentElement;
         if (!el) return false;
-        const pop = el.closest('.vela-popover');
+        const pop = el.closest('.tt-popover');
         return pop != null && this.host.contains(pop);
     }
 
@@ -467,7 +467,7 @@ export class DrawingSettingsPopup {
         const text = (actions.resolve() ?? drawing).text;
         // Textarea on top; format controls sit in a footer row so they never cover typed text.
         const panel = document.createElement('div');
-        panel.style.cssText = `padding:6px;border-top:1px solid var(--vela-border);display:flex;flex-direction:column;gap:4px;`;
+        panel.style.cssText = `padding:6px;border-top:1px solid var(--tt-border);display:flex;flex-direction:column;gap:4px;`;
         const ta = new TextArea({
             value: text?.value ?? '',
             rows: 1,
@@ -554,7 +554,7 @@ export class DrawingSettingsPopup {
         const b = document.createElement('button');
         b.type = 'button';
         b.dataset.tip = tip; // the custom tip strip reads this (no native `title` — that tooltip is noisy)
-        b.className = 'vela-dpop-btn';
+        b.className = 'tt-dpop-btn';
         b.style.cssText = `width:${BTN}px;height:${BTN}px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:inherit;border:none;border-radius:5px;padding:0;`;
         return b;
     }
@@ -571,11 +571,11 @@ export class DrawingSettingsPopup {
     private dragHandle(): HTMLButtonElement {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'vela-dpop-grip';
+        b.className = 'tt-dpop-grip';
         // touch-action:none — the handle owns its touches: without it the browser claims
         // the move for scrolling and CANCELS the pointer stream, which is why the bar
         // could barely be dragged on a phone.
-        b.style.cssText = `width:${BTN}px;height:${BTN}px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;cursor:grab;touch-action:none;color:var(--vela-fg-faint);`;
+        b.style.cssText = `width:${BTN}px;height:${BTN}px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;padding:0;cursor:grab;touch-action:none;color:var(--tt-fg-faint);`;
         b.innerHTML = sized(GRIP_ICON);
         b.addEventListener('pointerdown', (e) => {
             const el = this.el;
@@ -665,15 +665,15 @@ export class DrawingSettingsPopup {
         });
         const el = pop.el;
         el.style.background = t.background;
-        el.style.border = '1px solid var(--vela-border)';
-        el.style.borderRadius = 'var(--vela-radius-lg)';
-        el.style.boxShadow = 'var(--vela-shadow)';
+        el.style.border = '1px solid var(--tt-border)';
+        el.style.borderRadius = 'var(--tt-radius-lg)';
+        el.style.boxShadow = 'var(--tt-shadow)';
         el.style.padding = opts.padding;
         el.style.display = 'flex';
         el.style.flexDirection = 'column';
         el.style.gap = '1px';
         el.style.color = t.textColor;
-        el.style.font = `var(--vela-font-size-md) ${t.fontFamily}`;
+        el.style.font = `var(--tt-font-size-md) ${t.fontFamily}`;
         el.style.pointerEvents = 'auto';
         opts.fill(el, pop);
         pop.show();
@@ -710,7 +710,7 @@ export class DrawingSettingsPopup {
                 for (const o of options) {
                     const item = document.createElement('button');
                     item.type = 'button';
-                    item.className = 'vela-dpop-item';
+                    item.className = 'tt-dpop-item';
                     item.dataset.active = o.value === current ? '1' : '0';
                     item.style.cssText = 'display:flex;align-items:center;min-width:88px;padding:5px 10px;border:none;border-radius:5px;color:inherit;cursor:pointer;text-align:left;font:inherit;font-variant-numeric:tabular-nums;';
                     item.textContent = o.label;
@@ -736,7 +736,7 @@ export class DrawingSettingsPopup {
                 for (const row of rows) {
                     const item = document.createElement('button');
                     item.type = 'button';
-                    item.className = 'vela-dpop-item';
+                    item.className = 'tt-dpop-item';
                     item.style.cssText = 'display:flex;align-items:center;gap:9px;min-width:150px;padding:6px 9px;border:none;border-radius:5px;color:inherit;cursor:pointer;text-align:left;font:inherit;';
                     const ic = document.createElement('span');
                     ic.style.cssText = 'display:flex;flex:none;width:20px;justify-content:center;';
@@ -768,7 +768,7 @@ export class DrawingSettingsPopup {
         const t = this.theme;
         if (!this.tipEl) {
             const tp = document.createElement('div');
-            tp.style.cssText = `position:absolute;z-index:27;pointer-events:none;white-space:nowrap;background:${t.textColor};color:${t.background};padding:3px 7px;border-radius:5px;font:var(--vela-font-size-sm) ${t.fontFamily};box-shadow:var(--vela-shadow);`;
+            tp.style.cssText = `position:absolute;z-index:27;pointer-events:none;white-space:nowrap;background:${t.textColor};color:${t.background};padding:3px 7px;border-radius:5px;font:var(--tt-font-size-sm) ${t.fontFamily};box-shadow:var(--tt-shadow);`;
             this.host.appendChild(tp);
             this.tipEl = tp;
         }
@@ -922,7 +922,7 @@ export class DrawingSettingsPopup {
                     const active = v === current;
                     const item = document.createElement('button');
                     item.type = 'button';
-                    item.className = 'vela-dpop-item';
+                    item.className = 'tt-dpop-item';
                     item.dataset.active = active ? '1' : '0';
                     item.style.cssText = `display:flex;align-items:center;gap:8px;${label ? 'min-width:118px;' : ''}padding:5px 8px;border:none;border-radius:5px;color:inherit;cursor:pointer;text-align:left;font:inherit;`;
                     const glyph = render(v);
@@ -963,7 +963,7 @@ export class DrawingSettingsPopup {
         const b = document.createElement('button');
         b.type = 'button';
         b.dataset.tip = tip;
-        b.className = 'vela-dpop-btn';
+        b.className = 'tt-dpop-btn';
         b.style.cssText = `position:relative;width:${BTN}px;height:${BTN}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border-radius:5px;border:none;color:inherit;padding:0;`;
         const ic = document.createElement('span');
         ic.style.cssText = 'display:flex;';
@@ -1007,16 +1007,16 @@ export class DrawingSettingsPopup {
             fill: (el, pop) => {
                 if (used.length > 1) {
                     const row = document.createElement('div');
-                    row.style.cssText = 'display:flex;align-items:center;gap:6px;padding-bottom:9px;border-bottom:1px solid var(--vela-border);';
+                    row.style.cssText = 'display:flex;align-items:center;gap:6px;padding-bottom:9px;border-bottom:1px solid var(--tt-border);';
                     const lbl = document.createElement('span');
                     lbl.textContent = 'In use';
-                    lbl.style.cssText = 'font:var(--vela-font-size-sm) inherit;opacity:0.7;margin-right:2px;';
+                    lbl.style.cssText = 'font:var(--tt-font-size-sm) inherit;opacity:0.7;margin-right:2px;';
                     row.appendChild(lbl);
                     for (const c of used) {
                         const sw = document.createElement('button');
                         sw.type = 'button';
                         sw.dataset.tip = c;
-                        sw.style.cssText = `width:18px;height:18px;border-radius:4px;border:1px solid var(--vela-border-strong);cursor:pointer;background:${c};padding:0;`;
+                        sw.style.cssText = `width:18px;height:18px;border-radius:4px;border:1px solid var(--tt-border-strong);cursor:pointer;background:${c};padding:0;`;
                         sw.addEventListener('click', (e) => {
                             e.stopPropagation();
                             pop.hide();
@@ -1038,7 +1038,7 @@ export class DrawingSettingsPopup {
 
     private divider(): HTMLElement {
         const d = document.createElement('div');
-        d.style.cssText = 'width:1px;height:18px;margin:0 3px;background:var(--vela-border);';
+        d.style.cssText = 'width:1px;height:18px;margin:0 3px;background:var(--tt-border);';
         return d;
     }
 }
@@ -1073,7 +1073,7 @@ const SUPERSONIC_ICON = icon('supersonic');
 /** A striped underline for a mixed color swatch: equal bands of every color in use (a neutral
  *  gray pair when nothing concrete is known), so the mix itself is visible without opening it. */
 function stripes(colors: readonly string[]): string {
-    const bands = colors.length > 1 ? colors : ['var(--vela-fg-faint)', 'var(--vela-fg-muted)'];
+    const bands = colors.length > 1 ? colors : ['var(--tt-fg-faint)', 'var(--tt-fg-muted)'];
     const step = 100 / bands.length;
     const stops = bands.map((c, i) => `${c} ${i * step}% ${(i + 1) * step}%`).join(',');
     return `linear-gradient(90deg,${stops})`;

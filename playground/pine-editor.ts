@@ -14,7 +14,7 @@ indicator("${UNTITLED}", overlay = true)
 plot(ta.sma(close, 20), "SMA 20", color = color.orange)
 `;
 
-// House-style glyphs (24×24, currentColor stroke — the same builder Vela's own icons use).
+// House-style glyphs (24×24, currentColor stroke — the same builder Terminal Trading's own icons use).
 registerIcon("pine-code", svg24('<polyline points="8 7 3 12 8 17"/><polyline points="16 7 21 12 16 17"/>'));
 registerIcon(
   "pine-save",
@@ -39,7 +39,7 @@ export function openInEditor(script: LibraryScript | null): void {
 }
 
 const CSS = `
-.pe{display:flex;flex-direction:column;height:100%;min-height:0;background:var(--vela-bg,#101216);color:#e6e8ee;font:13px system-ui,sans-serif}
+.pe{display:flex;flex-direction:column;height:100%;min-height:0;background:var(--tt-bg,#101216);color:#e6e8ee;font:13px system-ui,sans-serif}
 .pe-hd{display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;align-items:center;font:13px system-ui,sans-serif;color:#e6e8ee}
 .pe button,.pe-hd button{background:transparent;border:1px solid transparent;border-radius:6px;color:inherit;padding:4px 8px;font:inherit;cursor:pointer;white-space:nowrap}
 .pe button:hover:not(:disabled),.pe-hd button:hover:not(:disabled){background:#242932}
@@ -47,10 +47,10 @@ const CSS = `
 .pe-hd button.icon:hover{color:#e6e8ee}
 .pe-hd button.run{background:#e8eaf0;color:#101216;font-weight:600;padding:4px 12px}
 /* Same field as the Indicators dialog's search row: #1c1d20 fill, #2a2b30 border, 8px radius. */
-.pe-hd .pe-name-input{box-sizing:border-box;width:190px;height:30px;background:var(--vela-surface-elev,#1c1d20);border:1px solid #2a2b30;border-radius:8px;color:var(--vela-fg,#d1d4dc);padding:0 12px;font:13px system-ui,sans-serif;outline:0;transition:border-color .12s ease,box-shadow .12s ease}
+.pe-hd .pe-name-input{box-sizing:border-box;width:190px;height:30px;background:var(--tt-surface-elev,#1c1d20);border:1px solid #2a2b30;border-radius:8px;color:var(--tt-fg,#d1d4dc);padding:0 12px;font:13px system-ui,sans-serif;outline:0;transition:border-color .12s ease,box-shadow .12s ease}
 .pe-hd .pe-name-input::placeholder{color:#757575}
-.pe-hd .pe-name-input:hover{border-color:var(--vela-fg-muted,#868a96)}
-.pe-hd .pe-name-input:focus{border-color:var(--vela-focus,rgba(178,181,190,.5));box-shadow:0 0 0 3px var(--vela-focus-soft,rgba(178,181,190,.12))}
+.pe-hd .pe-name-input:hover{border-color:var(--tt-fg-muted,#868a96)}
+.pe-hd .pe-name-input:focus{border-color:var(--tt-focus,rgba(178,181,190,.5));box-shadow:0 0 0 3px var(--tt-focus-soft,rgba(178,181,190,.12))}
 .pe-hd .pe-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .pe-menu{position:absolute;z-index:5;top:44px;left:12px;min-width:240px;max-height:320px;overflow:auto;background:#171a20;border:1px solid #2a2e37;border-radius:8px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .pe-menu button{display:block;width:100%;text-align:left}
@@ -293,7 +293,7 @@ registerSidePanel({
           resolve(commit ? input.value.trim() || null : null);
         };
         input.onkeydown = (e) => {
-          e.stopPropagation(); // keep Vela's single-letter shortcuts out of the field
+          e.stopPropagation(); // keep TerminalTrading's single-letter shortcuts out of the field
           if (e.key === "Enter") finish(true);
           else if (e.key === "Escape") finish(false);
         };
@@ -358,7 +358,7 @@ registerSidePanel({
       gutter.scrollTop = ta.scrollTop;
     });
     ta.addEventListener("keydown", (e) => {
-      e.stopPropagation(); // keep Vela's single-letter shortcuts out of the editor
+      e.stopPropagation(); // keep TerminalTrading's single-letter shortcuts out of the editor
       if (e.key === "Tab") {
         e.preventDefault();
         ta.setRangeText("  ", ta.selectionStart, ta.selectionEnd, "end");

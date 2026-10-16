@@ -1,20 +1,20 @@
 # API Reference
 
-This is a hand-written, conceptual reference for the Vela™ public surface — what each piece is for and how the pieces bind. A generated type reference (from the source declarations) may be added later; for now this prose is the source of truth.
+This is a hand-written, conceptual reference for the Terminal Trading public surface — what each piece is for and how the pieces bind. A generated type reference (from the source declarations) may be added later; for now this prose is the source of truth.
 
 ## The mental model
 
-Vela™ is a small **core** plus three independently swappable **layers** — data providers, scripting engines, and renderers — each reached through a single narrow **port**.
+Terminal Trading is a small **core** plus three independently swappable **layers** — data providers, scripting engines, and renderers — each reached through a single narrow **port**.
 
 The **neutral model** — bars, series, pane overlays, drawings, inputs, update patches — is the only thing that crosses a port. No backend-specific type ever leaks across. That opacity is what makes each layer swappable. What ships is the native renderer and the provider-backed, cache-wrapped data feed — both plain **swappable defaults**. No scripting engine ships at all: you install one (Pine Script: `@luxalgo/vela-pinets`) or write one against the port — see [Scripting engines](./scripting-engines.md).
 
-> These snippets import from the npm package `@luxalgo/vela` (see [installation.md](./installation.md)).
+> These snippets import from the npm package `terminal-trading` (see [installation.md](./installation.md)).
 
-The higher-level shell is documented on its own page: [the workspace](./workspace.md) (`@luxalgo/vela/workspace` — one chart with `layout: false`, or a multi-chart grid with one shared chrome and sync links). It exposes the state surface — `getState()` / `applyState()` / `state:changed` over one shared document format — which is also what its `persist` option writes.
+The higher-level shell is documented on its own page: [the workspace](./workspace.md) (`terminal-trading/workspace` — one chart with `layout: false`, or a multi-chart grid with one shared chrome and sync links). It exposes the state surface — `getState()` / `applyState()` / `state:changed` over one shared document format — which is also what its `persist` option writes.
 
 ---
 
-## `class Vela(container, options?, deps?)`
+## `class TerminalTrading(container, options?, deps?)`
 
 The public, imperative chart and the composition root — the one place that wires concrete backends.
 
@@ -28,7 +28,7 @@ Constructing a chart renders candles immediately. Scripting engines are opt-in.
 
 | Method | What it does |
 |---|---|
-| `registerEngine(language, engine)` | Register a scripting engine under a language id so `addIndicator` can run that language. **Vela™ ships none** — install an addon or write one ([Scripting engines](./scripting-engines.md)). Re-registering a language replaces it (affects future indicators only). Returns the chart for chaining. |
+| `registerEngine(language, engine)` | Register a scripting engine under a language id so `addIndicator` can run that language. **Terminal Trading ships none** — install an addon or write one ([Scripting engines](./scripting-engines.md)). Re-registering a language replaces it (affects future indicators only). Returns the chart for chaining. |
 | `addIndicator(source, options?)` | Run an indicator script over the chart's market data and render it. Returns an **`IndicatorHandle` synchronously**; values fill in asynchronously. See [options.md](./options.md) for per-indicator options. |
 | `addNativeIndicator(type, options?)` | Add a core-computed (non-scripting) **native indicator** by registered `type`. Returns an `IndicatorHandle` (same lifecycle: legend row, eye/remove, events). The layer-backed types `'volume'` (auto-added) and `'vpvr'` (the visible-range volume profile) are **single-instance** — a second call returns the existing handle; the built-in classic studies (`'sma'`, `'rsi'`, …) allow **several instances**, so each call adds one more. Plugin chart types can register more (see `multiInstance` on the descriptor). `options.inputs` seeds inputs. Native renderer only; an unregistered type returns a fail-soft handle that never mounts. |
 | `runScript(source, options?)` | Execute a script and resolve its **first computed run** — the data-out door for editors, consoles and dashboards. Resolves `{ ok: true, run }` with the [`ScriptRun`](#capturing-what-a-script-computes) itself, plus `onUpdate(cb)` to follow later runs and `remove()` to take it off the chart; `{ ok: false, error }` on a compile/runtime failure, which removes the script again (no dead legend row). Never rejects. Prefer it over `runIndicator` — same injection semantics, but it hands you the data instead of a handle to go fetch from. |
@@ -53,7 +53,7 @@ Constructing a chart renders candles immediately. Scripting engines are opt-in.
 Because `registerEngine` returns the chart, you can wire an engine straight off construction:
 
 ```js
-const chart = new Vela('#chart', { data: myBars, timeframe: '1h' })
+const chart = new TerminalTrading('#chart', { data: myBars, timeframe: '1h' })
   .registerEngine('pine', new PineEngine());
 ```
 
@@ -64,10 +64,10 @@ const chart = new Vela('#chart', { data: myBars, timeframe: '1h' })
 A minimal end-to-end setup — construct over data, register a scripting engine (here the Pine addon), add an indicator, then await the first render:
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 import { PineEngine } from '@luxalgo/vela-pinets';
 
-const chart = new Vela('#chart', { data: myBars, timeframe: '1h', theme: 'dark' });
+const chart = new TerminalTrading('#chart', { data: myBars, timeframe: '1h', theme: 'dark' });
 chart.registerEngine('pine', new PineEngine());
 
 // addIndicator returns synchronously — wire UI now; plotted values fill in later.
@@ -215,7 +215,7 @@ failure removes it again — no dead legend row), and never rejects.
 
 #### Across a grid
 
-`@luxalgo/vela/workspace` relays the same event with the cell it came from, so one subscription covers
+`terminal-trading/workspace` relays the same event with the cell it came from, so one subscription covers
 every cell — including cells a later layout change creates:
 
 ```js
@@ -333,10 +333,10 @@ registering the one that resolves the chart symbol fires the parked initial load
 Register the provider that resolves the chart symbol, then wait for both the index and the initial load:
 
 ```js
-import { Vela } from '@luxalgo/vela';
-import { BinanceProvider } from '@luxalgo/vela/providers/binance';
+import { TerminalTrading } from 'terminal-trading';
+import { BinanceProvider } from 'terminal-trading/providers/binance';
 
-const chart = new Vela('#chart', { symbol: 'BTCUSDT', timeframe: '1h' });
+const chart = new TerminalTrading('#chart', { symbol: 'BTCUSDT', timeframe: '1h' });
 
 // Registering the provider that resolves the symbol fires the parked initial load.
 chart.data.registerProvider('binance', new BinanceProvider());
@@ -428,7 +428,7 @@ A mark is `{ id, time, glyph, title?, tooltip?, group?, content? }`:
   timeframe and the marks re-snap.
 - **`glyph`** is a colored token — `{ shape?, color, letter? }` (`'circle'` · `'square'` · `'diamond'` ·
   `'pin'`, one or two characters in auto-contrasted ink) or `{ shape?, color, icon }` with an id from the
-  icon registry (`registerIcon` from `vela/ui`). Icons travel as ids, never inline markup, so a mark
+  icon registry (`registerIcon` from `terminal-trading/ui`). Icons travel as ids, never inline markup, so a mark
   payload can come from data.
 - **`content`** is what the popup shows under `title`: `{ text }` (escaped), `{ html }` (sanitized
   through an allowlist — scripts, styles, frames, event handlers and `javascript:` URLs never reach the
@@ -441,7 +441,7 @@ A mark is `{ id, time, glyph, title?, tooltip?, group?, content? }`:
   that fans out on hover (or a tap on touch) so each can be opened.
 
 ```js
-import { registerIcon, svg16 } from '@luxalgo/vela/ui';
+import { registerIcon, svg16 } from 'terminal-trading/ui';
 
 registerIcon('myco.split', svg16('<path d="M8 2v12M3 5l5-3 5 3M3 11l5 3 5-3"/>'));
 
@@ -541,7 +541,7 @@ fetches the `timeframe` bars inside each replayed bar and makes each one update 
 high and low, its volume (`barsToTicks` does that step on bars you already have).
 
 ```js
-import { lowerTimeframeTicks } from '@luxalgo/vela';
+import { lowerTimeframeTicks } from 'terminal-trading';
 
 chart.replay.setTicks(lowerTimeframeTicks(chart, '1'));   // replay 1h bars through their 1m bars
 chart.replay.play(1000);                                  // one 1m update per second: 60 s per bar

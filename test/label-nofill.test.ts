@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DrawingSceneRenderer, EMPTY_DRAWING_SET } from '../src/renderers/shared/DrawingSceneRenderer';
 import type { DrawingLabel } from '../src/core/model/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /**
  * A `noFill` label (Pine `color = na`) must keep its STYLE's geometry: the text
@@ -45,7 +45,7 @@ function recordingCtx() {
     return { ctx: ctx as unknown as CanvasRenderingContext2D, texts: () => texts, fills: () => fills };
 }
 
-const theme = { textColor: '#e0e0e0', fontFamily: 'sans-serif' } as unknown as VelaTheme;
+const theme = { textColor: '#e0e0e0', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme;
 
 function makeLabel(style: DrawingLabel['style'], noFill: boolean): DrawingLabel {
     return {

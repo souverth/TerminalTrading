@@ -1,4 +1,4 @@
-// vela/ui — the headless-first component kit. Overlay chrome (menu, dialog, drawer,
+// terminal-trading/ui — the headless-first component kit. Overlay chrome (menu, dialog, drawer,
 // tooltip) is driven by Zag machines; form primitives (switch, select, number, text,
 // color, popover) use vanilla controllers so they match the existing settings chrome
 // pixel-for-pixel. Every component is `components/<name>/{controller,view,styles,index}.ts`.

@@ -1,17 +1,17 @@
 // The SHELL options — the one option vocabulary both batteries-included shells share.
-// `VelaWidgetOptions` (deprecated wrapper) = chart options (`VelaOptions`) + this;
-// `VelaWorkspaceOptions` = the same minus `height`, plus the grid options — and at the
+// `TerminalTradingWidgetOptions` (deprecated wrapper) = chart options (`TerminalTradingOptions`) + this;
+// `TerminalTradingWorkspaceOptions` = the same minus `height`, plus the grid options — and at the
 // workspace, every chart option given top-level becomes the DEFAULT of each cell.
 // Every name below means the SAME thing in both shells; per-shell multiplicity
 // (one chart vs N cells) is noted per field, never a semantic fork.
 import type { DataProvider } from '../core/ports/DataProvider';
 import type { ScriptingEngine } from '../core/ports/ScriptingEngine';
 import type { IndicatorManifest, IndicatorLoader } from './indicators';
-import type { VelaStorage } from './persist';
+import type { TerminalTradingStorage } from './persist';
 import type { TopbarComposition } from './topbar-composition';
 
 /** What a shell (widget or workspace) accepts BEYOND the chart options themselves. */
-export interface VelaShellOptions {
+export interface TerminalTradingShellOptions {
     /** Provider factories, keyed by provider name. The shell owns the call cycle: the
      *  widget re-instantiates on each chart rebuild; the workspace instantiates once
      *  onto its single shared feed. */
@@ -67,10 +67,10 @@ export interface VelaShellOptions {
     autofocus?: boolean;
     /** Bring the shell back AS YOU LEFT IT: persist the full state document
      *  (`getState()`) and restore it at construction. `true` uses the shell's default
-     *  key ('vela-widget' / 'vela-workspace'); a string is the storage key. */
+     *  key ('tt-widget' / 'tt-workspace'); a string is the storage key. */
     persist?: boolean | string;
     /** Storage backend for `persist` — defaults to localStorage in BOTH shells. Inject
-     *  any {@link VelaStorage} (sync or async) for custom backends (REST, IndexedDB, …)
+     *  any {@link TerminalTradingStorage} (sync or async) for custom backends (REST, IndexedDB, …)
      *  or the exported in-memory adapter for session-lived state. */
-    storage?: VelaStorage;
+    storage?: TerminalTradingStorage;
 }

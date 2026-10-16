@@ -10,7 +10,7 @@ import { SceneGraph, type PaneNode } from '../src/renderers/native/core/SceneGra
 import { CoordinateSystem } from '../src/renderers/native/core/CoordinateSystem';
 import { NativeRenderer } from '../src/renderers/native/NativeRenderer';
 import { cellChartDefaults } from '../src/workspace/ChartCell';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import { DARK_THEME } from '../src/core/theme';
 import { resolveAnimations, type PriceAxisTick, type PriceAxisTickContext, type PriceAxisTicksFn, type RendererDisplayOptions } from '../src/core/options';
 import type { IChartRenderer } from '../src/core/ports/IChartRenderer';
@@ -340,7 +340,7 @@ describe('the priceAxisTicks feature and the priceAxis option', () => {
         expect(new NativeRenderer(display()).readFeature('priceAxisTicks')).toBeNull();
     });
 
-    it('VelaOptions.priceAxis.ticks reaches the renderer at construction', () => {
+    it('TerminalTradingOptions.priceAxis.ticks reaches the renderer at construction', () => {
         const fn: PriceAxisTicksFn = () => null;
         const seen: Array<RendererDisplayOptions | undefined> = [];
         const fake = {
@@ -365,8 +365,8 @@ describe('the priceAxisTicks feature and the priceAxis option', () => {
             return fake;
         }
         const renderer = Recording as unknown as new (opts?: RendererDisplayOptions) => IChartRenderer;
-        new Vela({} as unknown as HTMLElement, { priceAxis: { ticks: fn }, renderer }, { engines: [] });
-        new Vela({} as unknown as HTMLElement, { renderer }, { engines: [] });
+        new TerminalTrading({} as unknown as HTMLElement, { priceAxis: { ticks: fn }, renderer }, { engines: [] });
+        new TerminalTrading({} as unknown as HTMLElement, { renderer }, { engines: [] });
         expect(seen[0]!.priceAxisTicks).toBe(fn);
         expect(seen[1]!.priceAxisTicks).toBeNull();
     });

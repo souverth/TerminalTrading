@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { FrvpStyle, PositionLevelMode } from '../../../core/drawings';
 import { DIRECTION_OPTIONS, FixedRangeVolumeProfile, LINE_STYLE_OPTIONS, PositionTool } from '../../../core/drawings';
 import { contrastColor } from '../../shared/drawing-geometry';
@@ -22,7 +22,7 @@ const FRVP_ANCHOR: readonly SelectOption[] = [
 ];
 
 /** Position tool: account and risk sizing, the three levels, and which labels show. */
-export function buildPositionSection(grid: HTMLElement, drawing: PositionTool, actions: SettingsActions, theme: VelaTheme): void {
+export function buildPositionSection(grid: HTMLElement, drawing: PositionTool, actions: SettingsActions, theme: TerminalTradingTheme): void {
     const live = (): PositionTool => {
         const d = actions.resolve();
         return d instanceof PositionTool ? d : drawing;
@@ -134,8 +134,8 @@ export function buildPositionSection(grid: HTMLElement, drawing: PositionTool, a
     }
 
     const summary = document.createElement('div');
-    summary.className = 'vela-field-span';
-    summary.style.cssText = 'opacity:0.7;font-size:11px;line-height:1.4;border-top:1px solid var(--vela-border);padding-top:6px;font-variant-numeric:tabular-nums;';
+    summary.className = 'tt-field-span';
+    summary.style.cssText = 'opacity:0.7;font-size:11px;line-height:1.4;border-top:1px solid var(--tt-border);padding-top:6px;font-variant-numeric:tabular-nums;';
     refreshers.push(() => {
         const d = live();
         summary.textContent = `${d.headerLabel()}  —  ${d.lossSizeLabel()}`;
@@ -145,7 +145,7 @@ export function buildPositionSection(grid: HTMLElement, drawing: PositionTool, a
 }
 
 /** Fixed-range volume profile: rows, value area, colors and its level lines. */
-export function buildProfileSection(grid: HTMLElement, drawing: FixedRangeVolumeProfile, actions: SettingsActions, theme: VelaTheme): void {
+export function buildProfileSection(grid: HTMLElement, drawing: FixedRangeVolumeProfile, actions: SettingsActions, theme: TerminalTradingTheme): void {
     const styleOf = (): FrvpStyle => {
         const d = actions.resolve();
         return d instanceof FixedRangeVolumeProfile ? d.frvp : drawing.frvp;
@@ -203,7 +203,7 @@ export function buildProfileSection(grid: HTMLElement, drawing: FixedRangeVolume
     const styles = LINE_STYLE_OPTIONS.map((o) => ({ value: o.value, label: o.label }));
     const levelRow = (label: string, showPath: keyof FrvpStyle, colorPath: keyof FrvpStyle, stylePath: keyof FrvpStyle): void => {
         const row = document.createElement('div');
-        row.className = 'vela-field-span';
+        row.className = 'tt-field-span';
         row.style.cssText = 'display:flex;align-items:center;gap:8px;';
         const sw = buildFieldControl({
             kind: 'switch',
@@ -211,7 +211,7 @@ export function buildProfileSection(grid: HTMLElement, drawing: FixedRangeVolume
             onChange: (v) => actions.patch({ [`frvp.${showPath}`]: v }),
         });
         const lbl = document.createElement('span');
-        lbl.className = 'vela-field-label';
+        lbl.className = 'tt-field-label';
         lbl.style.flex = '1';
         lbl.textContent = label;
         let cur = (s[colorPath] as string | undefined) ?? contrastColor(theme.background);

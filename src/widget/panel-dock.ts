@@ -6,7 +6,7 @@
 // Both shells drive the same dock, so the exclusivity rule and the button wiring exist ONCE.
 // The chrome is reached through {@link PanelChrome} (the topbar implements it structurally) —
 // the dock never imports the topbar, and a different chrome can host the same buttons.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { PanelsState } from '../state/document';
 import { DEFAULT_PANEL_ORDER, sidePanels, type SidePanelButton, type SidePanelDescriptor, type SidePanelHandle, type SidePanelHeader, type WidgetContext } from './contributions';
 import { SidePanel } from './side-panel';
@@ -35,7 +35,7 @@ export interface BuiltInPanel {
     order: number;
     panel: SidePanel;
     /** Rebind hook, called by {@link PanelDock.onChart}. */
-    onChart?(chart: Vela): void;
+    onChart?(chart: TerminalTrading): void;
 }
 
 interface Entry {
@@ -44,7 +44,7 @@ interface Entry {
     icon: string;
     order: number;
     panel: SidePanel;
-    onChart?: (chart: Vela) => void;
+    onChart?: (chart: TerminalTrading) => void;
     /** Contributed entries are created (and destroyed) by the dock; built-ins by the shell. */
     contributed: boolean;
     handle?: SidePanelHandle;
@@ -60,7 +60,7 @@ export class PanelDock {
     private pinned = new Set<string>();
     /** A restored `open` naming a panel that has not registered yet: honored when it docks. */
     private pendingOpen: string | null = null;
-    private chart: Vela | null = null;
+    private chart: TerminalTrading | null = null;
 
     constructor(
         private readonly host: HTMLElement,
@@ -86,7 +86,7 @@ export class PanelDock {
         for (const entry of [...this.entries]) if (entry.contributed && !registered.includes(entry.desc!)) this.drop(entry);
         for (const desc of registered) {
             if (this.entries.some((e) => e.desc === desc)) continue;
-            const panel = new SidePanel(this.host, desc.title, `vela-panel-${desc.id}`, {
+            const panel = new SidePanel(this.host, desc.title, `tt-panel-${desc.id}`, {
                 width: desc.width,
                 resizable: desc.resizable,
                 minWidth: desc.minWidth,
@@ -117,7 +117,7 @@ export class PanelDock {
                 entry.handle = desc.mount(this.deps.context(), panel.content, header) ?? undefined;
                 if (this.chart) entry.handle?.onChart?.(this.chart);
             } catch (err) {
-                console.warn(`[vela] side panel "${desc.id}" failed to mount`, err);
+                console.warn(`[terminal-trading] side panel "${desc.id}" failed to mount`, err);
             }
             this.add(entry);
         }
@@ -126,7 +126,7 @@ export class PanelDock {
     }
 
     /** Bind (or rebind) every docked panel to a chart instance. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         this.chart = chart;
         for (const entry of this.entries) {
             if (entry.onChart) entry.onChart(chart);
@@ -223,7 +223,7 @@ export class PanelDock {
         try {
             entry.handle?.destroy?.();
         } catch (err) {
-            console.warn(`[vela] side panel "${entry.id}" failed to release`, err);
+            console.warn(`[terminal-trading] side panel "${entry.id}" failed to release`, err);
         }
         entry.panel.destroy();
     }

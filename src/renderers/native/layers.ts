@@ -9,7 +9,7 @@
 // `host.pushData`) and `setNativeData(`${id}-pending`, …)` loading ranges; both arrive in the
 // layer's render args every frame.
 import type { OHLCV } from '../../core/model/ohlcv';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import type { CoordinateSystem, PriceScale, PaneBounds } from './core/CoordinateSystem';
 
 /** Everything a layer needs to paint one frame. */
@@ -28,7 +28,7 @@ export interface RendererLayerArgs {
      *  pane — so a layer-backed indicator moved to its own pane takes its layer along. */
     scale: PriceScale;
     bounds: PaneBounds;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
     /** The active price style — layers tied to a chart type gate their visibility on it. */
     priceStyle: string;
     /** Frame clock (ms) for pulses/fades; monotonic within a session. */

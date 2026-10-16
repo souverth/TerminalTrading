@@ -12,17 +12,17 @@ const MIN_FONT_PX = 12;
 /** Share of the chart width the text may occupy (breathing room at both edges). */
 const FILL = 0.9;
 
-const STYLE_ID = 'vela-widget-watermark';
+const STYLE_ID = 'tt-widget-watermark';
 const CSS = `
-.vela-watermark {
+.tt-watermark {
     position: absolute;
     /* Insets follow the renderer-published gutters AND the price-pane vertical
      * bounds (mount container), so the mark centers on the PRICE PANE — never
      * the study panes below, the drawings toolbar, or the price scale. */
-    top: var(--vela-price-pane-top, 0px);
-    bottom: var(--vela-price-pane-bottom, 0px);
-    left: var(--vela-toolbar-gutter, 0px);
-    right: var(--vela-scale-gutter, 0px);
+    top: var(--tt-price-pane-top, 0px);
+    bottom: var(--tt-price-pane-bottom, 0px);
+    left: var(--tt-toolbar-gutter, 0px);
+    right: var(--tt-scale-gutter, 0px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,7 +30,7 @@ const CSS = `
     overflow: hidden;
     pointer-events: none;
     z-index: 1;
-    color: var(--vela-fg);
+    color: var(--tt-fg);
     opacity: 0.05;
     font-size: ${MAX_FONT_PX}px;
     font-weight: 700;
@@ -38,14 +38,14 @@ const CSS = `
     user-select: none;
     white-space: nowrap;
 }
-.vela-watermark-replay {
+.tt-watermark-replay {
     display: inline-flex;
     align-items: center;
     gap: 0.25em;
     margin-top: 0.1em;
     font-size: 0.8em;
 }
-.vela-watermark [hidden] { display: none !important; }
+.tt-watermark [hidden] { display: none !important; }
 `;
 
 /**
@@ -79,13 +79,13 @@ export class Watermark {
     constructor(host: HTMLElement, symbol: string, timeframe: string) {
         injectStyles(STYLE_ID, CSS, host.ownerDocument);
         this.el = host.ownerDocument.createElement('div');
-        this.el.className = 'vela-watermark';
+        this.el.className = 'tt-watermark';
         // Opt into the renderer's PNG export, beneath the canvases — on screen the mark
         // sits behind the candles.
-        this.el.dataset.velaScreenshot = 'under';
+        this.el.dataset.ttScreenshot = 'under';
         this.text = host.ownerDocument.createElement('span');
         this.replayLine = host.ownerDocument.createElement('span');
-        this.replayLine.className = 'vela-watermark-replay';
+        this.replayLine.className = 'tt-watermark-replay';
         this.replayLine.append(iconEl('replay', host.ownerDocument), host.ownerDocument.createTextNode('Replay'));
         this.el.append(this.text, this.replayLine);
         host.appendChild(this.el);

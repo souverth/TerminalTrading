@@ -98,14 +98,14 @@ last non-zero duration set through the option or the feature.
 #### Styling the `shadeRight` veil
 
 While a `crosshairOverride` with `shadeRight` paints its veil, the chart also places an
-empty element with the class `vela-shade-right` over exactly the veiled area: from the
+empty element with the class `tt-shade-right` over exactly the veiled area: from the
 right edge of the picked bar to the price scale, across the full plot height. It sits
 below the crosshair layer and above the candles, indicators and drawings, so a
 `backdrop-filter` on it reaches the bars under the veil but never the crosshair line or the
 veil color itself:
 
 ```css
-.vela-shade-right { backdrop-filter: grayscale(1); }
+.tt-shade-right { backdrop-filter: grayscale(1); }
 ```
 
 ```js
@@ -123,7 +123,7 @@ follows a synced crosshair's veil too.
 
 | Feature | Type | Default | Notes |
 |---|---|---|---|
-| `attribution` | boolean | `true` | The in-chart attribution mark (bottom-left logomark linking to the Vela™ project). Disabling it is allowed only when an equivalent visible attribution is displayed elsewhere on the page (see the repository's [`NOTICE`](../../NOTICE) file). |
+| `attribution` | boolean | `true` | The in-chart attribution mark (bottom-left logomark linking to the Terminal Trading project). Disabling it is allowed only when an equivalent visible attribution is displayed elsewhere on the page (see the repository's [`NOTICE`](../../NOTICE) file). |
 | `settings` | boolean | `false` | An in-chart gear button + dialog to edit a curated slice of the rich config (colors, fonts, scale, timezone) with export/import. |
 | `marks` | boolean or `{ visible?, groups? }` | everything on | The [timeline-mark](./api-reference.md#chartmarks--the-timeline-marks-control-surface) lane above the time axis. `false` hides the lane; `{ groups: { dividends: false } }` hides one group — the same switch as the Events tab's checkboxes, persisted with the config. Partial merge; malformed fields drop. |
 

@@ -29,23 +29,23 @@ export class DatePicker {
             b.className = className;
             return b;
         };
-        this.prev = button('vela-date-picker-nav');
+        this.prev = button('tt-date-picker-nav');
         this.prev.append(iconEl('chevron-left', doc));
-        this.next = button('vela-date-picker-nav');
+        this.next = button('tt-date-picker-nav');
         this.next.append(iconEl('chevron-right', doc));
-        this.monthBtn = button('vela-date-picker-switch');
+        this.monthBtn = button('tt-date-picker-switch');
         this.monthBtn.setAttribute('aria-label', 'Choose month');
-        this.yearBtn = button('vela-date-picker-switch');
+        this.yearBtn = button('tt-date-picker-switch');
         this.yearBtn.setAttribute('aria-label', 'Choose year');
         const title = doc.createElement('div');
-        title.className = 'vela-date-picker-title';
+        title.className = 'tt-date-picker-title';
         title.append(this.monthBtn, this.yearBtn);
         const head = doc.createElement('div');
-        head.className = 'vela-date-picker-head';
+        head.className = 'tt-date-picker-head';
         head.append(this.prev, title, this.next);
 
         this.week = doc.createElement('div');
-        this.week.className = 'vela-date-picker-week';
+        this.week.className = 'tt-date-picker-week';
         for (const d of WEEKDAY_LABELS) {
             const cell = doc.createElement('span');
             cell.textContent = d;
@@ -67,7 +67,7 @@ export class DatePicker {
         on(this.yearBtn, () => this.ctrl.showYears());
 
         this.el = doc.createElement('div');
-        this.el.className = 'vela-date-picker';
+        this.el.className = 'tt-date-picker';
         this.el.append(head, this.week, this.grid);
         this.paint();
     }
@@ -94,19 +94,19 @@ export class DatePicker {
         this.next.setAttribute('aria-label', nav.next);
         const dates = this.ctrl.panel === 'date';
         this.week.hidden = !dates;
-        this.grid.className = dates ? 'vela-date-picker-grid' : 'vela-date-picker-cells';
+        this.grid.className = dates ? 'tt-date-picker-grid' : 'tt-date-picker-cells';
         this.grid.replaceChildren(...this.ctrl.cells().map((cell) => this.cellEl(doc, cell, dates)));
     }
 
     private cellEl(doc: Document, cell: DatePickerCell, dates: boolean): HTMLElement {
         if (cell.blank) {
             const blank = doc.createElement('span');
-            blank.className = 'vela-date-picker-blank';
+            blank.className = 'tt-date-picker-blank';
             return blank;
         }
         const b = doc.createElement('button');
         b.type = 'button';
-        b.className = dates ? 'vela-date-picker-day' : 'vela-date-picker-cell';
+        b.className = dates ? 'tt-date-picker-day' : 'tt-date-picker-cell';
         b.textContent = cell.label;
         if (cell.checked) b.dataset.checked = '1';
         if (cell.today) b.dataset.today = '1';

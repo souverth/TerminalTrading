@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import { ACCENT, BEARISH, BULLISH } from '../src/core/palette';
 import type {
     IChartRenderer,
@@ -36,7 +36,7 @@ import type { IndicatorModel } from '../src/core/model/indicator';
 import type { CandleSeries } from '../src/core/model/series';
 import type { ScenePatch } from '../src/core/model/patch';
 import type { InputValue } from '../src/core/model/inputs';
-import type { VelaTheme, PriceStyle } from '../src/core/options';
+import type { TerminalTradingTheme, PriceStyle } from '../src/core/options';
 import type { Unsubscribe } from '../src/core/util/types';
 import type { ScriptRun } from '../src/core/script-run';
 
@@ -74,9 +74,9 @@ class FakeRenderer implements IChartRenderer {
     private viewportCb: ((r: VisibleRange) => void) | null = null;
     private removeCb: ((id: string) => void) | null = null;
 
-    mount(_c: HTMLElement, _t: VelaTheme): void { this.mounted = true; }
-    themes: VelaTheme[] = [];
-    setTheme(t: VelaTheme): void { this.themes.push(t); }
+    mount(_c: HTMLElement, _t: TerminalTradingTheme): void { this.mounted = true; }
+    themes: TerminalTradingTheme[] = [];
+    setTheme(t: TerminalTradingTheme): void { this.themes.push(t); }
     resize(): void {}
     readonly name = 'fake';
     readonly features: readonly string[] = [];
@@ -377,7 +377,7 @@ describe('EngineOrchestrator', () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
         // volume:false — this test counts mounted models; keep the default-on volume indicator out of it.
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
 
         const ema = chart.addIndicator('//@version=5\nindicator("EMA", overlay=true)\nplot(close)');
         chart.addIndicator('//@version=5\nindicator("RSI")\nplot(close)');
@@ -415,7 +415,7 @@ describe('EngineOrchestrator', () => {
 
     it('setTheme re-skins the renderer and emits theme:changed; a same-theme call no-ops', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         const seen: string[] = [];
         chart.on('theme:changed', (t) => seen.push(t.background));
@@ -435,7 +435,7 @@ describe('EngineOrchestrator', () => {
     it('the in-chart legend ✕ removes the indicator (renderer teardown + stream stop + event)', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("Stream", overlay=true)\nplot(close)');
         await chart.ready();
         await flush();
@@ -457,7 +457,7 @@ describe('EngineOrchestrator', () => {
         try {
             const data = makeBars(50);
             const snapshot = structuredClone(data);
-            const chart = new Vela({} as unknown as HTMLElement, { data, timeframe: '60', live: true, volume: false }, { renderer: new FakeRenderer(), engines: [] });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { data, timeframe: '60', live: true, volume: false }, { renderer: new FakeRenderer(), engines: [] });
             await chart.ready();
             const ticks: OHLCV[] = [];
             chart.on('bar', (bar) => ticks.push(bar));
@@ -473,7 +473,7 @@ describe('EngineOrchestrator', () => {
     it('hide suspends an indicator (drops visuals, keeps the record); show re-runs + re-mounts it', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("X", overlay=true)\nplot(close)');
         await chart.ready();
         await flush();
@@ -501,7 +501,7 @@ describe('EngineOrchestrator', () => {
         // unreachable — the legend eye that unhides it never existed.
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("Ghost", overlay=true)\nplot(close)');
         ind.setVisible(false); // hidden before prepare/execute — the restore ordering
         await chart.ready();
@@ -526,7 +526,7 @@ describe('EngineOrchestrator', () => {
     it('a hidden indicator does not re-run on viewport changes (resource suspension); the legend eye toggles it', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const vr = chart.addIndicator('//@version=6\nindicator("VR", overlay=true)\nx = chart.right_visible_bar_time\nplot(close)');
         await chart.ready();
         await flush();
@@ -550,7 +550,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator(testNativeDescriptor);
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             const h1 = chart.addNativeIndicator('test-native');
             await chart.ready();
             await flush();
@@ -590,7 +590,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator(multiDescriptor);
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             const h1 = chart.addNativeIndicator('test-multi');
             const h2 = chart.addNativeIndicator('test-multi', { inputs: { len: 20 } });
             await chart.ready();
@@ -640,7 +640,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator({ ...testNativeDescriptor, type: 'strict-native', title: 'Strict', multiInstance: true, create: () => { const n = new StrictNative(); made.push(n); return n; } });
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             // The restored-ledger shape: add, then hide immediately — before ready/start.
             const h = chart.addNativeIndicator('strict-native');
             h.setVisible(false);
@@ -691,7 +691,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator({ ...testNativeDescriptor, type: 'layer-multi', title: 'Multi', multiInstance: true, create: () => { const n = new LayerNative(); multis.push(n); return n; } });
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             const s = chart.addNativeIndicator('layer-single');
             const m1 = chart.addNativeIndicator('layer-multi');
             const m2 = chart.addNativeIndicator('layer-multi');
@@ -745,7 +745,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator(unscaledDescriptor);
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             const plain = chart.addNativeIndicator('test-native');
             const unscaled = chart.addNativeIndicator('test-unscaled');
             await chart.ready();
@@ -769,7 +769,7 @@ describe('EngineOrchestrator', () => {
         try {
             const renderer = new FakeRenderer();
             const engine = new MockEngine();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
             const pine = chart.addIndicator('//@version=5\nindicator("P", overlay=true)\nplot(close)'); // added FIRST
             const nat = chart.addNativeIndicator('test-native'); // added SECOND
             await chart.ready();
@@ -794,7 +794,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator(betaDescriptor);
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             await chart.ready();
 
             const before = await chart.availableNativeIndicators();
@@ -818,7 +818,7 @@ describe('EngineOrchestrator', () => {
     it('heals a live-bar gap: a discontinuous tick triggers a ranged backfill from the last known bar', async () => {
         const HOUR = 3_600_000;
         const feed = new GapFeed(10); // last loaded bar opens at T0 + 9h
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
         const seen: number[] = [];
         chart.on('bar', (b) => seen.push(b.time));
         await chart.ready();
@@ -842,7 +842,7 @@ describe('EngineOrchestrator', () => {
     it('accepts a legitimate market gap after an empty heal (cooldown — no refetch loop)', async () => {
         const HOUR = 3_600_000;
         const feed = new GapFeed(10);
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
         const seen: number[] = [];
         chart.on('bar', (b) => seen.push(b.time));
         await chart.ready();
@@ -865,7 +865,7 @@ describe('EngineOrchestrator', () => {
     it('does not heal on contiguous live bars (the normal tick path stays fetch-free)', async () => {
         const HOUR = 3_600_000;
         const feed = new GapFeed(10);
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
         await chart.ready();
         await flush();
         const lastT = 1_700_000_000_000 + 9 * HOUR;
@@ -881,7 +881,7 @@ describe('EngineOrchestrator', () => {
         try {
             const HOUR = 3_600_000;
             const feed = new GapFeed(10);
-            const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer: new FakeRenderer(), engines: [], dataFeed: feed });
             chart.addNativeIndicator('test-native');
             const barEvents: number[] = [];
             chart.on('bar', (b) => barEvents.push(b.time));
@@ -911,7 +911,7 @@ describe('EngineOrchestrator', () => {
         registerNativeIndicator(testNativeDescriptor);
         try {
             const renderer = new FakeRenderer();
-            const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+            const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
             const h = chart.addNativeIndicator('test-native');
             await chart.ready();
             await flush();
@@ -950,7 +950,7 @@ describe('EngineOrchestrator', () => {
     it('addNativeIndicator with an unregistered type returns a fail-soft handle (no mount, a warning)', async () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         const h = chart.addNativeIndicator('does-not-exist');
         await chart.ready();
         await flush();
@@ -962,7 +962,7 @@ describe('EngineOrchestrator', () => {
     it('on viewport change, re-runs ONLY visible-range-dependent scripts (debounced), passing the new range', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
 
         const vr = chart.addIndicator('//@version=6\nindicator("VR", overlay=true)\nx = chart.left_visible_bar_time\nplot(close)');
         const plain = chart.addIndicator('//@version=5\nindicator("Plain", overlay=true)\nplot(close)');
@@ -987,7 +987,7 @@ describe('EngineOrchestrator', () => {
     it('coalesces a burst of viewport events into a single re-run', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const vr = chart.addIndicator('//@version=6\nindicator("VR", overlay=true)\nx = chart.right_visible_bar_time\nplot(close)');
         await chart.ready();
         await flush();
@@ -1002,7 +1002,7 @@ describe('EngineOrchestrator', () => {
     it('live + non-visible-range → streams (mount on first emit, patch after); no full re-run on bar', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("Stream", overlay=true)\nplot(close)');
         await chart.ready();
         await flush();
@@ -1031,7 +1031,7 @@ describe('EngineOrchestrator', () => {
 
     it('an ordinary depth arrives in ONE request — no head, no steps', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 2000 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 2000 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
         await chart.ready();
         await chart.historyComplete();
         // Splitting this range only ever bought a faster FIRST candle, and nothing downstream
@@ -1053,7 +1053,7 @@ describe('EngineOrchestrator', () => {
             },
         };
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 120 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 120 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         await Promise.resolve(); // let loadMarketInner reach the progressive await
         emit!(all.slice(-10)); // below the 20-bar first-paint hold — held, the frame it would set is unusable
         expect(renderer.setBarsCalls).toEqual([]);
@@ -1077,7 +1077,7 @@ describe('EngineOrchestrator', () => {
             subscribe: () => () => {},
             loadProgressive: () => Promise.resolve(null),
         };
-        const b = new Vela({} as unknown as HTMLElement, { bars: 30 }, { renderer: fallback, engines: [new MockEngine()], dataFeed: legacy });
+        const b = new TerminalTrading({} as unknown as HTMLElement, { bars: 30 }, { renderer: fallback, engines: [new MockEngine()], dataFeed: legacy });
         await b.ready();
         await b.historyComplete();
         expect(fallback.setBarsCalls).toEqual([{ n: 30, preserveView: false }]);
@@ -1095,7 +1095,7 @@ describe('EngineOrchestrator', () => {
                 return Promise.resolve(makeBars(15)); // all the history there is
             },
         };
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 500 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 500 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         await chart.ready();
         await chart.historyComplete();
         expect(renderer.setBarsCalls).toEqual([{ n: 15, preserveView: false }]);
@@ -1116,7 +1116,7 @@ describe('EngineOrchestrator', () => {
                 return new Promise(() => {}); // a slow source that never resolves on its own
             },
         };
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 100 }, { renderer: new FakeRenderer(), engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 100 }, { renderer: new FakeRenderer(), engines: [new MockEngine()], dataFeed: feed });
         await Promise.resolve();
         emit!(makeBars(100)); // first paint releases the load pipeline
         await chart.ready();
@@ -1133,7 +1133,7 @@ describe('EngineOrchestrator', () => {
 
     it('the single-request depth boundary: 5000 in one pass, and 5001 still one (a chunk covers it)', async () => {
         const atLimit = new FakeRenderer();
-        const a = new Vela({} as unknown as HTMLElement, { bars: 5000 }, { renderer: atLimit, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
+        const a = new TerminalTrading({} as unknown as HTMLElement, { bars: 5000 }, { renderer: atLimit, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
         await a.ready();
         await a.historyComplete();
         expect(atLimit.setBarsCalls).toEqual([{ n: 5000, preserveView: false }]);
@@ -1141,7 +1141,7 @@ describe('EngineOrchestrator', () => {
         // Past the line the load is chunked, but the first chunk is 10 000 bars — so any depth
         // up to that still lands in a single round trip.
         const past = new FakeRenderer();
-        const b = new Vela({} as unknown as HTMLElement, { bars: 5001 }, { renderer: past, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
+        const b = new TerminalTrading({} as unknown as HTMLElement, { bars: 5001 }, { renderer: past, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
         await b.ready();
         await b.historyComplete();
         expect(past.setBarsCalls).toEqual([{ n: 5001, preserveView: false }]);
@@ -1149,7 +1149,7 @@ describe('EngineOrchestrator', () => {
 
     it('a requested initial window loads in ONE pass and is framed BEFORE the first paint', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela(
+        const chart = new TerminalTrading(
             {} as unknown as HTMLElement,
             { bars: 2000, visibleRange: '1D' }, // deep enough that it would normally preview-split
             { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() },
@@ -1167,7 +1167,7 @@ describe('EngineOrchestrator', () => {
     it('an explicit initial {from,to} is framed as given', async () => {
         const renderer = new FakeRenderer();
         const range = { from: 1_000, to: 5_000 };
-        const chart = new Vela(
+        const chart = new TerminalTrading(
             {} as unknown as HTMLElement,
             { bars: 2000, visibleRange: range },
             { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() },
@@ -1183,7 +1183,7 @@ describe('EngineOrchestrator', () => {
             load: (cfg: { bars?: number }) => Promise.resolve(makeBars(cfg.bars ?? 500)),
             subscribe: (): Unsubscribe => () => {},
         };
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 8000 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 8000 }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         await chart.ready();
         await flush();
         expect(renderer.setBarsCalls).toEqual([
@@ -1194,7 +1194,7 @@ describe('EngineOrchestrator', () => {
 
     it('a small request loads in one shot', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 200 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 200 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
         await chart.ready();
         await flush();
         expect(renderer.setBarsCalls).toEqual([{ n: 200, preserveView: false }]);
@@ -1202,7 +1202,7 @@ describe('EngineOrchestrator', () => {
 
     it('a mid-sized chart loads in one pass and completes with reason depth', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 500 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 500 }, { renderer, engines: [new MockEngine()], dataFeed: new SizedDataFeed() });
         const completes: { reason: string; barsLoaded: number }[] = [];
         chart.on('history:complete', (e) => completes.push(e));
         await chart.ready();
@@ -1215,7 +1215,7 @@ describe('EngineOrchestrator', () => {
         const renderer = new FakeRenderer();
         const feed = new DeepHistoryFeed(40_000);
         feed.gate = true; // park the backfill so the interactive intermediate state is observable
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         const progress: { loaded: number; target: number }[] = [];
         const completes: { reason: string; barsLoaded: number }[] = [];
         chart.on('history:progress', (e) => progress.push(e));
@@ -1241,7 +1241,7 @@ describe('EngineOrchestrator', () => {
     it('the backfill stops at genesis when a chunk adds nothing older, and reports it', async () => {
         const renderer = new FakeRenderer();
         const feed = new DeepHistoryFeed(12_000); // less than requested exists
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         const completes: { reason: string; barsLoaded: number }[] = [];
         chart.on('history:complete', (e) => completes.push(e));
 
@@ -1256,7 +1256,7 @@ describe('EngineOrchestrator', () => {
         const feed = new DeepHistoryFeed(40_000);
         feed.failRanges = true;
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         const completes: { reason: string }[] = [];
         chart.on('history:complete', (e) => completes.push(e));
 
@@ -1271,7 +1271,7 @@ describe('EngineOrchestrator', () => {
         const renderer = new FakeRenderer();
         const feed = new DeepHistoryFeed(40_000);
         feed.gate = true; // hold every ranged fetch until released
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: feed });
         await chart.ready();
         expect(renderer.bars.length).toBe(10_000);
 
@@ -1287,7 +1287,7 @@ describe('EngineOrchestrator', () => {
         const feed = new DeepHistoryFeed(40_000);
         const engine = new MockEngine();
         engine.policyA = true; // defer under historyState 'backfill' until the 'complete' notification
-        const chart = new Vela({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [engine], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { bars: 25_000, volume: false }, { renderer, engines: [engine], dataFeed: feed });
         const ind = chart.addIndicator('//@version=5\nindicator("Deep", overlay=true)\nplot(close)');
 
         await chart.ready();
@@ -1305,7 +1305,7 @@ describe('EngineOrchestrator', () => {
         const renderer = new FakeRenderer();
         const first = new MockEngine();
         const second = new MockEngine(); // also 'pine' — replaces the first
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [first, second], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [first, second], dataFeed: new MockDataFeed() });
 
         const ind = chart.addIndicator('//@version=5\nindicator("X", overlay=true)\nplot(close)');
         await chart.ready();
@@ -1321,7 +1321,7 @@ describe('EngineOrchestrator', () => {
     it('registerEngine adds an engine after construction', async () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         chart.registerEngine('pine', engine);
 
         const ind = chart.addIndicator('//@version=5\nindicator("X", overlay=true)\nplot(close)');
@@ -1336,7 +1336,7 @@ describe('EngineOrchestrator', () => {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
         engine.emitTrades = true;
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
 
         // 'visible' in the source flags the script viewport-dependent, so a viewport poke re-runs it.
         const ind = chart.addIndicator('//@version=6\nindicator("S", overlay=true)\nx = chart.left_visible_bar_time\nplot(close)');
@@ -1367,7 +1367,7 @@ describe('EngineOrchestrator', () => {
     it('with no engine registered: candles still render, addIndicator raises an actionable error', async () => {
         const err = vi.spyOn(console, 'error').mockImplementation(() => {});
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
 
         const errors: Error[] = [];
         chart.on('indicator:error', (e) => errors.push(e.error));
@@ -1407,7 +1407,7 @@ describe('EngineOrchestrator — per-bar candle colors in live value patches', (
     /** Mounts on the first emit, then returns the `bars` delta of the value patch a same-session tick sends. */
     async function tickDelta(engine: CandleColorEngine, beforeTick: () => void = () => {}) {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("Trend", overlay=true)\nplotcandle(open, high, low, close)');
         await chart.ready();
         await flush();
@@ -1492,7 +1492,7 @@ describe('EngineOrchestrator — loading placeholder + legend status', () => {
         const renderer = new FakeRenderer();
         const engine = new DeferredEngine();
         // volume:false — this test asserts nothing else is announced/inspectable pre-compute.
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const added: string[] = [];
         chart.on('indicator:added', (e) => added.push(e.id));
 
@@ -1530,7 +1530,7 @@ describe('EngineOrchestrator — loading placeholder + legend status', () => {
         const engine = new DeferredEngine();
         engine.declareShortTitle = 'MK'; // prepare-time meta already declares the compact name…
         engine.emitShortTitle = 'MK'; // …and the computed model carries it
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
 
         const ind = chart.addIndicator('//@version=5\nindicator("Slow", "MK")\nplot(close)');
         await chart.ready();
@@ -1560,7 +1560,7 @@ describe('EngineOrchestrator — loading placeholder + legend status', () => {
         const renderer = new FakeRenderer();
         const engine = new DeferredEngine();
         engine.emitOverlay = true; // prepare (regex) sees no overlay=true, the REAL model is an overlay
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
 
         const ind = chart.addIndicator('//@version=5\nindicator("Guess")\nplot(close)');
         await chart.ready();
@@ -1578,7 +1578,7 @@ describe('EngineOrchestrator — loading placeholder + legend status', () => {
     it('an input change shows the spinner during the re-compute and clears it on the new model', async () => {
         const renderer = new FakeRenderer();
         const engine = new DeferredEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("X")\nplot(close)');
         await chart.ready();
         await flush();
@@ -1595,7 +1595,7 @@ describe('EngineOrchestrator — loading placeholder + legend status', () => {
         const err = vi.spyOn(console, 'error').mockImplementation(() => {});
         const renderer = new FakeRenderer();
         const engine = new DeferredEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const errors: Error[] = [];
         chart.on('indicator:error', (e) => errors.push(e.error));
 
@@ -1670,7 +1670,7 @@ describe('EngineOrchestrator — a no-output first model never finalizes routing
         const engine = new HandDrivenEngine();
         // The chart's own initial load resolved EMPTY — the only window where a run can
         // produce nothing because the script never executed.
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new EmptyThenLiveFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new EmptyThenLiveFeed() });
         const added: string[] = [];
         chart.on('indicator:added', (e) => added.push(e.id));
 
@@ -1715,7 +1715,7 @@ describe('EngineOrchestrator — a no-output first model never finalizes routing
     it('the one-shot self-heal still moves a REAL first model that disagrees with the prepare-time guess', async () => {
         const renderer = new FakeRenderer();
         const engine = new HandDrivenEngine(); // prepare says overlay:true — the wrong static guess
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const added: string[] = [];
         chart.on('indicator:added', (e) => added.push(e.id));
 
@@ -1740,7 +1740,7 @@ describe('EngineOrchestrator — a no-output first model never finalizes routing
     it('an output-free run over REAL bars still completes the load: spinner stops, indicator announced', async () => {
         const renderer = new FakeRenderer();
         const engine = new HandDrivenEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const added: string[] = [];
         chart.on('indicator:added', (e) => added.push(e.id));
 
@@ -1782,7 +1782,7 @@ describe('EngineOrchestrator — a no-output first model never finalizes routing
         const renderer = new FakeRenderer();
         const engine = new ZeroBarEngine();
         const feed = new EmptyThenLiveFeed();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true, volume: false }, { renderer, engines: [engine], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true, volume: false }, { renderer, engines: [engine], dataFeed: feed });
         const added: string[] = [];
         chart.on('indicator:added', (e) => added.push(e.id));
 
@@ -1827,7 +1827,7 @@ describe('EngineOrchestrator — heikin ashi price style (bar transform)', () =>
     it('switching to heikinashi rebuilds the view (viewport preserved) and re-executes indicators on it', async () => {
         const renderer = new FakeRenderer();
         const engine = new RequestCaptureEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("X", overlay=true)\nplot(close)');
         await chart.ready();
         await flush();
@@ -1859,7 +1859,7 @@ describe('EngineOrchestrator — heikin ashi price style (bar transform)', () =>
     it('a chart CONSTRUCTED in heikinashi style loads the derived view from the start', async () => {
         const renderer = new FakeRenderer();
         renderer.priceStyleFeature = 'heikinashi';
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         expect(renderer.bars).toEqual(heikinAshiFull(makeBars(50)));
@@ -1869,7 +1869,7 @@ describe('EngineOrchestrator — heikin ashi price style (bar transform)', () =>
     it('live ticks derive the HA forming bar incrementally; the bar EVENT stays raw', async () => {
         const feed = new GapFeed(10);
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true, volume: false }, { renderer, engines: [], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true, volume: false }, { renderer, engines: [], dataFeed: feed });
         const seen: OHLCV[] = [];
         chart.on('bar', (b) => seen.push(b));
         await chart.ready();
@@ -1896,7 +1896,7 @@ describe('EngineOrchestrator — heikin ashi price style (bar transform)', () =>
     it('fetchSeries: the extended-ticker modifier decides — plain symbols stay raw, ";heikinashi" transforms', async () => {
         const renderer = new FakeRenderer();
         const engine = new RequestCaptureEngine();
-        const chart = new Vela(
+        const chart = new TerminalTrading(
             {} as unknown as HTMLElement,
             { symbol: 'TEST', live: false, volume: false },
             { renderer, engines: [engine], dataFeed: new MockDataFeed() },
@@ -1922,9 +1922,9 @@ describe('EngineOrchestrator — heikin ashi price style (bar transform)', () =>
 });
 
 describe('EngineOrchestrator — built-in volume native indicators', () => {
-    async function makeChart(options: { volume?: boolean } = {}): Promise<{ chart: Vela; renderer: FakeRenderer }> {
+    async function makeChart(options: { volume?: boolean } = {}): Promise<{ chart: TerminalTrading; renderer: FakeRenderer }> {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, ...options }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, ...options }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         return { chart, renderer };
@@ -2018,7 +2018,7 @@ describe('EngineOrchestrator — chart-type SDK (registerChartType)', () => {
     it('a registered bar-transform type rides the same path as the built-in heikinashi', async () => {
         registerChartType({ id: 'doubled', barTransform: DOUBLE });
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         const raw = makeBars(50);
@@ -2054,7 +2054,7 @@ describe('EngineOrchestrator — chart-type SDK (registerChartType)', () => {
             }),
         });
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
 
@@ -2088,7 +2088,7 @@ describe('EngineOrchestrator — chart-type SDK (registerChartType)', () => {
         registerChartType({ id: 'doubled', dataEngine: () => ({ start: () => { calls.push('start'); }, suspend() {}, resume() {}, stop() {} }) });
         const renderer = new FakeRenderer();
         renderer.priceStyleFeature = 'doubled';
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         expect(calls).toEqual(['start']);
@@ -2096,10 +2096,10 @@ describe('EngineOrchestrator — chart-type SDK (registerChartType)', () => {
     });
 });
 
-describe('Vela.runIndicator — execute-and-inject with structured failure', () => {
+describe('TerminalTrading.runIndicator — execute-and-inject with structured failure', () => {
     async function makeChart(engine: MockEngine) {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         return { chart, renderer };
@@ -2170,7 +2170,7 @@ describe('handle.context — positive proof the capability is wired end to end',
 
     it('resolves a snapshot through handle.context and fires context:changed', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new ContextEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new ContextEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const changed: string[] = [];
         chart.on('context:changed', ({ id }) => changed.push(id));
@@ -2188,7 +2188,7 @@ describe('handle.context — positive proof the capability is wired end to end',
 
     it('resolves null (not a hang, not a throw) on an engine without the capability', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const handle = chart.addIndicator('plot(close)');
         await flush();
@@ -2211,7 +2211,7 @@ describe('chart.panBy — the drag-equivalent keyboard pan', () => {
 
     it("prefers the renderer's own drag-clamped pan when it has one", async () => {
         const renderer = new PanRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         const before = renderer.visibleRangeCalls.length;
         chart.panBy(0.2);
@@ -2223,7 +2223,7 @@ describe('chart.panBy — the drag-equivalent keyboard pan', () => {
 
     it('falls back to an instant range shift on a renderer without panBy', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         const before = renderer.visibleRangeCalls.length;
         chart.panBy(0.5); // FakeRenderer.getVisibleRange() is null → nothing to shift, no throw
@@ -2235,7 +2235,7 @@ describe('chart.panBy — the drag-equivalent keyboard pan', () => {
             }
         }
         const ranged = new RangedRenderer();
-        const chart2 = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: ranged, engines: [], dataFeed: new MockDataFeed() });
+        const chart2 = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: ranged, engines: [], dataFeed: new MockDataFeed() });
         await chart2.ready();
         const n = ranged.visibleRangeCalls.length;
         chart2.panBy(0.5); // span 10000 × 0.5 → shift +5000
@@ -2262,7 +2262,7 @@ describe('chart-type SDK settings — renderer edits reach the type engine', () 
             }),
         });
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         renderer.firePriceStyle('settings-type'); // enter the style → the engine starts
@@ -2320,7 +2320,7 @@ class RunEngine extends MockEngine {
 
 describe('script:run — the run carries the data, not a signal to go fetch it', () => {
     it('the first run reports the declared title, its plots, and cause "history"', async () => {
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const runs: ScriptRun[] = [];
         chart.on('script:run', (run) => runs.push(run));
@@ -2343,7 +2343,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
 
     it('costs nothing when nobody listens — no context pull without a subscriber', async () => {
         const engine = new RunEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         chart.addIndicator('plot(close)');
         await flush();
@@ -2358,7 +2358,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
 
     it('the unbounded parts stay off the event: trades() is a separate, explicit pull', async () => {
         const engine = new RunEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         const runs: ScriptRun[] = [];
         chart.on('script:run', (run) => runs.push(run));
@@ -2380,7 +2380,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
     });
 
     it('attributes an input edit to "inputs" and a market switch to "market"', async () => {
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const causes: string[] = [];
         chart.on('script:run', (run) => causes.push(run.cause));
@@ -2402,7 +2402,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
     it('a new bar is "bar" and is never throttled away; forming-bar ticks collapse', async () => {
         const feed = new GapFeed(50);
         const engine = new RunEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: true, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: feed });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: true, volume: false }, { renderer: new FakeRenderer(), engines: [engine], dataFeed: feed });
         await chart.ready();
         const runs: ScriptRun[] = [];
         chart.on('script:run', (run) => runs.push(run));
@@ -2431,7 +2431,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
 
     it('never fires for a native indicator — there is no script to run', async () => {
         registerNativeIndicator(testNativeDescriptor);
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const runs: ScriptRun[] = [];
         chart.on('script:run', (run) => runs.push(run));
@@ -2445,7 +2445,7 @@ describe('script:run — the run carries the data, not a signal to go fetch it',
 
 describe('chart.runScript — execute and receive the run', () => {
     it('resolves the FIRST run, then follows later ones through onUpdate', async () => {
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new RunEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const result = await chart.runScript('plot(close)');
 
@@ -2472,7 +2472,7 @@ describe('chart.runScript — execute and receive the run', () => {
                 return Promise.reject(new Error('compile blew up'));
             }
         }
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new FailingEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer: new FakeRenderer(), engines: [new FailingEngine()], dataFeed: new MockDataFeed() });
         await chart.ready();
         const result = await chart.runScript('bad(');
         expect(result.ok).toBe(false);
@@ -2486,7 +2486,7 @@ describe('chart.runScript — execute and receive the run', () => {
 describe('host-supplied indicator ids (AddIndicatorOptions.id)', () => {
     async function makeChart(engine: MockEngine = new RunEngine()) {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         return { chart, renderer };
     }
@@ -2507,7 +2507,7 @@ describe('host-supplied indicator ids (AddIndicatorOptions.id)', () => {
         expect(runs).toEqual(['doc:rsi-1']);
         const model = renderer.mountedModels.find((m) => m.id === 'doc:rsi-1' && m.series.length > 0);
         expect(model).toBeDefined();
-        expect(model!.paneId).toBe('pane-doc:rsi-1'); // the pane id is derived from the indicator id (data-vela-pane)
+        expect(model!.paneId).toBe('pane-doc:rsi-1'); // the pane id is derived from the indicator id (data-tt-pane)
 
         const removed: string[] = [];
         chart.on('indicator:removed', (e) => removed.push(e.id));
@@ -2681,7 +2681,7 @@ describe('EngineOrchestrator — declaration props', () => {
     it('merges schema defaults with add-time overrides and passes them to execute', async () => {
         const renderer = new FakeRenderer();
         const engine = new PropsEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('indicator("P")', { props: { initial_capital: 25000 } });
         await chart.ready();
         await flush();
@@ -2696,7 +2696,7 @@ describe('EngineOrchestrator — declaration props', () => {
     it('setProps re-runs the session with merged prop overrides', async () => {
         const renderer = new FakeRenderer();
         const engine = new PropsEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('indicator("P")');
         await chart.ready();
         await flush();
@@ -2716,7 +2716,7 @@ describe('EngineOrchestrator — declaration props', () => {
     it("routes a renderer 'prop' edit to the props bag and an input edit to inputs", async () => {
         const renderer = new FakeRenderer();
         const engine = new PropsEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('indicator("P")');
         await chart.ready();
         await flush();
@@ -2737,7 +2737,7 @@ describe('EngineOrchestrator — declaration props', () => {
 describe('EngineOrchestrator — force_overlay routing', () => {
     it('stamps force_overlay items with the price pane while own items keep the study pane', async () => {
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new ForcedOverlayEngine()], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new ForcedOverlayEngine()], dataFeed: new MockDataFeed() });
         const ind = chart.addIndicator('//@version=5\nindicator("Study")\nplot(close)');
         await chart.ready();
         await flush();
@@ -2777,10 +2777,10 @@ describe('native indicators — legend: false (host-owned chrome)', () => {
     };
     afterEach(() => unregisterNativeIndicator(legendless.type));
 
-    async function makeChart(): Promise<{ chart: Vela; renderer: FakeRenderer }> {
+    async function makeChart(): Promise<{ chart: TerminalTrading; renderer: FakeRenderer }> {
         registerNativeIndicator(legendless);
         const renderer = new FakeRenderer();
-        const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         return { chart, renderer };
@@ -2834,7 +2834,7 @@ describe('handle.updateCode — the same indicator runs new code', () => {
     async function makeChart(opts: { live?: boolean } = {}) {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: opts.live ?? false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: opts.live ?? false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         return { chart, renderer, engine };
@@ -2997,7 +2997,7 @@ describe('handle.updateCode — the outcome, rollback and declared defaults', ()
     async function makeChart(opts: { live?: boolean } = {}) {
         const renderer = new FakeRenderer();
         const engine = new MockEngine();
-        const chart = new Vela({} as unknown as HTMLElement, { live: opts.live ?? false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
+        const chart = new TerminalTrading({} as unknown as HTMLElement, { live: opts.live ?? false, volume: false }, { renderer, engines: [engine], dataFeed: new MockDataFeed() });
         await chart.ready();
         await flush();
         return { chart, renderer, engine };

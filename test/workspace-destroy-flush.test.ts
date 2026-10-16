@@ -15,7 +15,7 @@ import { describe, it, expect, beforeAll, vi } from 'vitest';
     disconnect() {}
 };
 
-import { VelaWorkspace } from '../src/workspace/VelaWorkspace';
+import { TerminalTradingWorkspace } from '../src/workspace/TerminalTradingWorkspace';
 
 beforeAll(() => {
     Element.prototype.animate ??= (() => ({ cancel() {}, finish() {}, addEventListener() {} })) as unknown as Element['animate'];
@@ -26,7 +26,7 @@ beforeAll(() => {
 function mountWorkspace(opts: Record<string, unknown> = {}) {
     const host = document.createElement('div');
     document.body.append(host);
-    return new VelaWorkspace(host, { layout: '1', ...opts } as never);
+    return new TerminalTradingWorkspace(host, { layout: '1', ...opts } as never);
 }
 
 describe('tearing down a workspace with an unsaved edit', () => {

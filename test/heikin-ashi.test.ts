@@ -4,7 +4,7 @@ import { heikinAshiFull, heikinAshiNext } from '../src/core/price-styles/heikin-
 import { barTransformFor, parseExtendedTicker } from '../src/core/price-styles/BarTransform';
 import { registerBuiltinChartTypes } from '../src/chart-types/builtins';
 
-registerBuiltinChartTypes(); // the mapping is registry-driven (normally seeded by the Vela constructor)
+registerBuiltinChartTypes(); // the mapping is registry-driven (normally seeded by the TerminalTrading constructor)
 
 function bar(i: number, open: number, high: number, low: number, close: number, volume?: number): OHLCV {
     return { time: 1_700_000_000_000 + i * 60_000, open, high, low, close, ...(volume != null ? { volume } : {}) };

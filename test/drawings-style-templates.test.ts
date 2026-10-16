@@ -3,7 +3,7 @@
 // `toolTemplates()` / `setToolTemplates()` so a host can keep them.
 import { describe, it, expect } from 'vitest';
 import { TypedEventBus } from '../src/core/events/EventBus';
-import type { VelaEventMap } from '../src/core/events/types';
+import type { TerminalTradingEventMap } from '../src/core/events/types';
 import { DrawingController } from '../src/core/drawings/DrawingController';
 import { builtinToolTemplates, captureToolDefaults, createDrawing, type DrawingIntent, type DrawingToolTemplate, type IDrawingsRendererPort } from '../src/core/drawings';
 import type { IChartRenderer } from '../src/core/ports/IChartRenderer';
@@ -31,7 +31,7 @@ class FakePort implements IDrawingsRendererPort {
 
 function setup() {
     const port = new FakePort();
-    const events = new TypedEventBus<VelaEventMap>();
+    const events = new TypedEventBus<TerminalTradingEventMap>();
     const renderer = { capabilities: { userDrawings: true }, userDrawingsPort: port } as unknown as IChartRenderer;
     const ctrl = new DrawingController(renderer, events, undefined);
     const announced: string[] = [];

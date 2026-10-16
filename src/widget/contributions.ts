@@ -2,7 +2,7 @@
 // apps) contribute ACTIONS as data (never DOM): the widget projects them into its own
 // chrome — topbar buttons, context-menu items — so any future view layer (React) can
 // project the same descriptors. Register at import time, before widgets are constructed.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { LegendActionView, LegendCalloutView } from '../core/ports/IChartRenderer';
 import type { ScriptingEngine } from '../core/ports/ScriptingEngine';
 import type { SymbolDescriptor } from '../core/ports/DataProvider';
@@ -15,7 +15,7 @@ export interface WidgetContext {
     /** The CURRENT inner chart. Read it through this getter rather than capturing it:
      *  a shell may replace its chart instance, and a captured one would be destroyed.
      *  (Symbol and timeframe switches are applied IN PLACE — the instance survives them.) */
-    chart: Vela;
+    chart: TerminalTrading;
     /** LIVE getters, like `chart` — they resolve the ACTIVE cell's market at every
      *  read, so an attachment that holds its mount context keeps reading the truth
      *  after a symbol/timeframe switch. Read them at the point of use; never copy
@@ -112,7 +112,7 @@ export interface WidgetActionDescriptor {
     /** Always required, even icon-only: it is the button's aria-label and tooltip, the
      *  mobile drawer row's text, and the context-menu item's label. */
     label: string;
-    /** Icon id from the `vela/ui` icon registry (register yours with `registerIcon`). */
+    /** Icon id from the `terminal-trading/ui` icon registry (register yours with `registerIcon`). */
     icon?: string;
     /** Topbar only: render the DESKTOP button icon-only, like the built-in tools — the
      *  `label` moves to the aria-label and a kit tooltip instead of button text (mobile
@@ -168,7 +168,7 @@ export interface WidgetAttachment {
 export interface SidePanelHandle {
     /** (Re)bind to a chart instance: on mount, after every widget rebuild, and — in a
      *  workspace — whenever the active cell changes. */
-    onChart?(chart: Vela): void;
+    onChart?(chart: TerminalTrading): void;
     /** The panel just became visible. Panels that render lazily do it here. */
     onOpen?(): void;
     /** Released when the panel is dropped (widget destroy, or a re-registration). */
@@ -208,7 +208,7 @@ export interface SidePanelDescriptor {
     id: string;
     /** Header title, and the tooltip of its topbar button. */
     title: string;
-    /** Icon id from the `vela/ui` icon registry (register yours with `registerIcon`). */
+    /** Icon id from the `terminal-trading/ui` icon registry (register yours with `registerIcon`). */
     icon: string;
     /** Sort key among the panel buttons (ascending; default 100 — after the built-ins). */
     order?: number;
@@ -306,7 +306,7 @@ export function topbarActionOverride(id: string): WidgetActionDescriptor | undef
  *  stateful composites cannot be overridden and the registration is refused. */
 export function registerWidgetAction(desc: WidgetActionDescriptor): () => void {
     if (builtinTopbarSet.has(desc.id) && !overridableSet.has(desc.id)) {
-        console.warn(`[vela] widget action "${desc.id}": this built-in topbar slot is a stateful control and cannot be overridden — ignored. Overridable slots: ${OVERRIDABLE_TOPBAR_IDS.join(', ')}.`);
+        console.warn(`[terminal-trading] widget action "${desc.id}": this built-in topbar slot is a stateful control and cannot be overridden — ignored. Overridable slots: ${OVERRIDABLE_TOPBAR_IDS.join(', ')}.`);
         return () => undefined;
     }
     registry.set(desc.id, desc);
@@ -348,7 +348,7 @@ export interface LegendIndicatorInfo {
 export interface LegendActionDescriptor {
     /** Stable id — re-registering an id replaces it. */
     id: string;
-    /** Icon id from the `vela/ui` icon registry (register yours with `registerIcon`). */
+    /** Icon id from the `terminal-trading/ui` icon registry (register yours with `registerIcon`). */
     icon: string;
     tooltip: string;
     /** Sort key within the contributed group (ascending; default 0). */
@@ -382,7 +382,7 @@ export function legendActions(): LegendActionDescriptor[] {
  * indicator on THAT chart, gates each descriptor, and binds `run` to a fresh context per
  * click (never a cached one; the widget context rule). Both shells wire exactly this.
  */
-export function legendActionsProviderFor(chart: Vela, context: () => WidgetContext): (indicatorId: string) => LegendActionView[] {
+export function legendActionsProviderFor(chart: TerminalTrading, context: () => WidgetContext): (indicatorId: string) => LegendActionView[] {
     return (indicatorId) => {
         const find = (): IndicatorHandle | undefined => chart.indicators().find((h) => h.id === indicatorId);
         const infoOf = (h: IndicatorHandle): LegendIndicatorInfo => ({ id: h.id, title: h.title, ...(h.source !== undefined ? { source: h.source } : {}) });
@@ -422,7 +422,7 @@ export interface LegendCalloutContent {
 
 /** A callout's resolved presentation for one row — what {@link LegendCalloutDescriptor.callout} returns. */
 export interface LegendCalloutSpec {
-    /** Icon id from the `vela/ui` icon registry (register yours with `registerIcon`). */
+    /** Icon id from the `terminal-trading/ui` icon registry (register yours with `registerIcon`). */
     icon: string;
     /** Bubble fill — any CSS color (`color-mix` token washes match the built-in badges). */
     background: string;
@@ -480,7 +480,7 @@ export function legendCallouts(): LegendCalloutDescriptor[] {
  * panel button to a fresh context per click (never a cached one; the widget context
  * rule). Both shells wire exactly this, beside {@link legendActionsProviderFor}.
  */
-export function legendCalloutsProviderFor(chart: Vela, context: () => WidgetContext): (indicatorId: string) => LegendCalloutView[] {
+export function legendCalloutsProviderFor(chart: TerminalTrading, context: () => WidgetContext): (indicatorId: string) => LegendCalloutView[] {
     return (indicatorId) => {
         const handle = chart.indicators().find((h) => h.id === indicatorId);
         if (!handle) return [];
@@ -533,7 +533,7 @@ export interface CellStateContext {
     /** The cell's durable identity (`'c1'`, a declared name). */
     cellId: string;
     /** The cell's LIVE chart. */
-    chart: Vela;
+    chart: TerminalTrading;
     /** Add a script indicator to THIS cell through the shell (see {@link WidgetContext.addIndicator}). */
     addIndicator(entry: ExternalIndicatorEntry): void;
     /** Add a native indicator to THIS cell through the shell. */
@@ -639,9 +639,9 @@ const defaultEngines = new Map<string, EngineFactory>();
 /**
  * Register (or replace) a DEFAULT scripting engine for a language: every widget and
  * workspace cell built afterwards registers `make()` on its chart automatically — the
- * app-level wiring for hosts that pair Vela with an engine package, same shape as the
+ * app-level wiring for hosts that pair Terminal Trading with an engine package, same shape as the
  * other contribution registries. A per-instance `engines` option still wins for the
- * same language, and the bare `Vela` chart is untouched: with nothing registered here,
+ * same language, and the bare `Terminal Trading` chart is untouched: with nothing registered here,
  * nothing changes anywhere (there is still no bundled default engine).
  */
 export function registerDefaultEngine(language: string, make: EngineFactory): () => void {

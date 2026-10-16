@@ -1,10 +1,10 @@
 // A themed hover tooltip for RENDERER chrome (legend rows, the drawing toolbar, the
 // in-chart dialogs) — the same look as the ui kit's Tooltip, without importing the kit:
-// renderer chrome must work on a BARE chart, where no `.vela-ui` token host exists, so
+// renderer chrome must work on a BARE chart, where no `.tt-ui` token host exists, so
 // the tip carries its own tokens (`applyChromeTokens`) like the rest of the in-chart
 // chrome. Native `title` tooltips are banned here for the same reason they are banned on
 // the widget chrome: they look foreign and cannot be themed.
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import { iconAt } from '../../core/icons';
 import { applyChromeTokens } from './theme-tokens';
 
@@ -12,7 +12,7 @@ export interface ChromeTooltipOptions {
     /** Positioned container the tip mounts into (the chart plot, the toolbar host…). */
     host: HTMLElement;
     /** Live theme — read at OPEN time, so a theme switch never shows a stale tip. */
-    theme: () => VelaTheme;
+    theme: () => TerminalTradingTheme;
     /** Tip text — read at OPEN time (dynamic labels: Hide/Show). Empty ⇒ no tip. */
     text: () => string;
     /** Hover delay before the tip opens. Default 700 ms. */
@@ -51,10 +51,10 @@ export function attachChromeTooltip(anchor: HTMLElement, opts: ChromeTooltipOpti
         // The tooltip layer token (60) keeps tips above the in-chart dialogs (40) — the
         // settings dialog's own control tips used to open BEHIND its card at a fixed 25.
         tip.style.cssText =
-            'position:absolute;z-index:var(--vela-z-tooltip);pointer-events:none;' +
-            'background:var(--vela-bg);border:1px solid var(--vela-border);color:var(--vela-fg);' +
-            'border-radius:var(--vela-radius-md);padding:4px 9px;box-shadow:var(--vela-shadow);' +
-            'font:var(--vela-font-size-md) var(--vela-font);' +
+            'position:absolute;z-index:var(--tt-z-tooltip);pointer-events:none;' +
+            'background:var(--tt-bg);border:1px solid var(--tt-border);color:var(--tt-fg);' +
+            'border-radius:var(--tt-radius-md);padding:4px 9px;box-shadow:var(--tt-shadow);' +
+            'font:var(--tt-font-size-md) var(--tt-font);' +
             (opts.wrap ? 'max-width:260px;' : 'white-space:nowrap;');
         applyChromeTokens(tip, opts.theme());
         opts.host.appendChild(tip);
@@ -101,7 +101,7 @@ export interface ChromeHintOptions {
     /** See {@link ChromeTooltipOptions.host}. */
     host: HTMLElement;
     /** See {@link ChromeTooltipOptions.theme}. */
-    theme: () => VelaTheme;
+    theme: () => TerminalTradingTheme;
     /** Badge diameter in px. Default 16. */
     size?: number;
 }
@@ -116,17 +116,17 @@ export interface ChromeHintOptions {
 export function chromeHint(text: string, opts: ChromeHintOptions): { el: HTMLElement; dispose: () => void } {
     const px = opts.size ?? 16;
     const el = document.createElement('span');
-    el.className = 'vela-hint';
+    el.className = 'tt-hint';
     el.setAttribute('role', 'img');
     el.setAttribute('aria-label', text);
     el.innerHTML = iconAt('info', px);
     el.style.cssText =
         `flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:${px}px;height:${px}px;` +
-        'border-radius:50%;cursor:help;user-select:none;background:var(--vela-hover);color:var(--vela-fg-muted);' +
-        'transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;';
+        'border-radius:50%;cursor:help;user-select:none;background:var(--tt-hover);color:var(--tt-fg-muted);' +
+        'transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;';
     const hover = (on: boolean): void => {
-        el.style.background = on ? 'var(--vela-active)' : 'var(--vela-hover)';
-        el.style.color = on ? 'var(--vela-fg-bright)' : 'var(--vela-fg-muted)';
+        el.style.background = on ? 'var(--tt-active)' : 'var(--tt-hover)';
+        el.style.color = on ? 'var(--tt-fg-bright)' : 'var(--tt-fg-muted)';
     };
     el.addEventListener('pointerenter', () => hover(true));
     el.addEventListener('pointerleave', () => hover(false));

@@ -103,7 +103,7 @@ describe('rect helpers', () => {
 });
 
 describe('switchController', () => {
-    it('toggle emits; setChecked does not (vela-sync)', () => {
+    it('toggle emits; setChecked does not (tt-sync)', () => {
         const seen: boolean[] = [];
         const c = switchController({ checked: false, onChange: (v) => seen.push(v) });
         c.setChecked(true);
@@ -181,12 +181,12 @@ describe('snapToStep', () => {
 
 describe('closed field size', () => {
     it('number, text, and select share a 100px column and ellipsize overflow', () => {
-        expect(NUMBER_CSS).toContain('.vela-num:not([data-fill]) { width: 100px;');
-        expect(TEXT_CSS).toContain('.vela-text:not([data-fill]) { width: 100px;');
-        expect(SELECT_CSS).toContain('.vela-select:not([data-fill]) { width: 100px;');
+        expect(NUMBER_CSS).toContain('.tt-num:not([data-fill]) { width: 100px;');
+        expect(TEXT_CSS).toContain('.tt-text:not([data-fill]) { width: 100px;');
+        expect(SELECT_CSS).toContain('.tt-select:not([data-fill]) { width: 100px;');
         expect(TEXT_CSS).toContain('text-overflow: ellipsis');
         expect(SELECT_CSS).toContain('text-overflow: ellipsis');
-        expect(SELECT_CSS).toContain('.vela-select-list {\n    width: max-content;');
+        expect(SELECT_CSS).toContain('.tt-select-list {\n    width: max-content;');
         expect(SELECT_CSS).toContain('white-space: nowrap');
     });
 });

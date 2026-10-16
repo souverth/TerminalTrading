@@ -41,7 +41,7 @@ describe('legend callout contributions', () => {
                     ? null // natives show no bubble — the per-indicator gate
                     : {
                           icon: 'market-open',
-                          background: 'var(--vela-up)',
+                          background: 'var(--tt-up)',
                           color: 'red',
                           tooltip: `Status of ${ind.title}`,
                           content: {
@@ -74,7 +74,7 @@ describe('legend callout contributions', () => {
         expect(provider('native-1')).toHaveLength(0); // null spec: no bubble
         const views = provider('ind-1');
         expect(views).toHaveLength(1);
-        expect(views[0]).toMatchObject({ id: 'status', icon: 'market-open', background: 'var(--vela-up)', color: 'red', tooltip: 'Status of EMA' });
+        expect(views[0]).toMatchObject({ id: 'status', icon: 'market-open', background: 'var(--tt-up)', color: 'red', tooltip: 'Status of EMA' });
         expect(views[0]!.content?.title).toBe('Session');
         expect(views[0]!.content?.items[0]).toEqual({ type: 'text', text: 'Market is open.' });
 

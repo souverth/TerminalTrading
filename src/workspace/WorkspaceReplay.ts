@@ -4,20 +4,20 @@
 // replay time — a 1h chart and a 1D chart next to each other never reveal the future to
 // one another. A single-chart layout hands every call straight to that chart's replay
 // (tick replay included).
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import { TypedEventBus } from '../core/events/EventBus';
-import type { VelaEventMap } from '../core/events/types';
+import type { TerminalTradingEventMap } from '../core/events/types';
 import type { ReplayBounds, ReplayEndReason, ReplayState } from '../core/ReplayControl';
 import { timeframeToMs } from '../data/timeframe';
 
 /** The workspace replay's events — the chart `replay:*` events, reported for the ACTIVE cell. */
 export interface WorkspaceReplayEventMap extends Record<string, unknown> {
-    'replay:start': VelaEventMap['replay:start'];
-    'replay:step': VelaEventMap['replay:step'];
-    'replay:tick': VelaEventMap['replay:tick'];
-    'replay:play': VelaEventMap['replay:play'];
+    'replay:start': TerminalTradingEventMap['replay:start'];
+    'replay:step': TerminalTradingEventMap['replay:step'];
+    'replay:tick': TerminalTradingEventMap['replay:tick'];
+    'replay:play': TerminalTradingEventMap['replay:play'];
     'replay:pause': undefined;
-    'replay:end': VelaEventMap['replay:end'];
+    'replay:end': TerminalTradingEventMap['replay:end'];
 }
 
 /** Options for {@link WorkspaceReplay.start}. */
@@ -32,12 +32,12 @@ export interface WorkspaceReplayStartOptions {
 
 /** What the controller reads from its workspace. */
 export interface WorkspaceReplayHost {
-    cells(): ReadonlyArray<{ readonly id: string; readonly chart: Vela }>;
+    cells(): ReadonlyArray<{ readonly id: string; readonly chart: TerminalTrading }>;
     activeId(): string | null;
     onCells(handler: (e: { kind: 'created' | 'destroyed' | 'active'; id: string }) => void): () => void;
 }
 
-type Cell = { readonly id: string; readonly chart: Vela };
+type Cell = { readonly id: string; readonly chart: TerminalTrading };
 
 /** How many bars one step may reveal on a single chart (a runaway-loop guard, never a real limit). */
 const MAX_BARS_PER_STEP = 100_000;
@@ -122,7 +122,7 @@ export class WorkspaceReplay {
         if (!this.session) return this;
         if (intervalMs !== undefined) {
             if (!(Number.isFinite(intervalMs) && intervalMs > 0)) {
-                console.warn(`[vela] workspace.replay.play(${intervalMs}) ignored — the interval must be a positive number of ms`);
+                console.warn(`[terminal-trading] workspace.replay.play(${intervalMs}) ignored — the interval must be a positive number of ms`);
                 return this;
             }
             this.intervalMs = intervalMs;
@@ -183,12 +183,12 @@ export class WorkspaceReplay {
     // ── internals ──
 
     /** The one chart of a single-chart layout — it replays on its own, tick replay included. */
-    private solo(): Vela | null {
+    private solo(): TerminalTrading | null {
         const cells = this.host.cells();
         return cells.length === 1 ? cells[0]!.chart : null;
     }
 
-    private activeChart(): Vela | null {
+    private activeChart(): TerminalTrading | null {
         const cells = this.host.cells();
         return (cells.find((c) => c.id === this.host.activeId()) ?? cells[0])?.chart ?? null;
     }

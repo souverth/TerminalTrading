@@ -1,4 +1,4 @@
-// Browser global build (window.Vela) — batteries-included: the full public
+// Browser global build (window.Terminal Trading) — batteries-included: the full public
 // API plus the bundled providers, as one self-contained IIFE for script-tag
 // usage and the playground. The npm entry (`./index`) stays lean.
 export * from './index';

@@ -10,15 +10,15 @@ import { iconEl } from '../ui/icons';
 import { injectStyles } from '../ui/styles';
 import { layoutGridCanvas, paintLayoutGrid } from './layout-picker';
 
-const STYLE_ID = 'vela-widget-more-drawer';
+const STYLE_ID = 'tt-widget-more-drawer';
 const CSS = `
-.vela-md-actions {
+.tt-md-actions {
     display: flex;
     gap: 6px;
     padding: 2px 2px 10px;
-    border-bottom: 1px solid var(--vela-border);
+    border-bottom: 1px solid var(--tt-border);
 }
-.vela-md-action {
+.tt-md-action {
     all: unset;
     flex: 1 1 0;
     min-height: 48px;
@@ -29,15 +29,15 @@ const CSS = `
     gap: 4px;
     border-radius: 8px;
     font-size: 11px;
-    color: var(--vela-fg);
+    color: var(--tt-fg);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-md-action:active { background: var(--vela-hover); }
-.vela-md-action:disabled { opacity: 0.35; cursor: default; }
-.vela-md-action .vela-icon { font-size: 17px; width: 17px; height: 17px; }
-.vela-md-list { padding: 6px 0 4px; }
-.vela-md-row {
+.tt-md-action:active { background: var(--tt-hover); }
+.tt-md-action:disabled { opacity: 0.35; cursor: default; }
+.tt-md-action .tt-icon { font-size: 17px; width: 17px; height: 17px; }
+.tt-md-list { padding: 6px 0 4px; }
+.tt-md-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -47,12 +47,12 @@ const CSS = `
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-md-row:active { background: var(--vela-hover); }
-.vela-md-row[data-checked='1'] { background: var(--vela-hover-strong); }
-.vela-md-row .vela-icon { flex: none; font-size: 17px; width: 17px; height: 17px; color: var(--vela-fg-muted); }
-.vela-md-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--vela-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-md-row-value { flex: none; font-size: 13px; color: var(--vela-fg-muted); }
-.vela-md-back {
+.tt-md-row:active { background: var(--tt-hover); }
+.tt-md-row[data-checked='1'] { background: var(--tt-hover-strong); }
+.tt-md-row .tt-icon { flex: none; font-size: 17px; width: 17px; height: 17px; color: var(--tt-fg-muted); }
+.tt-md-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--tt-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-md-row-value { flex: none; font-size: 13px; color: var(--tt-fg-muted); }
+.tt-md-back {
     all: unset;
     display: flex;
     align-items: center;
@@ -61,26 +61,26 @@ const CSS = `
     padding: 0 2px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
     cursor: pointer;
-    border-bottom: 1px solid var(--vela-border);
+    border-bottom: 1px solid var(--tt-border);
     width: 100%;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
 }
-/* The layout sub-view's grid canvas, centered and touch-sized (the base .vela-lp-grid
+/* The layout sub-view's grid canvas, centered and touch-sized (the base .tt-lp-grid
    squares are popover-sized for a mouse). */
-.vela-md-gridwrap { display: flex; justify-content: center; padding: 14px 0 10px; }
-.vela-md-gridwrap .vela-lp-grid { grid-template-columns: repeat(4, 44px); grid-auto-rows: 44px; gap: 8px; }
-.vela-md-section {
+.tt-md-gridwrap { display: flex; justify-content: center; padding: 14px 0 10px; }
+.tt-md-gridwrap .tt-lp-grid { grid-template-columns: repeat(4, 44px); grid-auto-rows: 44px; gap: 8px; }
+.tt-md-section {
     padding: 12px 2px 4px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.4px;
     text-transform: uppercase;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
 }
-.vela-md-empty { padding: 18px 2px; color: var(--vela-fg-muted); font-size: 13px; }
+.tt-md-empty { padding: 18px 2px; color: var(--tt-fg-muted); font-size: 13px; }
 `;
 
 export interface MoreDrawerAction {
@@ -168,7 +168,7 @@ export class MoreDrawer {
 
         if (this.view !== 'main') {
             const back = doc.createElement('button');
-            back.className = 'vela-md-back';
+            back.className = 'tt-md-back';
             back.appendChild(iconEl('chevron-left', doc));
             back.appendChild(doc.createTextNode(this.view === 'style' ? 'Chart type' : this.view === 'layout' ? 'Layout' : 'Alerts'));
             back.addEventListener('click', () => this.show('main'));
@@ -183,19 +183,19 @@ export class MoreDrawer {
 
     private row(doc: Document, label: string, opts: { icon?: string; glyph?: string; value?: string; chevron?: boolean; checked?: boolean; onClick: () => void }): HTMLElement {
         const el = doc.createElement('div');
-        el.className = 'vela-md-row';
+        el.className = 'tt-md-row';
         if (opts.icon) {
             const icon = iconEl(opts.icon, doc);
             if (opts.glyph) icon.innerHTML = opts.glyph;
             el.appendChild(icon);
         }
         const text = doc.createElement('span');
-        text.className = 'vela-md-row-label';
+        text.className = 'tt-md-row-label';
         text.textContent = label;
         el.appendChild(text);
         if (opts.value) {
             const value = doc.createElement('span');
-            value.className = 'vela-md-row-value';
+            value.className = 'tt-md-row-value';
             value.textContent = opts.value;
             el.appendChild(value);
         }
@@ -207,10 +207,10 @@ export class MoreDrawer {
 
     private renderMain(doc: Document): void {
         const actions = doc.createElement('div');
-        actions.className = 'vela-md-actions';
+        actions.className = 'tt-md-actions';
         const action = (icon: string, label: string, enabled: boolean, run: () => void): void => {
             const b = doc.createElement('button');
-            b.className = 'vela-md-action';
+            b.className = 'tt-md-action';
             b.disabled = !enabled;
             b.appendChild(iconEl(icon, doc));
             b.appendChild(doc.createTextNode(label));
@@ -226,7 +226,7 @@ export class MoreDrawer {
         if (actions.childElementCount > 0) this.drawer.body.appendChild(actions);
 
         const list = doc.createElement('div');
-        list.className = 'vela-md-list';
+        list.className = 'tt-md-list';
         const current = this.opts.priceStyles().find((s) => s.id === this.opts.priceStyle());
         list.appendChild(this.row(doc, 'Chart type', { icon: 'style-line', value: current?.label, chevron: true, onClick: () => this.show('style') }));
         if (this.opts.layout) {
@@ -267,7 +267,7 @@ export class MoreDrawer {
 
     private renderStyle(doc: Document): void {
         const list = doc.createElement('div');
-        list.className = 'vela-md-list';
+        list.className = 'tt-md-list';
         const current = this.opts.priceStyle();
         for (const style of this.opts.priceStyles()) {
             list.appendChild(
@@ -288,15 +288,15 @@ export class MoreDrawer {
         const layout = this.opts.layout;
         if (!layout) return;
         const list = doc.createElement('div');
-        list.className = 'vela-md-list';
+        list.className = 'tt-md-list';
         // The desktop dropdown's grid canvas, touch-sized: the current rows×cols
         // rectangle is lit, a tap applies that grid immediately (no hover preview).
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-md-gridwrap';
+        wrap.className = 'tt-md-gridwrap';
         const { el: grid, squares } = layoutGridCanvas(doc);
         paintLayoutGrid(squares, layout.shape());
         grid.addEventListener('click', (e) => {
-            const sq = (e.target as Element | null)?.closest?.('.vela-lp-sq');
+            const sq = (e.target as Element | null)?.closest?.('.tt-lp-sq');
             if (!(sq instanceof HTMLButtonElement)) return;
             layout.onSelectGrid(Number(sq.dataset.r) + 1, Number(sq.dataset.c) + 1);
             this.drawer.hide();
@@ -317,7 +317,7 @@ export class MoreDrawer {
         const syncs = layout.syncs?.() ?? [];
         if (syncs.length > 0) {
             const heading = doc.createElement('div');
-            heading.className = 'vela-md-section';
+            heading.className = 'tt-md-section';
             heading.textContent = 'Sync';
             list.appendChild(heading);
             for (const s of syncs) {
@@ -339,13 +339,13 @@ export class MoreDrawer {
         const alerts = this.opts.alerts?.() ?? [];
         if (alerts.length === 0) {
             const empty = doc.createElement('div');
-            empty.className = 'vela-md-empty';
+            empty.className = 'tt-md-empty';
             empty.textContent = 'No alerts yet.';
             this.drawer.body.appendChild(empty);
             return;
         }
         const list = doc.createElement('div');
-        list.className = 'vela-md-list';
+        list.className = 'tt-md-list';
         for (const a of alerts) {
             list.appendChild(this.row(doc, `${a.title}: ${a.message}`, { value: new Date(a.time).toLocaleTimeString(), onClick: () => undefined }));
         }

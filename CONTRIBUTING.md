@@ -1,6 +1,6 @@
-# Contributing to Vela™
+# Contributing to Terminal Trading
 
-Thank you for considering a contribution to Vela™. Whether you fix a bug, add a drawing
+Thank you for considering a contribution to Terminal Trading. Whether you fix a bug, add a drawing
 tool, improve a provider, or clarify the docs, your help is appreciated.
 
 This page tells you how to contribute so your work lands quickly. The most important
@@ -37,7 +37,7 @@ search the existing issues to avoid duplicates. A useful report includes:
 
 - what you expected and what happened instead
 - reproduction steps: a list of steps to reproduce issues. StackBlitz / CodeSandbox link, images or videos are welcome to illustrate the issue
-- your environment: `@luxalgo/vela` version, the scripting-engine addon and its version
+- your environment: `terminal-trading` version, the scripting-engine addon and its version
   if one is involved, browser and OS, and whether the chart runs on WebGL2 or the
   canvas2d fallback.
 
@@ -111,7 +111,7 @@ split it.
 Some changes need agreement on the design before code. **Open an issue first** when your
 change:
 
-- adds or changes a **public option, method, or type**, every Vela consumer sees it,
+- adds or changes a **public option, method, or type**, every Terminal Trading consumer sees it,
   and it has semver consequences;
 - adds or reshapes a **port** (`DataProvider` / `MarketDataFeed`, `ScriptingEngine`,
   `IChartRenderer`) or a **plugin SDK** registry;
@@ -122,7 +122,7 @@ change:
   live in separate packages; see [License and CLA](#license-and-cla)).
 
 Describe the use case, the seam you intend to use, and what stays out of the core.
-Prefer extending Vela through its **public seams**, chart types, renderer layers,
+Prefer extending Terminal Trading through its **public seams**, chart types, renderer layers,
 native indicators, widget actions, settings sections, over adding a new hole in a
 layer. If you believe a new seam is needed, propose it as a neutral, general-purpose
 surface, not one shaped for a single feature.
@@ -180,7 +180,7 @@ Before you mark the PR ready for review, make sure that:
 
 ## Testing requirements
 
-Every behavior change comes with a test. Vela is tested in two tiers; see
+Every behavior change comes with a test. Terminal Trading is tested in two tiers; see
 [docs/contributing/testing.md](docs/contributing/testing.md).
 
 - **Unit tests (vitest, Node).** Pure logic and the port contracts. The
@@ -216,16 +216,16 @@ Three rules:
   narration of the next line.
 - **Everything is written in English**, code, comments, commit messages, docs.
 - **Never name other charting products** in code, comments, commit messages, or docs.
-  Describe a feature by its own behavior.
+  Describe a feature by its own behavior. The credit to the Vela project that the NOTICE requires is the one exception; keep it.
 - **Match the surrounding code**: naming, comment density, file layout. New UI-kit
-  components follow the `controller.ts` + `view.ts` + `styles.css` + `index.ts`
+  components follow the `controller.ts` + `view.ts` + `styles.ts` + `index.ts`
   skeleton in [docs/contributing/adding-a-ui-component.md](docs/contributing/adding-a-ui-component.md).
 
 ---
 
 ## Changelog
 
-`CHANGELOG.md` is written for the person **using** Vela, not for the developer reading
+`CHANGELOG.md` is written for the person **using** Terminal Trading, not for the developer reading
 the diff. When your PR changes something a user can notice, add the entry in the same
 PR:
 
@@ -245,7 +245,7 @@ Read a few existing entries before writing yours and match their tone.
 
 ## License and CLA
 
-Vela™ is licensed under the **Apache License 2.0** (see [LICENSE](LICENSE)) with a
+Terminal Trading is licensed under the **Apache License 2.0** (see [LICENSE](LICENSE)) with a
 **NOTICE-based attribution requirement** (see [NOTICE](NOTICE)): every chart renders a
 small attribution mark by default, and any example or documentation that disables it
 must mention the equivalent-notice obligation. Do not weaken either side.
@@ -255,10 +255,10 @@ signed [CLA](https://github.com/LuxAlgo/cla-signatures/blob/main/CLA.md). You si
 once, for all LuxAlgo repositories, from inside your first pull request: a bot comments
 with instructions and the PR status stays pending until the signature is recorded.
 
-**Keep the license boundary intact.** Vela ships no scripting engine and must not
+**Keep the license boundary intact.** Terminal Trading ships no scripting engine and must not
 import one. Pine Script support lives in the separate, AGPL-3.0
 [`@luxalgo/vela-pinets`](https://github.com/LuxAlgo/Vela-pinets) addon; importing it
-(or the PineTS runtime) into this package would pull that license onto Vela, and the
+(or the PineTS runtime) into this package would pull that license onto Terminal Trading, and the
 lint rules reject it. Contributions to the engine belong in that repository.
 
 ---
@@ -273,4 +273,4 @@ lint rules reject it. Contributions to the engine belong in that repository.
 
 ---
 
-Thank you for contributing to Vela™.
+Thank you for contributing to Terminal Trading.

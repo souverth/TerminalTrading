@@ -1,6 +1,8 @@
 # Contributor Workflow
 
-This page describes how to make a change in Vela™ and how to know it is finished. Start from [setup.md](./setup.md) if you have not built the project yet.
+> **Status:** Stable · **Verified against code:** 2026-10-16 · **Audience:** contributors and AI agents
+
+This page describes how to make a change in Terminal Trading and how to know it is finished. Start from [setup.md](./setup.md) if you have not built the project yet.
 
 ## The quality gate is the definition of done
 
@@ -29,7 +31,7 @@ So a green typecheck does not imply a working build, and a successful build does
 Lint is not just formatting here. The import rules are part of the architecture:
 
 - The **core** depends only on the ports and the neutral model. It imports **no concrete backend**.
-- Only the **composition root** (the `Vela` class plus the package entry point) imports concrete backends and wires the defaults.
+- Only the **composition root** (the `TerminalTrading` class plus the package entry point) imports concrete backends and wires the defaults.
 - The scripting backend may be imported only in the engine layer; the renderer dependency only in its own renderer folder; the renderer never imports the scripting backend.
 
 These rules are enforced by lint as an import ACL with named exception buckets. **Adding a new backend means deliberately extending that ACL** — that friction is intentional, so a boundary is never crossed by accident.
@@ -39,13 +41,13 @@ These rules are enforced by lint as an import ACL with named exception buckets. 
 `npm run playground` serves `playground/` with vite on `http://localhost:5190` (no build step;
 changes hot-reload on save). The index page links the two surfaces:
 
-- **`/widget.html`** (`playground/widget.ts`) — mounts a single-chart **VelaWorkspace**
+- **`/widget.html`** (`playground/widget.ts`) — mounts a single-chart **TerminalTradingWorkspace**
   (`layout: false`) straight from `src/`. It registers the Binance provider (public API, no
   key, no server) and the page's own `demo-engine.ts` — a tiny `ScriptingEngine`
-  implementation, since Vela™ bundles none — with a starter indicator manifest and a "Code"
+  implementation, since Terminal Trading bundles none — with a starter indicator manifest and a "Code"
   topbar entry that runs a script on demand. Use `window.ws` from the browser console to
   poke at the live instance.
-- **`/workspace.html`** (`playground/workspace.ts`) — mounts the multi-chart **VelaWorkspace**.
+- **`/workspace.html`** (`playground/workspace.ts`) — mounts the multi-chart **TerminalTradingWorkspace**.
   It registers two providers and two engines, and its default cells use the `tv` provider, so
   it needs a local server (see below):
     - `tv` — `playground/tv-provider.ts`, a client for a local market-data server.
@@ -72,7 +74,7 @@ do not expose it on a public network.
 
 ## Where to make a change, by layer
 
-Vela™ is a **core** plus three swappable **layers**, each reached through a single narrow **port**: **data providers** (`MarketDataFeed`), **scripting engines** (`ScriptingEngine`), and **renderers** (`IChartRenderer`). The only thing that crosses a port is the **neutral model**; no backend-specific type ever does. For how the core and the three layers fit together, see the [architecture overview](../architecture/overview.md).
+Terminal Trading is a **core** plus three swappable **layers**, each reached through a single narrow **port**: **data providers** (`MarketDataFeed`), **scripting engines** (`ScriptingEngine`), and **renderers** (`IChartRenderer`). The only thing that crosses a port is the **neutral model**; no backend-specific type ever does. For how the core and the three layers fit together, see the [architecture overview](../architecture/overview.md).
 
 The shape of almost every change is the same: **implement a port, then register or inject the implementation.** Only the composition root wires the defaults.
 

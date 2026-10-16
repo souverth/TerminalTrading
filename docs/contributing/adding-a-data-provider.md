@@ -1,6 +1,6 @@
 # Adding a Data Provider
 
-This page is for engineers adding a new **market-data source** to Vela™. There are two extension points, from simplest to most powerful:
+This page is for engineers adding a new **market-data source** to Terminal Trading. There are two extension points, from simplest to most powerful:
 
 1. **A `DataProvider`** — implement one method, register it with `chart.data.registerProvider(name, provider)`, and the chart's provider registry routes symbols to it. This is what you want almost always.
 2. **A `MarketDataFeed`** — replace the *entire* data layer (registry, caching, routing) with your own, injected via `deps.dataFeed`. Advanced; only when you need full control.
@@ -45,9 +45,9 @@ Every bar you return — from `getBars` or a live `onBar` — follows the same n
 ### Registering it
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 
-const chart = new Vela('#chart', { symbol: 'BTCUSDT', timeframe: '1h' });
+const chart = new TerminalTrading('#chart', { symbol: 'BTCUSDT', timeframe: '1h' });
 chart.data.registerProvider('binance', new MyBinanceProvider());
 await chart.ready();
 ```
@@ -93,7 +93,7 @@ The default feed caches **closed** bars in a shared in-memory store, keyed on th
 The provider registry is itself a `MarketDataFeed` — the one small port the core talks to (`load` / `subscribe`, plus optional `loadRange` / `symbolInfo`). To bypass the registry, caching, and routing entirely — sourcing candles from a single fixed backend, a database, or deterministic test fixtures — implement that port and inject it:
 
 ```ts
-const chart = new Vela(container, options, {
+const chart = new TerminalTrading(container, options, {
   dataFeed: myFeed, // used BARE — no registry, no auto-cache wrapping
 });
 ```

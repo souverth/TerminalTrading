@@ -1,6 +1,6 @@
 // Public composition root + default backends
-export { Vela } from './Vela';
-export type { VelaDeps, RunIndicatorResult } from './Vela';
+export { TerminalTrading } from './TerminalTrading';
+export type { TerminalTradingDeps, RunIndicatorResult } from './TerminalTrading';
 export { RendererControl } from './core/RendererControl';
 // The second pulse behind time displays — share one between a host clock and
 // `chart.renderer.setWallClock` so the countdown chip never reads a different second.
@@ -73,11 +73,11 @@ export type { TimelineMark, MarkGlyph, MarkShape, MarkContent, MarkContentSource
 // Public types
 export type * from './core/model';
 export type {
-    VelaOptions,
+    TerminalTradingOptions,
     MarketConfig,
     MarketSwitch,
     MarketSnapshot,
-    VelaTheme,
+    TerminalTradingTheme,
     ThemeName,
     ProviderName,
     RendererConstructor,
@@ -94,7 +94,7 @@ export type {
     PriceAxisTicksFn,
 } from './core/options';
 export type { CodeUpdateResult, IndicatorHandle, IndicatorEventMap } from './core/IndicatorHandle';
-export type { VelaEventMap } from './core/events/types';
+export type { TerminalTradingEventMap } from './core/events/types';
 // The script-run surface: the `script:run` payload and what `chart.runScript()` resolves.
 export type { ScriptRun, ScriptRunCause, ScriptRunResult } from './core/script-run';
 export type { StrategyState, StrategyTrade, StrategyFill } from './core/model/strategy';
@@ -134,5 +134,5 @@ export type { Resolved, ParsedSymbol } from './data/ProviderRegistry';
 export type { SceneInspection, IndicatorSummary } from './core/engine/inspect';
 export type { VisibleRangePreset } from './core/visible-range';
 
-// The plugin SDK surface (also available as the `vela/plugin` subpath).
+// The plugin SDK surface (also available as the `terminal-trading/plugin` subpath).
 export * from './plugin';

@@ -62,7 +62,7 @@ export class PanesControl {
 
     private guard(): boolean {
         if (this.controller.paneManagementSupported()) return true;
-        console.warn('[vela] the active renderer does not support pane management — chart.panes mutation ignored.');
+        console.warn('[terminal-trading] the active renderer does not support pane management — chart.panes mutation ignored.');
         return false;
     }
 }

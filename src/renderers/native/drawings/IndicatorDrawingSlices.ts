@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { DrawingTable } from '../../../core/model/drawings';
 import type { CoordinateSystem } from '../core/CoordinateSystem';
 import type { SceneGraph, PaneNode, DrawingSlice } from '../core/SceneGraph';
@@ -44,7 +44,7 @@ interface SliceEntry {
  * painting moved off the chrome canvas / DOM, so the tooltip lookup lives here now.
  */
 export class IndicatorDrawingSlices {
-    private readonly drawScene = new DrawingSceneRenderer({ timeToLogical: () => 0, barAt: () => null, theme: {} as VelaTheme });
+    private readonly drawScene = new DrawingSceneRenderer({ timeToLogical: () => 0, barAt: () => null, theme: {} as TerminalTradingTheme });
     /** Slice canvas cache, keyed `paneId|beforeZ` — same lifecycle as the user-drawing cache. */
     private readonly sliceCache = new Map<string, HTMLCanvasElement>();
     /** Tooltip hit-rects of every label drawn this frame, in plot coords (rebuilt per prepare). */
@@ -55,7 +55,7 @@ export class IndicatorDrawingSlices {
      * canvas the slices must match pixel-for-pixel (the backend composites them 1:1).
      * Runs from the renderer's data paint, just before the backend composites the scene.
      */
-    prepare(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, ref: HTMLCanvasElement): Map<string, DrawingSlice[]> {
+    prepare(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, ref: HTMLCanvasElement): Map<string, DrawingSlice[]> {
         this.tips = [];
         const out = new Map<string, DrawingSlice[]>();
         if (ref.width === 0 || ref.height === 0) {
@@ -130,7 +130,7 @@ export class IndicatorDrawingSlices {
         return out;
     }
 
-    private paintEntry(ctx: CanvasRenderingContext2D, e: SliceEntry, coords: CoordinateSystem, dataW: number, theme: VelaTheme): void {
+    private paintEntry(ctx: CanvasRenderingContext2D, e: SliceEntry, coords: CoordinateSystem, dataW: number, theme: TerminalTradingTheme): void {
         const { pane } = e;
         const paneTips: LabelTipRegion[] = [];
         ctx.save();

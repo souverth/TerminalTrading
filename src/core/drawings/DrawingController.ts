@@ -1,7 +1,7 @@
 import type { Unsubscribe } from '../util/types';
 import type { IChartRenderer } from '../ports/IChartRenderer';
 import type { TypedEventBus } from '../events/EventBus';
-import type { VelaEventMap } from '../events/types';
+import type { TerminalTradingEventMap } from '../events/types';
 import type { IDrawingsRendererPort, DrawingIntent, DrawingMode } from './port';
 import type { DrawingSeriesGateway } from './series';
 import type { DrawingsOption } from './toolbar';
@@ -75,7 +75,7 @@ export class DrawingController {
 
     constructor(
         renderer: IChartRenderer,
-        private readonly events: TypedEventBus<VelaEventMap>,
+        private readonly events: TypedEventBus<TerminalTradingEventMap>,
         option: DrawingsOption | undefined,
         seriesGateway?: DrawingSeriesGateway,
     ) {

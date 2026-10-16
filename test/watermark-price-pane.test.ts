@@ -50,8 +50,8 @@ function primed(extra?: (scene: SceneGraph) => void): { r: LayoutPriv; host: Ove
 describe('price-pane overlay insets (symbol watermark clip)', () => {
     it('with only the price pane, the bottom inset is just the time axis', () => {
         const { host } = primed();
-        expect(host.style.getPropertyValue('--vela-price-pane-top')).toBe('0px');
-        expect(host.style.getPropertyValue('--vela-price-pane-bottom')).toBe(`${TIME_AXIS_H}px`);
+        expect(host.style.getPropertyValue('--tt-price-pane-top')).toBe('0px');
+        expect(host.style.getPropertyValue('--tt-price-pane-bottom')).toBe(`${TIME_AXIS_H}px`);
     });
 
     it('with a study pane below, the bottom inset covers the study plus the time axis', () => {
@@ -59,8 +59,8 @@ describe('price-pane overlay insets (symbol watermark clip)', () => {
         const { host } = primed((scene) => {
             scene.ensurePane('rsi', 'study', 1, 1);
         });
-        expect(host.style.getPropertyValue('--vela-price-pane-top')).toBe('0px');
-        expect(host.style.getPropertyValue('--vela-price-pane-bottom')).toBe(`${100 + TIME_AXIS_H}px`);
+        expect(host.style.getPropertyValue('--tt-price-pane-top')).toBe('0px');
+        expect(host.style.getPropertyValue('--tt-price-pane-bottom')).toBe(`${100 + TIME_AXIS_H}px`);
     });
 
     it('a maximized study pane collapses the overlay to zero height', () => {
@@ -69,8 +69,8 @@ describe('price-pane overlay insets (symbol watermark clip)', () => {
         });
         r.maximizedPaneId = 'rsi';
         r.layoutPanes();
-        const top = Number.parseFloat(host.style.getPropertyValue('--vela-price-pane-top'));
-        const bottom = Number.parseFloat(host.style.getPropertyValue('--vela-price-pane-bottom'));
+        const top = Number.parseFloat(host.style.getPropertyValue('--tt-price-pane-top'));
+        const bottom = Number.parseFloat(host.style.getPropertyValue('--tt-price-pane-bottom'));
         // Overlay height = plotH − top − bottom. plotH = data + time axis.
         expect(DATA_H + TIME_AXIS_H - top - bottom).toBe(0);
     });
@@ -84,7 +84,7 @@ describe('bottom-gutter inset (host overlays above the bottom chrome)', () => {
         const { host } = primed((scene) => {
             scene.ensurePane('rsi', 'study', 1, 1);
         });
-        expect(host.style.getPropertyValue('--vela-bottom-gutter')).toBe(`${TIME_AXIS_H}px`);
+        expect(host.style.getPropertyValue('--tt-bottom-gutter')).toBe(`${TIME_AXIS_H}px`);
     });
 
     it('a collapsed bottom pane pushes the gutter up by its strip', () => {
@@ -96,7 +96,7 @@ describe('bottom-gutter inset (host overlays above the bottom chrome)', () => {
         });
         r.scene.panes.get('rsi')!.collapsed = true;
         r.layoutPanes();
-        expect(host.style.getPropertyValue('--vela-bottom-gutter')).toBe(`${TIME_AXIS_H + COLLAPSED_PANE_H}px`);
+        expect(host.style.getPropertyValue('--tt-bottom-gutter')).toBe(`${TIME_AXIS_H + COLLAPSED_PANE_H}px`);
     });
 
     it('a maximized pane fills the plot — the gutter drops back to the time axis', () => {
@@ -107,6 +107,6 @@ describe('bottom-gutter inset (host overlays above the bottom chrome)', () => {
         r.layoutPanes();
         r.maximizedPaneId = 'price';
         r.layoutPanes();
-        expect(host.style.getPropertyValue('--vela-bottom-gutter')).toBe(`${TIME_AXIS_H}px`);
+        expect(host.style.getPropertyValue('--tt-bottom-gutter')).toBe(`${TIME_AXIS_H}px`);
     });
 });

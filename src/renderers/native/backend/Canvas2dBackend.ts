@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { OHLCV } from '../../../core/model/ohlcv';
 import type { IndicatorModel } from '../../../core/model/indicator';
 import type { Fill, Background, PriceLine } from '../../../core/model/scene';
@@ -35,7 +35,7 @@ export class Canvas2dBackend implements IRenderBackend {
         this.ctx = canvas.getContext('2d');
     }
 
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme): void {
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme): void {
         const ctx = this.ctx;
         const canvas = this.canvas;
         if (!ctx || !canvas) return;
@@ -177,7 +177,7 @@ export class Canvas2dBackend implements IRenderBackend {
         i1: number,
         coords: CoordinateSystem,
         pane: PaneNode,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         barColors: ReadonlyMap<number, string>,
         dataW: number,
     ): void {
@@ -317,7 +317,7 @@ export class Canvas2dBackend implements IRenderBackend {
         coords: CoordinateSystem,
         pane: PaneNode,
         scene: SceneGraph,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         dataW: number,
     ): void {
         const baseline = scene.baselinePriceFor(pane.scale);
@@ -420,7 +420,7 @@ export class Canvas2dBackend implements IRenderBackend {
         i1: number,
         coords: CoordinateSystem,
         pane: PaneNode,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         barColors: ReadonlyMap<number, string>,
     ): void {
         const spacing = coords.bodySpacing();
@@ -541,7 +541,7 @@ export class Canvas2dBackend implements IRenderBackend {
         }
     }
 
-    private drawSeries(ctx: CanvasRenderingContext2D, spec: SeriesSpec, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: VelaTheme, off = 0): void {
+    private drawSeries(ctx: CanvasRenderingContext2D, spec: SeriesSpec, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: TerminalTradingTheme, off = 0): void {
         // Off-pane series (legend/data-window-only readouts, hidden fill anchors) are
         // kept in the model for fills and readouts but never painted here.
         if (!seriesShownOn(spec, 'pane')) return;
@@ -686,7 +686,7 @@ export class Canvas2dBackend implements IRenderBackend {
         }
     }
 
-    private drawPlotCandles(ctx: CanvasRenderingContext2D, s: CandleSeries, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: VelaTheme, off = 0): void {
+    private drawPlotCandles(ctx: CanvasRenderingContext2D, s: CandleSeries, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: TerminalTradingTheme, off = 0): void {
         const spacing = coords.bodySpacing();
         const up = s.style?.up ?? theme.upColor;
         const down = s.style?.down ?? theme.downColor;
@@ -798,7 +798,7 @@ export class Canvas2dBackend implements IRenderBackend {
         ctx.fillRect(x1, pane.bounds.top, x2 - x1, pane.bounds.height);
     }
 
-    private drawHline(ctx: CanvasRenderingContext2D, pl: PriceLine, pane: PaneNode, coords: CoordinateSystem, dataW: number, theme: VelaTheme): void {
+    private drawHline(ctx: CanvasRenderingContext2D, pl: PriceLine, pane: PaneNode, coords: CoordinateSystem, dataW: number, theme: TerminalTradingTheme): void {
         const y = Math.round(coords.priceToY(pl.price, pane.scale, pane.bounds)) + 0.5;
         if (y < pane.bounds.top || y > pane.bounds.top + pane.bounds.height) return;
         ctx.strokeStyle = pl.color ?? theme.textColor;

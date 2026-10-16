@@ -1,7 +1,7 @@
 // In-chart status line (top-left overlay): symbol + the OHLC/change of the bar under the
 // crosshair, falling back to the latest live bar. Resting values come from the chart's
 // `bar` event; hover values from the renderer crosshair seam (RendererControl.onCrosshairMove).
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { OHLCV } from '../core/model/ohlcv';
 import { injectStyles } from '../ui/styles';
 import { Tooltip } from '../ui/components/tooltip';
@@ -16,27 +16,27 @@ import { tickerIconEl } from './symbol-icon';
 import { parseSymbol } from '../data/ProviderRegistry';
 import { LEGEND_AT_TOP_ATTR } from '../renderers/shared/InputsUI';
 
-const STYLE_ID = 'vela-widget-statusline';
+const STYLE_ID = 'tt-widget-statusline';
 const CSS = `
-.vela-statusline {
+.tt-statusline {
     position: absolute;
-    top: var(--vela-space-2);
+    top: var(--tt-space-2);
     /* Track the indicator legend's left edge: the renderer publishes its toolbar gutter
      * on the mount container, and the legend sits 10px into the plot to its right —
      * so the two columns stay aligned whether the toolbar is docked (44px), collapsed
      * (16px), or absent entirely (a workspace cell: 0). */
-    left: calc(var(--vela-toolbar-gutter, 0px) + 10px);
+    left: calc(var(--tt-toolbar-gutter, 0px) + 10px);
     z-index: 10;
     display: flex;
     align-items: baseline;
-    gap: var(--vela-space-2);
+    gap: var(--tt-space-2);
     /* The chip never grows past the plot: fit() measures overflow against this width to
      * walk the layout ladder (stack, then shed values), so overflow:hidden only guards
      * the transient between a resize and the next measure. */
-    max-width: calc(100% - var(--vela-toolbar-gutter, 0px) - var(--vela-scale-gutter, 0px) - 24px);
+    max-width: calc(100% - var(--tt-toolbar-gutter, 0px) - var(--tt-scale-gutter, 0px) - 24px);
     overflow: hidden;
-    color: var(--vela-fg);
-    font-size: var(--vela-font-size-md);
+    color: var(--tt-fg);
+    font-size: var(--tt-font-size-md);
     /* Same chip treatment as the indicator legend rows (InputsUI): a translucent wash of
      * the chart background when idle — enough to keep the readout legible when candles
      * reach it — and the solid chart background on hover. Symmetric 7px padding with a
@@ -44,7 +44,7 @@ const CSS = `
      * edge on the legend column's left edge (both at left:10px) while the chip itself
      * extends 7px further left, so both columns' chips share the same left edge. */
     pointer-events: auto;
-    background: color-mix(in srgb, var(--vela-bg) 60%, transparent);
+    background: color-mix(in srgb, var(--tt-bg) 60%, transparent);
     border-radius: 4px;
     padding: 2px 7px;
     margin-left: -7px;
@@ -52,36 +52,36 @@ const CSS = `
 /* Hovering opens the chip the same way a legend row opens: solid chart background
  * plus the same inset neutral outline the indicator rows wear (InputsUI's
  * setRowHighlighted) — the two columns read as one family. */
-.vela-statusline:hover { background: var(--vela-bg); box-shadow: inset 0 0 0 1px var(--vela-border); }
+.tt-statusline:hover { background: var(--tt-bg); box-shadow: inset 0 0 0 1px var(--tt-border); }
 /* Chart hidden (the price series' eye — renderer 'candleVisible'): the line dims to
  * the same 0.5 wash a hidden indicator's legend row wears. */
-.vela-statusline.vela-sl-chart-hidden { opacity: 0.5; }
+.tt-statusline.tt-sl-chart-hidden { opacity: 0.5; }
 /* Two rows inside the chip — the identity (logo / symbol / meta / market badge) and the
  * value readout (O/H/L/C + change, or the show-chart eye). In the widest layout they sit
  * side by side on one line; the STACKED layouts (fit() decides, see the ladder in
  * statusline-model) turn the chip into a column so the values drop under the symbol. */
-.vela-statusline .vela-sl-row {
+.tt-statusline .tt-sl-row {
     display: flex;
     align-items: baseline;
-    gap: var(--vela-space-2);
+    gap: var(--tt-space-2);
     white-space: nowrap;
 }
-.vela-statusline.vela-sl-stacked {
+.tt-statusline.tt-sl-stacked {
     flex-direction: column;
     align-items: flex-start;
     /* The same air between the two rows as between the values row and the legend row
      * that follows the chip (see the stacked legend shift below). */
-    row-gap: var(--vela-space-1);
+    row-gap: var(--tt-space-1);
 }
 /* Stacked, the identity row may shrink (the meta carries the ellipsis) — the values row
  * never does, so its overflow is what fit() measures to keep descending the ladder. */
-.vela-statusline.vela-sl-stacked .vela-sl-identity { max-width: 100%; }
-.vela-statusline.vela-sl-stacked .vela-sl-meta {
+.tt-statusline.tt-sl-stacked .tt-sl-identity { max-width: 100%; }
+.tt-statusline.tt-sl-stacked .tt-sl-meta {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.vela-statusline .vela-sl-avatar {
+.tt-statusline .tt-sl-avatar {
     width: 18px;
     height: 18px;
     border-radius: 50%;
@@ -90,33 +90,33 @@ const CSS = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--vela-fg-on-fill);
+    color: var(--tt-fg-on-fill);
     font-size: 10px;
     font-weight: 700;
 }
-.vela-statusline .vela-sl-symbol { font-weight: 600; font-size: var(--vela-font-size-lg); }
-.vela-statusline .vela-sl-meta { color: var(--vela-fg-muted); font-size: var(--vela-font-size-md); font-weight: 600; }
+.tt-statusline .tt-sl-symbol { font-weight: 600; font-size: var(--tt-font-size-lg); }
+.tt-statusline .tt-sl-meta { color: var(--tt-fg-muted); font-size: var(--tt-font-size-md); font-weight: 600; }
 /* The meta opens with "· " — sit its dot one space-width after the ticker, as far as the
  * venue sits after it, not a full row gap away. */
-.vela-statusline .vela-sl-symbol + .vela-sl-meta { margin-left: calc(var(--vela-space-1) - var(--vela-space-2)); }
+.tt-statusline .tt-sl-symbol + .tt-sl-meta { margin-left: calc(var(--tt-space-1) - var(--tt-space-2)); }
 /* Market status badge — a kit callout bubble (icon-only 16px circle, label on hover
  * via the kit tooltip); the session tint is applied per status in setMarketStatus. While
  * the chart replays past bars it wears the replay badge instead (the inverse chip). */
-.vela-statusline .vela-sl-market { align-self: center; display: inline-flex; }
-.vela-statusline .vela-sl-market > [hidden] { display: none !important; }
-.vela-statusline .vela-sl-replay-badge, .vela-statusline .vela-sl-replay-badge svg { display: block; width: 16px; height: 16px; }
+.tt-statusline .tt-sl-market { align-self: center; display: inline-flex; }
+.tt-statusline .tt-sl-market > [hidden] { display: none !important; }
+.tt-statusline .tt-sl-replay-badge, .tt-statusline .tt-sl-replay-badge svg { display: block; width: 16px; height: 16px; }
 /* Tabular figures: every digit has one advance, so a readout whose text changes only in
  * its digits keeps its width — render() skips the ladder for those (see widthKey). */
-.vela-statusline .vela-sl-values { font-variant-numeric: tabular-nums; }
-.vela-statusline .vela-sl-ohlc { display: flex; gap: var(--vela-space-1); color: var(--vela-fg-muted); }
-.vela-statusline .vela-sl-ohlc b { color: var(--vela-fg); font-weight: 500; }
+.tt-statusline .tt-sl-values { font-variant-numeric: tabular-nums; }
+.tt-statusline .tt-sl-ohlc { display: flex; gap: var(--tt-space-1); color: var(--tt-fg-muted); }
+.tt-statusline .tt-sl-ohlc b { color: var(--tt-fg); font-weight: 500; }
 /* The change value wears the SAME ink as the OHLC values (set inline per render) —
  * these are the pre-ink fallbacks only. */
-.vela-statusline .vela-sl-change[data-dir='up'] { color: var(--vela-up); }
-.vela-statusline .vela-sl-change[data-dir='down'] { color: var(--vela-down); }
+.tt-statusline .tt-sl-change[data-dir='up'] { color: var(--tt-up); }
+.tt-statusline .tt-sl-change[data-dir='down'] { color: var(--tt-down); }
 /* The show-chart eye — out only while the chart is hidden (syncParts drives display),
  * replacing the value readout it took away. Same footprint as a legend action button. */
-.vela-statusline .vela-sl-eye {
+.tt-statusline .tt-sl-eye {
     align-self: center;
     align-items: center;
     justify-content: center;
@@ -126,12 +126,12 @@ const CSS = `
     border: none;
     border-radius: 3px;
     background: none;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     cursor: pointer;
     line-height: 0;
     flex: none;
 }
-.vela-statusline .vela-sl-eye:hover { color: var(--vela-fg); background: color-mix(in srgb, var(--vela-fg) 12%, transparent); }
+.tt-statusline .tt-sl-eye:hover { color: var(--tt-fg); background: color-mix(in srgb, var(--tt-fg) 12%, transparent); }
 /* Stack the TOP pane's legend below the status line (lower study panes stay put).
  * The renderer marks whichever legend sits at the plot's top edge — the price pane
  * normally, or a maximized study pane filling the plot — so the legend never merges
@@ -140,14 +140,14 @@ const CSS = `
  * CARRY a status line (the marker class set by the Statusline constructor) — the
  * stylesheet is document-global, so a bare attribute selector here would shift every
  * chart on the page, including statusline-less ones. */
-.vela-has-statusline [${LEGEND_AT_TOP_ATTR}] { transform: translateY(26px); }
+.tt-has-statusline [${LEGEND_AT_TOP_ATTR}] { transform: translateY(26px); }
 /* A stacked chip is two lines tall — the legend shifts one more line. fit() flags the
  * host whenever the ladder lands on a stacked layout. */
-.vela-has-statusline.vela-sl-stacked-host [${LEGEND_AT_TOP_ATTR}] { transform: translateY(40px); }
+.tt-has-statusline.tt-sl-stacked-host [${LEGEND_AT_TOP_ATTR}] { transform: translateY(40px); }
 /* Mobile: the same ladder at the phone's type scale — the width alone decides how much
  * of the readout fits, exactly as on a narrow desktop chart. */
-[data-layout='mobile'] .vela-statusline { font-size: var(--vela-font-size-sm); }
-[data-layout='mobile'] .vela-statusline .vela-sl-symbol { font-size: var(--vela-font-size-md); }
+[data-layout='mobile'] .tt-statusline { font-size: var(--tt-font-size-sm); }
+[data-layout='mobile'] .tt-statusline .tt-sl-symbol { font-size: var(--tt-font-size-md); }
 `;
 
 interface BarLike {
@@ -194,15 +194,15 @@ const REPLAY_LABEL = 'Replay Mode';
  */
 const REPLAY_BADGE_SVG =
     '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">' +
-    '<circle cx="8" cy="8" r="8" style="fill: var(--vela-selected-bg)"/>' +
-    '<path d="M11.7 4.75v6.5L7.2 8zM7.2 4.75v6.5L2.7 8z" style="fill: var(--vela-selected-fg); stroke: var(--vela-selected-fg); stroke-width: 0.8; stroke-linejoin: round"/>' +
+    '<circle cx="8" cy="8" r="8" style="fill: var(--tt-selected-bg)"/>' +
+    '<path d="M11.7 4.75v6.5L7.2 8zM7.2 4.75v6.5L2.7 8z" style="fill: var(--tt-selected-fg); stroke: var(--tt-selected-fg); stroke-width: 0.8; stroke-linejoin: round"/>' +
     '</svg>';
 
 /** Session ink: open wears the theme's up color; the other sessions are meaning
  *  constants from the palette (amber pre, sky post and extended, gray closed/holiday).
  *  The badge circle is the same ink at a 20% wash. */
 const MARKET_INKS: Record<MarketStatus, string> = {
-    open: 'var(--vela-up)',
+    open: 'var(--tt-up)',
     pre: SESSION_PRE,
     post: SESSION_POST,
     extended: SESSION_POST,
@@ -330,20 +330,20 @@ export class Statusline {
     ) {
         const doc = host.ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
-        host.classList.add('vela-has-statusline'); // scopes the price-legend shift to THIS host
+        host.classList.add('tt-has-statusline'); // scopes the price-legend shift to THIS host
         this.el = doc.createElement('div');
-        this.el.className = 'vela-statusline';
+        this.el.className = 'tt-statusline';
         // Opt into the renderer's PNG export — the status line is part of what's on screen.
-        this.el.dataset.velaScreenshot = '1';
+        this.el.dataset.ttScreenshot = '1';
         // Display the bare ticker — the venue prefix is identity, not label; the venue
         // itself shows in the meta segment ("· BINANCE · 1h") beside it.
         const ticker = parseSymbol(symbol).ticker;
-        this.avatarEl = tickerIconEl(doc, baseOfTicker(ticker), ticker, 'vela-sl-avatar', this.iconFor?.(symbol));
+        this.avatarEl = tickerIconEl(doc, baseOfTicker(ticker), ticker, 'tt-sl-avatar', this.iconFor?.(symbol));
         this.symbolEl = doc.createElement('span');
-        this.symbolEl.className = 'vela-sl-symbol';
+        this.symbolEl.className = 'tt-sl-symbol';
         this.symbolEl.textContent = ticker;
         this.metaEl = doc.createElement('span');
-        this.metaEl.className = 'vela-sl-meta';
+        this.metaEl.className = 'tt-sl-meta';
         // The badge is the shared kit callout bubble — no panel, so it stays a plain
         // (non-clickable) tinted circle; setMarketStatus re-dresses it per session.
         this.marketBubble = new CalloutBubble({
@@ -354,22 +354,22 @@ export class Statusline {
             host,
         });
         this.replayBadge = doc.createElement('span');
-        this.replayBadge.className = 'vela-sl-replay-badge';
+        this.replayBadge.className = 'tt-sl-replay-badge';
         this.replayBadge.innerHTML = REPLAY_BADGE_SVG;
         this.replayBadge.hidden = true;
         // One slot, two faces: the market bubble, or the replay badge while replaying.
         this.marketEl = doc.createElement('span');
-        this.marketEl.className = 'vela-sl-market';
+        this.marketEl.className = 'tt-sl-market';
         this.marketEl.append(this.marketBubble.el, this.replayBadge);
         this.ohlcEl = doc.createElement('span');
-        this.ohlcEl.className = 'vela-sl-ohlc';
+        this.ohlcEl.className = 'tt-sl-ohlc';
         this.changeEl = doc.createElement('span');
-        this.changeEl.className = 'vela-sl-change';
+        this.changeEl.className = 'tt-sl-change';
         // Show-chart eye: takes the value readout's place while the chart is hidden
         // (same glyph the legend rows wear on a hidden indicator). syncParts drives it.
         this.eyeEl = doc.createElement('button');
         this.eyeEl.type = 'button';
-        this.eyeEl.className = 'vela-sl-eye';
+        this.eyeEl.className = 'tt-sl-eye';
         this.eyeEl.innerHTML = iconAt('eye-off', 14);
         this.eyeEl.setAttribute('aria-label', 'Show chart');
         this.eyeEl.style.display = 'none';
@@ -379,10 +379,10 @@ export class Statusline {
             this.setChartHidden(false);
         });
         this.identityRow = doc.createElement('span');
-        this.identityRow.className = 'vela-sl-row vela-sl-identity';
+        this.identityRow.className = 'tt-sl-row tt-sl-identity';
         this.identityRow.append(this.avatarEl, this.symbolEl, this.metaEl, this.marketEl);
         this.valuesRow = doc.createElement('span');
-        this.valuesRow.className = 'vela-sl-row vela-sl-values';
+        this.valuesRow.className = 'tt-sl-row tt-sl-values';
         this.valuesRow.append(this.ohlcEl, this.changeEl, this.eyeEl);
         this.el.append(this.identityRow, this.valuesRow);
         host.appendChild(this.el);
@@ -392,7 +392,7 @@ export class Statusline {
             this.fitRO.observe(host);
         }
         doc.fonts?.addEventListener('loadingdone', this.onFontsLoaded);
-        // The tooltips portal to the nearest `.vela-ui` ancestor for theme tokens — resolve
+        // The tooltips portal to the nearest `.tt-ui` ancestor for theme tokens — resolve
         // them AFTER the statusline is in the DOM. The badge's content follows setMarketStatus.
         this.marketTip = new Tooltip(this.marketEl, { content: MARKET_LABELS.open, placement: 'bottom' });
         this.eyeTip = new Tooltip(this.eyeEl, { content: 'Show chart', placement: 'bottom' });
@@ -403,7 +403,7 @@ export class Statusline {
     setSymbol(symbol: string): void {
         const ticker = parseSymbol(symbol).ticker;
         this.symbolEl.textContent = ticker;
-        const fresh = tickerIconEl(this.el.ownerDocument, baseOfTicker(ticker), ticker, 'vela-sl-avatar', this.iconFor?.(symbol));
+        const fresh = tickerIconEl(this.el.ownerDocument, baseOfTicker(ticker), ticker, 'tt-sl-avatar', this.iconFor?.(symbol));
         this.avatarEl.replaceWith(fresh);
         this.avatarEl = fresh;
         this.syncParts(); // the fresh avatar must inherit a hidden logo part
@@ -439,8 +439,8 @@ export class Statusline {
     /** Apply one ladder rung: the stacked/inline shape and the readout's level. */
     private applyLayout(layout: StatuslineLayout): void {
         this.layout = layout;
-        this.el.classList.toggle('vela-sl-stacked', layout.stacked);
-        this.host.classList.toggle('vela-sl-stacked-host', layout.stacked);
+        this.el.classList.toggle('tt-sl-stacked', layout.stacked);
+        this.host.classList.toggle('tt-sl-stacked-host', layout.stacked);
         this.renderValues();
     }
 
@@ -555,7 +555,7 @@ export class Statusline {
     setChartHidden(hidden: boolean): void {
         if (hidden === this.chartHidden) return;
         this.chartHidden = hidden;
-        this.el.classList.toggle('vela-sl-chart-hidden', hidden);
+        this.el.classList.toggle('tt-sl-chart-hidden', hidden);
         this.syncParts();
         this.fit();
     }
@@ -602,7 +602,7 @@ export class Statusline {
     }
 
     /** (Re)bind to a chart instance — called after every widget rebuild. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         this.detach();
         this.lastBar = null;
         this.hoverBar = null;
@@ -642,7 +642,7 @@ export class Statusline {
         this.marketTip.destroy();
         this.eyeTip.destroy();
         this.marketBubble.destroy();
-        this.host.classList.remove('vela-has-statusline', 'vela-sl-stacked-host'); // the legend shift leaves with the line
+        this.host.classList.remove('tt-has-statusline', 'tt-sl-stacked-host'); // the legend shift leaves with the line
         this.el.remove();
     }
 
@@ -690,7 +690,7 @@ export class Statusline {
         const up = this.isUp ? this.isUp(bar) : bar.close >= bar.open;
         // ONE ink for the whole readout — OHLC values and the change share it, so the
         // row always reads in the color the plot wears at this bar.
-        const ink = up ? (this.upColor ?? 'var(--vela-up)') : (this.downColor ?? 'var(--vela-down)');
+        const ink = up ? (this.upColor ?? 'var(--tt-up)') : (this.downColor ?? 'var(--tt-down)');
         const cell = (k: string, v: number) => {
             const s = doc.createElement('span');
             if (k) s.append(`${k} `);

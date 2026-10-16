@@ -1,5 +1,5 @@
 /**
- * Canonical time in Vela: Unix epoch **milliseconds**.
+ * Canonical time in Terminal Trading: Unix epoch **milliseconds**.
  *
  * This matches JS `Date` and the bar `openTime` every provider and scripting
  * engine speaks. Each renderer converts to its own unit at its boundary (a

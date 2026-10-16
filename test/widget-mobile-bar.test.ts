@@ -21,7 +21,7 @@ function mount(withMaximize: boolean): { bar: MobileBar; stop: () => HTMLButtonE
         onSettingsClick: () => {},
         ...(withMaximize ? { onMaximizeClick: () => {} } : {}),
     });
-    return { bar, stop: () => host.querySelector<HTMLButtonElement>('.vela-mb-maximize') };
+    return { bar, stop: () => host.querySelector<HTMLButtonElement>('.tt-mb-maximize') };
 }
 
 describe('MobileBar maximize stop', () => {
@@ -46,7 +46,7 @@ describe('MobileBar maximize stop', () => {
         const { bar, stop } = mount(true);
         bar.setMaximizeActive(true);
         bar.setMaximizeVisible(false);
-        expect(stop()!.classList.contains('vela-mb-on')).toBe(true);
+        expect(stop()!.classList.contains('tt-mb-on')).toBe(true);
         expect(stop()!.hidden).toBe(true);
     });
 });

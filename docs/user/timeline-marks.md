@@ -1,7 +1,7 @@
 # Timeline marks
 
 Pin events to the chart — dividends, splits, earnings, news, releases, deployments, anything
-with a moment in time. Vela™ shows each one as a small **glyph on a lane just above the time
+with a moment in time. Terminal Trading shows each one as a small **glyph on a lane just above the time
 axis**, snapped to the bar it belongs to, and opens a **popup with the details** when it is
 clicked. The surface is `chart.marks`; it needs no scripting engine.
 
@@ -14,9 +14,9 @@ clicked. The surface is `chart.marks`; it needs no scripting engine.
 ## Quick start
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 
-const chart = new Vela('#chart', { symbol: 'NVDA', timeframe: 'D' });
+const chart = new TerminalTrading('#chart', { symbol: 'NVDA', timeframe: 'D' });
 
 chart.marks
     .defineGroup({ id: 'dividends', label: 'Dividends' })
@@ -57,7 +57,7 @@ tooltip; click it for the popup. Open the chart settings: an **Events** tab now 
 | `group` | no | The kind of event (`'dividends'`, `'news'`…). Marks of one group on one bar — or on neighbouring bars once zoomed out far enough for their glyphs to overlap — fold together; each group gets a checkbox in settings — see [Groups](#groups-clusters-and-stacks). |
 | `content` | no | What the popup shows — text, sanitized HTML, or a panel; a value or a function resolved on click. Without it a click only emits `mark:click` — see [The popup](#the-popup). |
 
-The full type is `TimelineMark`, exported from `@luxalgo/vela`.
+The full type is `TimelineMark`, exported from `terminal-trading`.
 
 ---
 
@@ -108,7 +108,7 @@ background. The token swells briefly when the pointer lands on it, and **fills**
   come straight from data without carrying markup.
 
 ```js
-import { registerIcon, svg16 } from '@luxalgo/vela/ui';
+import { registerIcon, svg16 } from 'terminal-trading/ui';
 
 registerIcon('myco.rocket', svg16('<path d="M9.5 2.5c1.8 0 3.5 1.7 4 4.5l-4 4-4-4c.5-2.8 2.2-4.5 4-4.5z"/><path d="M5.5 7 3 9.5l2 .5.5 2L8 9.5"/>'));
 

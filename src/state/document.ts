@@ -1,9 +1,9 @@
-// The ONE serializable shell-state document, shared by BOTH shells: `vela/workspace`
-// persists a multi-cell document; `vela/widget` persists the SAME document with a
+// The ONE serializable shell-state document, shared by BOTH shells: `terminal-trading/workspace`
+// persists a multi-cell document; `terminal-trading/widget` persists the SAME document with a
 // single `c1` cell (`layout: '1'`). One format means one mental model, one codec, and
 // state that moves freely between shells (a saved widget chart drops into a workspace
 // slot as-is). This module is NEUTRAL — it imports from neither shell; both re-export
-// it (`vela/widget` and `vela/workspace` expose the same names).
+// it (`terminal-trading/widget` and `terminal-trading/workspace` expose the same names).
 //
 // Design intent: the state SURFACE is the product (`getState()` / `applyState()` /
 // the `state:changed` notification); persistence is just an adapter driven through

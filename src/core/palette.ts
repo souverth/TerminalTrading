@@ -1,9 +1,9 @@
-// The semantic palette — every fixed color Vela ships that is NOT part of a swappable
-// `VelaTheme`. These are brand/meaning constants (an accent stays the accent whichever
+// The semantic palette — every fixed color Terminal Trading ships that is NOT part of a swappable
+// `TerminalTradingTheme`. These are brand/meaning constants (an accent stays the accent whichever
 // theme is active), so they live here once instead of being retyped as literals in the
 // chrome, the pickers, the defaults and the tokens.
 //
-// Theme-dependent colors (surfaces, text, borders, candles) belong to `VelaTheme` in
+// Theme-dependent colors (surfaces, text, borders, candles) belong to `TerminalTradingTheme` in
 // `theme.ts` and must NOT be duplicated here.
 
 /** Selection/menu accent — active entries, "native" badges, selected controls. */

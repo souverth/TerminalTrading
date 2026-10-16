@@ -1,5 +1,5 @@
 import { inputVisible, type InputSchema, type InputValue, type SymbolPickerFn } from '../../core/model/inputs';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import { isDarkColor } from '../../core/color';
 import { iconAt } from '../../core/icons';
 import { applyChromeTokens } from './theme-tokens';
@@ -46,7 +46,7 @@ function bagOf(row: IndicatorDialogRow, decl: DialogDecl): Record<string, InputV
 
 export interface IndicatorDialogHost {
     container: HTMLElement;
-    theme: () => VelaTheme;
+    theme: () => TerminalTradingTheme;
     mobile: () => boolean;
     dialogHost: () => HTMLElement | null;
     symbolPicker: () => SymbolPickerFn | null;
@@ -103,8 +103,8 @@ export class IndicatorInputsDialog {
         this.propSnapshot = { ...row.propValues };
         ensureDialogStyles();
         const t = this.host.theme();
-        const border = 'var(--vela-border)';
-        const fg = 'var(--vela-fg-bright)';
+        const border = 'var(--tt-border)';
+        const fg = 'var(--tt-fg-bright)';
         const host = this.host.dialogHost() ?? this.host.container;
         this.tipHost = host;
 
@@ -118,7 +118,7 @@ export class IndicatorInputsDialog {
             align: 'center',
             draggable: !this.host.mobile(),
             flush: true,
-            className: 'vela-dialog--form vela-ind-dialog',
+            className: 'tt-dialog--form tt-ind-dialog',
             closeOnEscape: false,
             footer: (foot) => {
                 foot.append(
@@ -134,7 +134,7 @@ export class IndicatorInputsDialog {
         });
         applyChromeTokens(ui.panel, t);
         ui.panel.style.colorScheme = this.isDarkTheme() ? 'dark' : 'light';
-        this.dialogTips.push(attachChromeTooltip(ui.panel.querySelector('.vela-dialog-close') as HTMLElement, {
+        this.dialogTips.push(attachChromeTooltip(ui.panel.querySelector('.tt-dialog-close') as HTMLElement, {
             host,
             theme: () => this.host.theme(),
             text: () => 'Close',
@@ -166,15 +166,15 @@ export class IndicatorInputsDialog {
                 const on = i === idx;
                 const el = tabEls[i]!;
                 el.style.borderBottomColor = on ? fg : 'transparent';
-                el.style.color = on ? 'inherit' : 'var(--vela-fg-muted)';
-                el.classList.toggle('vela-ind-tab-active', on);
+                el.style.color = on ? 'inherit' : 'var(--tt-fg-muted)';
+                el.classList.toggle('tt-ind-tab-active', on);
                 bodies[i]!.style.display = on ? 'grid' : 'none';
             }
         };
         for (const [idx, def] of tabDefs.entries()) {
             const tab = document.createElement('div');
             tab.textContent = def.name;
-            tab.className = 'vela-ind-tab';
+            tab.className = 'tt-ind-tab';
             tab.style.cssText = `padding:0 0 8px;margin-bottom:-1px;border-bottom:2px solid transparent;${tabDefs.length > 1 ? 'cursor:pointer;' : ''}`;
             tab.addEventListener('click', () => activate(idx));
             tabs.appendChild(tab);
@@ -235,7 +235,7 @@ export class IndicatorInputsDialog {
         // popover (color picker, select list) is swapped in one gesture, jumping this scroller
         // to its max — content here only scrolls when the user scrolls it.
         body.style.cssText = inputDialogBodyStyle(this.host.mobile());
-        body.className = 'vela-ind-body'; // scopes the wrapping labels (see ensureDialogStyles)
+        body.className = 'tt-ind-body'; // scopes the wrapping labels (see ensureDialogStyles)
         for (const group of groupInputs(inputs)) {
             const section = document.createElement('div');
             section.style.cssText = 'display:contents;';
@@ -352,7 +352,7 @@ export class IndicatorInputsDialog {
 
     /** One settings row (or several `inline=` inputs) placed into a section's grid. */
     private buildInputRow(grid: HTMLElement, decls: InputSchema[], row: IndicatorDialogRow): HTMLElement {
-        const idOf = (inp: InputSchema): string => `vela-inp-${row.id}-${inp.key}`;
+        const idOf = (inp: InputSchema): string => `tt-inp-${row.id}-${inp.key}`;
         const append = (el: HTMLElement): HTMLElement => {
             grid.appendChild(el);
             return el;
@@ -530,7 +530,7 @@ export class IndicatorInputsDialog {
     /** A fixed-width HH:MM combobox (typeable, plus a 30-minute-step dropdown) used by session + time. */
     private timeCombobox(id: string, current: string, width: number, onChange: (v: string) => void): HTMLElement {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-ind-combo';
+        wrap.className = 'tt-ind-combo';
         wrap.style.cssText = `position:relative;width:${width}px;`;
         const input = document.createElement('input');
         input.type = 'text';
@@ -542,7 +542,7 @@ export class IndicatorInputsDialog {
         const chevron = document.createElement('button');
         chevron.type = 'button';
         chevron.tabIndex = -1;
-        chevron.className = 'vela-ind-combo-chevron';
+        chevron.className = 'tt-ind-combo-chevron';
         chevron.setAttribute('aria-label', 'Open time list');
         chevron.innerHTML = CLOCK_SVG;
         let value = current;
@@ -591,7 +591,7 @@ export class IndicatorInputsDialog {
     /** A typeable YYYY-MM-DD field that also opens a themed month calendar. */
     private dateField(id: string, current: string, onChange: (v: string) => void): HTMLElement {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-ind-combo';
+        wrap.className = 'tt-ind-combo';
         wrap.style.cssText = 'position:relative;width:128px;';
         const input = document.createElement('input');
         input.type = 'text';
@@ -603,7 +603,7 @@ export class IndicatorInputsDialog {
         const chevron = document.createElement('button');
         chevron.type = 'button';
         chevron.tabIndex = -1;
-        chevron.className = 'vela-ind-combo-chevron';
+        chevron.className = 'tt-ind-combo-chevron';
         chevron.setAttribute('aria-label', 'Open calendar');
         chevron.innerHTML = CALENDAR_SVG;
         let value = current;
@@ -646,7 +646,7 @@ export class IndicatorInputsDialog {
     }
 
     /** Placement shared by the indicator dialog's dropdowns and the time combobox. */
-    private listPopover(): { theme: VelaTheme; matchWidth: boolean; boundary: HTMLElement | 'viewport'; boundaryInset: number; gap: number } {
+    private listPopover(): { theme: TerminalTradingTheme; matchWidth: boolean; boundary: HTMLElement | 'viewport'; boundaryInset: number; gap: number } {
         return {
             theme: this.host.theme(),
             matchWidth: true,
@@ -661,7 +661,7 @@ export class IndicatorInputsDialog {
         const pop = new Popover({
             trigger: anchor,
             theme: this.host.theme(),
-            className: 'vela-ind-cal',
+            className: 'tt-ind-cal',
             boundary: this.dialog ?? 'viewport',
             boundaryInset: 8,
             gap: 4,
@@ -714,7 +714,7 @@ export class IndicatorInputsDialog {
 
     /** Shared field chrome for text / number / select controls (fills its wrapper's width). */
     private ctrlStyle(): string {
-        return 'width:100%;box-sizing:border-box;height:34px;background:transparent;border:1px solid var(--vela-border-strong);color:var(--vela-fg-bright);border-radius:6px;padding:0 8px;font-size:14px;font-family:inherit;outline:none;';
+        return 'width:100%;box-sizing:border-box;height:34px;background:transparent;border:1px solid var(--tt-border-strong);color:var(--tt-fg-bright);border-radius:6px;padding:0 8px;font-size:14px;font-family:inherit;outline:none;';
     }
 
     /** Whether the active theme is dark (drives the dialog's `color-scheme`). */
@@ -728,7 +728,7 @@ export class IndicatorInputsDialog {
         b.textContent = label;
         // Primary = filled inverse chip; Cancel = outlined. Both hover states are in the
         // scoped stylesheet.
-        b.className = primary ? 'vela-dialog-btn vela-dialog-btn-primary' : 'vela-dialog-btn';
+        b.className = primary ? 'tt-dialog-btn tt-dialog-btn-primary' : 'tt-dialog-btn';
         b.addEventListener('click', onClick);
         return b;
     }
@@ -853,7 +853,7 @@ function groupInputs(inputs: InputSchema[]): InputGroup[] {
 const CALENDAR_SVG = iconAt('calendar', 14);
 const CLOCK_SVG = iconAt('clock', 14);
 
-const DIALOG_STYLE_ID = 'vela-ind-dialog-styles';
+const DIALOG_STYLE_ID = 'tt-ind-dialog-styles';
 /** Bump when the injected sheet's rules change so an already-mounted page refreshes them. */
 const DIALOG_STYLE_REV = '31';
 const LEGEND_ICON_PX = 16;
@@ -867,22 +867,22 @@ export function ensureDialogStyles(): void {
     s.id = DIALOG_STYLE_ID;
     s.dataset.rev = DIALOG_STYLE_REV;
     s.textContent = `
-.vela-ind-combo input{${FIELD_FOCUS_CSS}}
-.vela-ind-body .vela-field-label{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35;}
-.vela-ind-combo input:hover{border-color:var(--vela-fg-muted);}
-.vela-ind-combo input:focus{${FIELD_FOCUS_RING}}
-.vela-ind-combo-chevron{position:absolute;right:0;top:0;bottom:0;width:26px;border:none;background:transparent;color:inherit;opacity:0.55;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
-.vela-ind-combo-chevron:hover{opacity:0.9;}
-.vela-ind-cal{background:var(--vela-bg);color:var(--vela-fg);border:none;border-radius:6px;box-shadow:var(--vela-shadow);font:14px var(--vela-font);padding:10px 12px;user-select:none;}
-${overlayScrollbarCss('.vela-dialog.vela-ind-dialog *', 9)}
-.vela-ind-tab{font-weight:600;font-size:13px;line-height:20px;transition:color var(--vela-dur-fast) ease,border-color var(--vela-dur-fast) ease;}
-.vela-ind-tab:not(.vela-ind-tab-active):hover{color:var(--vela-fg-bright);}
-.vela-ind-ctl,.vela-ind-close{background-color:transparent;color:inherit;transition:color var(--vela-dur-fast) ease,background-color var(--vela-dur-fast) ease;}
-.vela-ind-ctl svg,.vela-ind-close svg{width:${LEGEND_ICON_PX}px;height:${LEGEND_ICON_PX}px;display:block;flex:none;stroke-width:1;}
-.vela-ind-ctl:hover{background-color:var(--vela-hover-strong);}
-.vela-ind-close:hover{color:var(--vela-danger) !important;background-color:var(--vela-hover-strong);}
-.vela-ind-fold{transition:border-color var(--vela-dur-fast) ease,opacity var(--vela-dur-fast) ease;}
-.vela-ind-fold:hover{border-color:var(--vela-border-strong);opacity:0.9;}`;
+.tt-ind-combo input{${FIELD_FOCUS_CSS}}
+.tt-ind-body .tt-field-label{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35;}
+.tt-ind-combo input:hover{border-color:var(--tt-fg-muted);}
+.tt-ind-combo input:focus{${FIELD_FOCUS_RING}}
+.tt-ind-combo-chevron{position:absolute;right:0;top:0;bottom:0;width:26px;border:none;background:transparent;color:inherit;opacity:0.55;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}
+.tt-ind-combo-chevron:hover{opacity:0.9;}
+.tt-ind-cal{background:var(--tt-bg);color:var(--tt-fg);border:none;border-radius:6px;box-shadow:var(--tt-shadow);font:14px var(--tt-font);padding:10px 12px;user-select:none;}
+${overlayScrollbarCss('.tt-dialog.tt-ind-dialog *', 9)}
+.tt-ind-tab{font-weight:600;font-size:13px;line-height:20px;transition:color var(--tt-dur-fast) ease,border-color var(--tt-dur-fast) ease;}
+.tt-ind-tab:not(.tt-ind-tab-active):hover{color:var(--tt-fg-bright);}
+.tt-ind-ctl,.tt-ind-close{background-color:transparent;color:inherit;transition:color var(--tt-dur-fast) ease,background-color var(--tt-dur-fast) ease;}
+.tt-ind-ctl svg,.tt-ind-close svg{width:${LEGEND_ICON_PX}px;height:${LEGEND_ICON_PX}px;display:block;flex:none;stroke-width:1;}
+.tt-ind-ctl:hover{background-color:var(--tt-hover-strong);}
+.tt-ind-close:hover{color:var(--tt-danger) !important;background-color:var(--tt-hover-strong);}
+.tt-ind-fold{transition:border-color var(--tt-dur-fast) ease,opacity var(--tt-dur-fast) ease;}
+.tt-ind-fold:hover{border-color:var(--tt-border-strong);opacity:0.9;}`;
     if (!existing) document.head.appendChild(s);
 }
 

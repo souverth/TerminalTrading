@@ -1,13 +1,13 @@
-// The workspace playground page: a 4-cell VelaWorkspace on live Binance data with the
+// The workspace playground page: a 4-cell TerminalTradingWorkspace on live Binance data with the
 // page's demo scripting engine and the full shared chrome — topbar (symbol / timeframe /
 // style / LAYOUT dropdowns, indicator picker, alerts, screenshot, object tree, settings),
 // bottombar (range chips, clock, timezone), one keymap. Served straight from src/ (HMR).
 //
-// Vela ships no scripting engine — `demo-engine.ts` is the page's own, written against
+// Terminal Trading ships no scripting engine — `demo-engine.ts` is the page's own, written against
 // the public port (see widget.ts's header). For Pine Script:
 // `npm i @luxalgo/vela-pinets pinets` and `engines: { pine: () => new PineWorkerEngine() }`.
-import type { Vela } from "../src";
-import { VelaWorkspace } from "../src/workspace";
+import type { TerminalTrading } from "../src";
+import { TerminalTradingWorkspace } from "../src/workspace";
 import { BinanceProvider } from "../src/data/providers/binance";
 import { DemoEngine } from "./demo-engine";
 import { PineWorkerEngine } from "@luxalgo/vela-pinets";
@@ -17,7 +17,7 @@ import { installScriptLibrary } from "./scripts-manager";
 import { playgroundStorage } from "./persistence";
 import { addSampleMarks } from "./marks";
 
-const ws = new VelaWorkspace("#workspace", {
+const ws = new TerminalTradingWorkspace("#workspace", {
   layout: "4",
   // The unified vocabulary: top-level chart options are every cell's DEFAULT,
   // `cells` overrides per cell. A cell's NAME is its durable identity (persistence,
@@ -50,7 +50,7 @@ const ws = new VelaWorkspace("#workspace", {
   // The playground's CUSTOM persistence (shared with the widget page): the whole
   // workspace document — layout, sync, timezone, and per cell the market, renderer
   // config, DRAWINGS and indicators — survives a reload via localStorage.
-  persist: true, // key 'vela-workspace' → 'vela-play:vela-workspace' in devtools
+  persist: true, // key 'tt-workspace' → 'tt-play:tt-workspace' in devtools
   storage: playgroundStorage(),
   settings: { hidden: ["advanced"] },
 
@@ -122,7 +122,7 @@ ws.on("cell:created", ({ id }) =>
 // Sample timeline marks (chart.marks) on every cell — the ones alive now and those a
 // later layout switch mints. Each waits for its own chart to paint, then spreads the
 // marks over that chart's visible range (see marks.ts).
-const seedMarks = (chart: Vela): void => {
+const seedMarks = (chart: TerminalTrading): void => {
   void chart.ready().then(() => addSampleMarks(chart));
 };
 for (const cell of ws.cells()) seedMarks(cell.chart);
@@ -132,7 +132,7 @@ ws.on("cell:created", ({ id }) => {
 });
 
 // Handy for poking around from the browser console (and for the automated probes).
-(window as unknown as { __ws: VelaWorkspace }).__ws = ws;
+(window as unknown as { __ws: TerminalTradingWorkspace }).__ws = ws;
 
 // ── State surface demo (uncomment to try) ─────────────────────────────────────
 // The workspace speaks the SAME state triplet and document format as the widget —

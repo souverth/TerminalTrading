@@ -3,7 +3,7 @@
 // scripting engine, and an inline indicator manifest — the OSS integration surface
 // exercised end to end.
 //
-// Vela SHIPS NO SCRIPTING ENGINE. `demo-engine.ts` (next to this file) is a ~300-line
+// Terminal Trading SHIPS NO SCRIPTING ENGINE. `demo-engine.ts` (next to this file) is a ~300-line
 // engine written against the public `ScriptingEngine` port purely so this page can
 // exercise the indicator path with zero dependencies — it is the runnable companion to
 // docs/contributing/adding-an-engine.md, not a product. For Pine Script, install the
@@ -14,7 +14,7 @@
 //     engines: { pine: () => new PineWorkerEngine() }
 //
 // …which is exactly what the addon's own playground does (repos/Vela-pinets, port 5192).
-import { VelaWorkspace } from '../src/workspace';
+import { TerminalTradingWorkspace } from '../src/workspace';
 import { BinanceProvider } from '../src/data/providers/binance';
 import { addSampleMarks } from './marks';
 import { DemoEngine, DEMO_SCRIPTS } from './demo-engine';
@@ -23,17 +23,17 @@ import { playgroundStorage } from './persistence';
 // The playground's CUSTOM persistence (shared with the workspace page): with `persist`
 // on, the shell saves and restores EVERYTHING through this adapter — prefs, renderer
 // config, and user drawings. The key is pinned so this page never collides with the
-// multi-chart page's own document ('vela-workspace') in the same adapter namespace.
+// multi-chart page's own document ('tt-workspace') in the same adapter namespace.
 const storage = playgroundStorage();
 
-const ws = new VelaWorkspace('#chart', {
+const ws = new TerminalTradingWorkspace('#chart', {
     layout: false, // SINGLE-CHART mode: one cell, no layout picker, no sync switches
     symbol: 'BTCUSDT', // bare = first declared provider (binance); 'coinbase:BTC-USD' pins a venue
     timeframe: '60',
     live: true,
     theme: 'dark',
     autofocus: true, // the chart IS the page — shortcuts work from the first keystroke
-    persist: 'vela-widget', // → 'vela-play:vela-widget' in devtools (the page's historical key)
+    persist: 'tt-widget', // → 'tt-play:tt-widget' in devtools (the page's historical key)
     storage,
     providers: { binance: () => new BinanceProvider() },
     engines: { demo: () => new DemoEngine() }, // swap for `pine: () => new PineWorkerEngine()` (see the header)
@@ -86,7 +86,7 @@ const ws = new VelaWorkspace('#chart', {
     //                                 //  list is the side's complete (and frozen) contract.
 });
 
-void ws.chart.ready().then(() => console.log('[vela-dev] chart ready'));
+void ws.chart.ready().then(() => console.log('[tt-dev] chart ready'));
 
 // Sample timeline marks (chart.marks) — see marks.ts: a cluster, a fanning stack, a custom
 // icon with details loaded on click… spread over the visible range once the chart painted.
@@ -99,7 +99,7 @@ ws.chart.on('theme:changed', (t) => {
 });
 
 // Handy for poking around from the browser console.
-(window as unknown as { ws: VelaWorkspace }).ws = ws;
+(window as unknown as { ws: TerminalTradingWorkspace }).ws = ws;
 
 // ── State surface demo (uncomment to try) ─────────────────────────────────────
 // Single-chart mode speaks the SAME state triplet and document format as the grid —
@@ -158,13 +158,13 @@ registerWidgetAction({
             codeArea.value = DEMO_SCRIPTS.bands;
             codeArea.spellcheck = false;
             codeArea.style.cssText =
-                'width:520px;max-width:80vw;height:220px;resize:vertical;background:var(--vela-surface-overlay);color:var(--vela-fg);border:1px solid var(--vela-border-soft);border-radius:var(--vela-radius-md);padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;outline:none;';
+                'width:520px;max-width:80vw;height:220px;resize:vertical;background:var(--tt-surface-overlay);color:var(--tt-fg);border:1px solid var(--tt-border-soft);border-radius:var(--tt-radius-md);padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;outline:none;';
             codeRun = document.createElement('button');
             codeRun.textContent = 'Run';
             codeRun.style.cssText =
-                'all:unset;margin-top:8px;padding:6px 18px;border-radius:var(--vela-radius-sm);background:var(--vela-accent);color:#0b0e14;font-weight:600;cursor:pointer;';
+                'all:unset;margin-top:8px;padding:6px 18px;border-radius:var(--tt-radius-sm);background:var(--tt-accent);color:#0b0e14;font-weight:600;cursor:pointer;';
             codeStatus = document.createElement('div');
-            codeStatus.style.cssText = 'margin-top:8px;min-height:1.3em;font-size:var(--vela-font-size-md);white-space:pre-wrap;';
+            codeStatus.style.cssText = 'margin-top:8px;min-height:1.3em;font-size:var(--tt-font-size-md);white-space:pre-wrap;';
             codeDialog = new Dialog({
                 title: 'Run an indicator',
                 host: ctx.host, // first invoker's root hosts the singleton (fine for the one-chart demo)
@@ -182,21 +182,21 @@ registerWidgetAction({
 
 async function runCode(ctx: WidgetContext): Promise<void> {
     if (!codeArea || !codeStatus) return;
-    codeStatus.style.color = 'var(--vela-fg-muted)';
+    codeStatus.style.color = 'var(--tt-fg-muted)';
     codeStatus.textContent = 'Running…';
     const r = await ctx.chart.runIndicator(codeArea.value);
     if (r.ok) {
-        codeStatus.style.color = 'var(--vela-accent)';
+        codeStatus.style.color = 'var(--tt-accent)';
         codeStatus.textContent = `✓ ${r.handle!.title || 'Indicator'} added to the chart`;
     } else {
-        codeStatus.style.color = 'var(--vela-danger)';
+        codeStatus.style.color = 'var(--tt-danger)';
         codeStatus.textContent = `✗ ${r.error!.message}`;
     }
 }
 
 ws.refreshActions();
 
-// ── Execution-context listener demo — how host code intercepts Vela's engine context.
+// ── Execution-context listener demo — how host code intercepts Terminal Trading's engine context.
 // 'context:changed' fires after the initial run and (throttled ~1/s) on live candles;
 // pull a read-only snapshot and inspect it. Subscriptions survive symbol/timeframe
 // changes — the shell switches markets IN PLACE (setMarket), same chart instance.
@@ -210,7 +210,7 @@ void ws.chart.ready().then(() => {
             const keys = Object.keys(snap.plots);
             const points = Object.values(snap.plots).reduce((n, p) => n + p.length, 0);
             console.log(
-                `[vela-ctx] ${handle.title || id} — ${keys.length} plot(s) [${keys.join(', ')}], ` +
+                `[tt-ctx] ${handle.title || id} — ${keys.length} plot(s) [${keys.join(', ')}], ` +
                     `${points} points, last bar #${snap.barIndex} (${snap.phase})`,
             );
         })();

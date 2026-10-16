@@ -1,6 +1,6 @@
 # Drawing tools
 
-Vela™ ships an interactive **drawing-tools** layer: a docked toolbar and ~67 on-chart
+Terminal Trading ships an interactive **drawing-tools** layer: a docked toolbar and ~67 on-chart
 tools — trend lines, channels, Fibonacci, harmonic patterns, annotations, and more — that a user
 draws, edits, and keeps on the chart. Drawings are anchored in **data space** (time + price), so
 they stay locked to the bars across pan, zoom, timeframe changes, and reload — the same durability
@@ -363,9 +363,9 @@ Every chart exposes a `chart.drawings` control surface (a sibling of `chart.rend
 even on a renderer that can't paint drawings.
 
 ```js
-import { Vela } from '@luxalgo/vela';
+import { TerminalTrading } from 'terminal-trading';
 
-const chart = new Vela('#chart', { data: bars });
+const chart = new TerminalTrading('#chart', { data: bars });
 await chart.ready();
 
 // Arm a tool so the next clicks place it:

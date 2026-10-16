@@ -75,7 +75,7 @@ export interface EngineCapabilities {
     props?: boolean;
 }
 
-/** Market context an execution needs. Vela owns the bars; this is the metadata. */
+/** Market context an execution needs. Terminal Trading owns the bars; this is the metadata. */
 export interface ExecutionMarket {
     symbol: string;
     timeframe: string;
@@ -92,7 +92,7 @@ export interface ExecutionMarket {
 }
 
 /**
- * One execution request. Vela owns the bars and passes them in — the engine
+ * One execution request. Terminal Trading owns the bars and passes them in — the engine
  * never fetches market data. `mode: 'static'` runs on demand (and re-runs when
  * the session is poked); `mode: 'live'` keeps a streaming context that emits per
  * tick (only requested when `capabilities.streaming`).
@@ -102,11 +102,11 @@ export interface ExecutionRequest {
     market: ExecutionMarket;
     /** The initial bar snapshot. */
     bars: OHLCV[];
-    /** Live accessor to Vela's canonical array (read on each re-run / tick). */
+    /** Live accessor to Terminal Trading's canonical array (read on each re-run / tick). */
     getBars?: () => OHLCV[];
     /**
      * Fetch a secondary `(symbol, timeframe)` series (Pine `request.security`
-     * HTF/LTF/cross-symbol). Cache-backed by Vela's data feed. Absent ≡ no
+     * HTF/LTF/cross-symbol). Cache-backed by Terminal Trading's data feed. Absent ≡ no
      * gateway (secondary fetches degrade to empty).
      */
     fetchSeries?: FetchSeries;
@@ -193,16 +193,16 @@ export interface ExecutionSession {
     update(inputs: Record<string, InputValue>, props?: Record<string, InputValue>): void;
     /** Update the viewport window (re-runs viewport-dependent scripts; no-op otherwise). */
     setVisibleRange(range: VisibleBarRange): void;
-    /** Signal that Vela's bars changed. No reason = live tick; see {@link BarsChangeReason}. */
+    /** Signal that Terminal Trading's bars changed. No reason = live tick; see {@link BarsChangeReason}. */
     notifyBars(reason?: BarsChangeReason): void;
 }
 
 /**
  * The scripting-engine abstraction. The orchestrator talks only to this, so every
- * concrete engine is swappable and Vela itself SHIPS none — engines are separate
+ * concrete engine is swappable and Terminal Trading itself SHIPS none — engines are separate
  * packages (Pine Script: `@luxalgo/vela-pinets`) or host code written against this
  * port (see docs/contributing/adding-an-engine.md). Engines are registered by `language` and selected per
- * `addIndicator({ language })`; market data is owned by Vela's
+ * `addIndicator({ language })`; market data is owned by Terminal Trading's
  * `MarketDataFeed` and passed into `execute`.
  */
 export interface ScriptingEngine {

@@ -9,7 +9,7 @@ export { iconMarkup, registerIcon, svg16, svg24, svg24Solid } from '../core/icon
 /** A ready-to-insert element rendering the icon (empty span when unknown). */
 export function iconEl(id: string, doc: Document = document): HTMLElement {
     const span = doc.createElement('span');
-    span.className = 'vela-icon';
+    span.className = 'tt-icon';
     span.setAttribute('aria-hidden', 'true');
     const svg = iconMarkup(id);
     if (svg) span.innerHTML = svg;

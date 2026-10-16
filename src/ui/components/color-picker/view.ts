@@ -1,5 +1,5 @@
 // Color-picker VIEW — swatch grid + recents + opacity slider, plus the field trigger.
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { ACCENT, BEARISH, BULLISH, NEUTRAL, WARNING } from '../../../core/palette';
 import { injectStyles } from '../../styles';
 import { Popover, closeOpenPopovers, openPopoverTrigger, type PopoverBoundary, type PopoverOptions } from '../popover';
@@ -44,7 +44,7 @@ export interface ColorPickerOptions {
  * recents row with a custom "+" picker, and an opacity slider over a transparency checker.
  * Emits `#RRGGBB` / `#RRGGBBAA` through `onChange`.
  */
-export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: string) => void, options: ColorPickerOptions = {}): HTMLElement {
+export function buildColorPicker(color: string, theme: TerminalTradingTheme, onChange: (v: string) => void, options: ColorPickerOptions = {}): HTMLElement {
     const commit: ColorCommit = options.commit ?? 'live';
     const parsed = splitColor(color);
     let curHex = parsed.hex6;
@@ -81,13 +81,13 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
     };
 
     const recentRow = document.createElement('div');
-    recentRow.style.cssText = 'display:flex;align-items:center;gap:5px;flex-wrap:wrap;border-top:1px solid var(--vela-border);padding-top:9px;';
+    recentRow.style.cssText = 'display:flex;align-items:center;gap:5px;flex-wrap:wrap;border-top:1px solid var(--tt-border);padding-top:9px;';
     // Swatches get their own wrapper so re-rendering them never detaches the native
     // color input — the browser closes its chooser the moment its input leaves the DOM.
     const recentSwatches = document.createElement('div');
     recentSwatches.style.cssText = 'display:contents;';
     const add = document.createElement('label');
-    add.style.cssText = `width:17px;height:17px;border-radius:var(--vela-radius-sm);border:1px dashed var(--vela-border-strong);cursor:pointer;display:flex;align-items:center;justify-content:center;color:${theme.textColor};font:14px ${theme.fontFamily};position:relative;`;
+    add.style.cssText = `width:17px;height:17px;border-radius:var(--tt-radius-sm);border:1px dashed var(--tt-border-strong);cursor:pointer;display:flex;align-items:center;justify-content:center;color:${theme.textColor};font:14px ${theme.fontFamily};position:relative;`;
     add.textContent = '+';
     const customInput = document.createElement('input');
     customInput.type = 'color';
@@ -103,7 +103,7 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
         for (const c of recents) {
             const sw = document.createElement('button');
             sw.type = 'button';
-            sw.style.cssText = `width:17px;height:17px;border-radius:var(--vela-radius-sm);border:1px solid var(--vela-border);cursor:pointer;background:${c};padding:0;`;
+            sw.style.cssText = `width:17px;height:17px;border-radius:var(--tt-radius-sm);border:1px solid var(--tt-border);cursor:pointer;background:${c};padding:0;`;
             sw.addEventListener('click', (e) => {
                 e.stopPropagation();
                 pickHex(c);
@@ -114,21 +114,21 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
 
     const opLabel = document.createElement('div');
     opLabel.textContent = 'Opacity';
-    opLabel.style.cssText = `font:11px ${theme.fontFamily};color:var(--vela-fg-muted);`;
+    opLabel.style.cssText = `font:11px ${theme.fontFamily};color:var(--tt-fg-muted);`;
     const opRow = document.createElement('div');
     opRow.style.cssText = 'display:flex;align-items:center;gap:10px;';
     const track = document.createElement('div');
     track.style.cssText = 'flex:1;position:relative;height:13px;border-radius:7px;cursor:pointer;';
     const knob = document.createElement('div');
-    knob.style.cssText = 'position:absolute;top:50%;width:15px;height:15px;border-radius:50%;background:var(--vela-selected-bg);box-shadow:0 1px 3px rgba(0,0,0,0.55);transform:translate(-50%,-50%);pointer-events:none;';
+    knob.style.cssText = 'position:absolute;top:50%;width:15px;height:15px;border-radius:50%;background:var(--tt-selected-bg);box-shadow:0 1px 3px rgba(0,0,0,0.55);transform:translate(-50%,-50%);pointer-events:none;';
     track.appendChild(knob);
     const pctBox = document.createElement('input');
     pctBox.type = 'text';
     pctBox.inputMode = 'numeric';
     pctBox.title = 'Opacity (%)';
-    pctBox.style.cssText = `width:46px;box-sizing:border-box;text-align:center;font:var(--vela-font-size-md) ${theme.fontFamily};color:var(--vela-fg);background:transparent;border:1px solid var(--vela-border);border-radius:5px;padding:3px 4px;outline:none;`;
+    pctBox.style.cssText = `width:46px;box-sizing:border-box;text-align:center;font:var(--tt-font-size-md) ${theme.fontFamily};color:var(--tt-fg);background:transparent;border:1px solid var(--tt-border);border-radius:5px;padding:3px 4px;outline:none;`;
     pctBox.addEventListener('focus', () => {
-        pctBox.style.borderColor = 'var(--vela-border-strong)';
+        pctBox.style.borderColor = 'var(--tt-border-strong)';
         pctBox.select();
     });
     opRow.append(track, pctBox);
@@ -140,7 +140,7 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
     // A typed value is one discrete edit, so it commits once under either `commit` policy.
     // Unparseable input snaps back to the current opacity.
     const commitTyped = (): void => {
-        pctBox.style.borderColor = 'var(--vela-border)';
+        pctBox.style.borderColor = 'var(--tt-border)';
         const n = parseFloat(pctBox.value.replace('%', ''));
         if (Number.isFinite(n)) {
             const next = Math.max(0, Math.min(100, n)) / 100;
@@ -156,7 +156,7 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
     pctBox.addEventListener('change', commitTyped);
     pctBox.addEventListener('blur', () => {
         // `change` does not fire when the text is unchanged; still restore the "%" readout.
-        pctBox.style.borderColor = 'var(--vela-border)';
+        pctBox.style.borderColor = 'var(--tt-border)';
         paintOpacity();
     });
     pctBox.addEventListener('keydown', (e) => {
@@ -220,7 +220,7 @@ export function buildColorPicker(color: string, theme: VelaTheme, onChange: (v: 
 
 export interface ColorFieldOpts {
     shape?: ColorFieldShape;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
     getVal: () => string;
     onVal: (v: string) => void;
     id?: string;
@@ -232,7 +232,7 @@ export interface ColorFieldOpts {
 /** Closed-state swatch shape. `circle` is the settings-dialog preview (a square chip
  *  inset from a matching field border); `square` is the compact drawing-chrome swatch. */
 export function colorField(
-    theme: VelaTheme,
+    theme: TerminalTradingTheme,
     getVal: () => string,
     onVal: (v: string) => void,
     opts?: { shape?: ColorFieldShape; id?: string; popover?: ColorFieldOpts['popover']; commit?: ColorCommit },
@@ -245,7 +245,7 @@ export class ColorField {
     private readonly swatch: HTMLElement;
     private readonly getVal: () => string;
     private readonly onVal: (v: string) => void;
-    private readonly theme: VelaTheme;
+    private readonly theme: TerminalTradingTheme;
     private readonly popoverOpts: ColorFieldOpts['popover'];
     private readonly commit: ColorCommit | undefined;
 
@@ -260,14 +260,14 @@ export class ColorField {
         const trigger = document.createElement('button');
         trigger.type = 'button';
         if (opts.id) trigger.id = opts.id;
-        trigger.className = opts.shape === 'circle' ? 'vela-color-field vela-color-field-circle' : 'vela-color-field';
+        trigger.className = opts.shape === 'circle' ? 'tt-color-field tt-color-field-circle' : 'tt-color-field';
         const swatch = document.createElement('span');
-        swatch.className = 'vela-color-field-swatch';
+        swatch.className = 'tt-color-field-swatch';
         trigger.appendChild(swatch);
         this.el = trigger;
         this.swatch = swatch;
         this.paint();
-        trigger.addEventListener('vela-sync', () => this.paint());
+        trigger.addEventListener('tt-sync', () => this.paint());
         // Suppress the default mousedown focus: when this press outside-dismisses an open
         // popover, Chrome's focus action can scroll the dialog body under the pointer.
         trigger.addEventListener('pointerdown', (e) => {
@@ -299,7 +299,7 @@ export class ColorField {
             position: this.popoverOpts?.position,
             boundary: this.popoverOpts?.boundary as PopoverBoundary | undefined,
             zIndex: this.popoverOpts?.zIndex,
-            className: 'vela-color-field-pop',
+            className: 'tt-color-field-pop',
             content: buildColorPicker(
                 this.getVal(),
                 this.theme,

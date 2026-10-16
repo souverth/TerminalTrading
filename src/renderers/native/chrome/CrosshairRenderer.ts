@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { LineStyle } from '../../../core/model/series';
 import type { CoordinateSystem } from '../core/CoordinateSystem';
 import type { SceneGraph, PaneNode } from '../core/SceneGraph';
@@ -36,7 +36,7 @@ export class CrosshairRenderer {
     /** Clear the cursor canvas and (re)draw the crosshair lines + axis chips. The optional
      *  `separatorHoverY` highlights the draggable pane separator under the cursor;
      *  `external` is a SYNCED ghost crosshair (another chart's pointer, pixel-resolved). */
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, separatorHoverY: number | null = null, external: { x: number; y: number | null; time: number; price?: number | null; line?: boolean } | null = null): void {
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, separatorHoverY: number | null = null, external: { x: number; y: number | null; time: number; price?: number | null; line?: boolean } | null = null): void {
         this.shade = null;
         const ctx = this.ctx;
         const canvas = this.canvas;
@@ -127,7 +127,7 @@ export class CrosshairRenderer {
      *  applies to the ghost as well — its line style, a dropped horizontal line, and the
      *  `shadeRight` veil from the ghost bar's right edge — so a pick that spans several
      *  charts reads the same on every one of them. */
-    private drawExternal(ctx: CanvasRenderingContext2D, ext: { x: number; y: number | null; time: number; price?: number | null; line?: boolean }, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme): void {
+    private drawExternal(ctx: CanvasRenderingContext2D, ext: { x: number; y: number | null; time: number; price?: number | null; line?: boolean }, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme): void {
         const cs = scene.style.crosshair;
         const ov = scene.crosshairOverride;
         const dataW = coords.width;
@@ -189,7 +189,7 @@ export class CrosshairRenderer {
     /** A soft band + a brighter crisp center line over the hovered separator, so it reads as
      *  a draggable handle (the cursor is already `row-resize`). Spans the full width (data +
      *  scale gutter) to match the separator itself. Theme-derived (textColor). */
-    private drawSeparatorHover(ctx: CanvasRenderingContext2D, fullW: number, theme: VelaTheme, y: number): void {
+    private drawSeparatorHover(ctx: CanvasRenderingContext2D, fullW: number, theme: TerminalTradingTheme, y: number): void {
         const yy = Math.round(y);
         ctx.fillStyle = theme.textColor;
         ctx.globalAlpha = 0.1;

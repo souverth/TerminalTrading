@@ -25,16 +25,16 @@ export default defineConfig([
         clean: true,
         treeshake: true,
     },
-    // Browser globals — self-contained IIFEs exposing `window.Vela`, in the reference
-    // dev/prod pair: `vela.global.js` is the readable development build,
-    // `vela.global.min.js` the minified one for CDN use. An addon (e.g.
-    // `vela-pinets.global.js`) loads AFTER one of them and resolves `@luxalgo/vela`
-    // to that same `window.Vela` — never a second copy of the library.
+    // Browser globals — self-contained IIFEs exposing `window.Terminal Trading`, in the reference
+    // dev/prod pair: `terminal-trading.global.js` is the readable development build,
+    // `terminal-trading.global.min.js` the minified one for CDN use. An addon (e.g.
+    // `vela-pinets.global.js`) loads AFTER one of them and resolves `terminal-trading`
+    // to that same `window.Terminal Trading` — never a second copy of the library.
     {
         name: 'browser-dev',
-        entry: { vela: 'src/browser.ts' },
+        entry: { 'terminal-trading': 'src/browser.ts' },
         format: ['iife'],
-        globalName: 'Vela',
+        globalName: 'TerminalTrading',
         platform: 'browser',
         sourcemap: false,
         clean: false,
@@ -43,9 +43,9 @@ export default defineConfig([
     },
     {
         name: 'browser-min',
-        entry: { vela: 'src/browser.ts' },
+        entry: { 'terminal-trading': 'src/browser.ts' },
         format: ['iife'],
-        globalName: 'Vela',
+        globalName: 'TerminalTrading',
         platform: 'browser',
         outExtension: () => ({ js: '.global.min.js' }),
         sourcemap: false,

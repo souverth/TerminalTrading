@@ -73,24 +73,24 @@ export class Drawer {
         const host = opts.host ?? doc.body;
 
         this.backdrop = doc.createElement('div');
-        this.backdrop.className = 'vela-drawer-backdrop vela-ui-layer';
+        this.backdrop.className = 'tt-drawer-backdrop tt-ui-layer';
         this.positioner = doc.createElement('div');
-        this.positioner.className = 'vela-drawer-positioner vela-ui-layer';
+        this.positioner.className = 'tt-drawer-positioner tt-ui-layer';
         this.panel = doc.createElement('div');
-        this.panel.className = 'vela-drawer';
+        this.panel.className = 'tt-drawer';
         // Programmatically focusable: the sheet itself takes the dialog machine's initial
         // focus — focusing the first tabbable (often a search input) would pop the
         // on-screen keyboard over a surface that just slid in.
         this.panel.tabIndex = -1;
 
         const grab = doc.createElement('div');
-        grab.className = 'vela-drawer-grab';
+        grab.className = 'tt-drawer-grab';
         this.titleEl = doc.createElement('div');
-        this.titleEl.className = 'vela-drawer-title';
+        this.titleEl.className = 'tt-drawer-title';
         this.titleEl.textContent = opts.title ?? '';
 
         this.body = doc.createElement('div');
-        this.body.className = 'vela-drawer-body';
+        this.body.className = 'tt-drawer-body';
         if (opts.content instanceof Node) this.body.appendChild(opts.content);
         else if (typeof opts.content === 'function') opts.content(this.body);
 

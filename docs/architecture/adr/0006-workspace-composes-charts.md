@@ -4,7 +4,7 @@
 
 ## Context
 
-Vela™ was single-chart: `VelaWidget` wraps ONE core `Vela` instance in a full chrome
+Terminal Trading was single-chart: `TerminalTradingWidget` wraps ONE core `TerminalTrading` instance in a full chrome
 (topbar, pickers, drawing toolbar, object tree, bottombar, keymap). Multi-chart
 layouts (2–16 cells, presets + splitters) had to arrive with a hard product
 constraint: **everything outside the charts stays shared** — one topbar, one symbol
@@ -22,8 +22,8 @@ programmatic seams.
 
 ## Decision
 
-**`VelaWorkspace` composes ordinary, unmodified charts.** The core stays single-chart;
-the new `@luxalgo/vela/workspace` subpath owns the grid. The enabling work landed as core
+**`TerminalTradingWorkspace` composes ordinary, unmodified charts.** The core stays single-chart;
+the new `terminal-trading/workspace` subpath owns the grid. The enabling work landed as core
 capabilities that are useful stand-alone, not as workspace special cases:
 `chart.setMarket()` switches a market **in place** (indicators, drawings, config, and
 subscriptions survive; `market:changed` carries `prev`), the bar cache gained
@@ -52,7 +52,7 @@ The load-bearing rules:
   another's history. Engines are per-cell (the worker engine isolates each cell).
 - **One state document for BOTH shells** (`src/state/document.ts`):
   `getState()` / `applyState()` / `state:changed` and the `persist` option speak the
-  same versioned, sanitized format on `VelaWidget` and `VelaWorkspace` — the widget
+  same versioned, sanitized format on `TerminalTradingWidget` and `TerminalTradingWorkspace` — the widget
   is the single-cell case (`layout: '1'`, one `c1` cell). Persistence is an adapter
   over that surface (`WidgetStorage ≡ WorkspaceStorage`); the workspace default is
   in-memory, and no shell writes the URL natively.
@@ -69,7 +69,7 @@ The load-bearing rules:
   (DOM/canvas counts return to baseline; the WebGL backend explicitly releases its
   context on destroy so churn cannot evict live charts' contexts).
 - The workspace duplicates ~a few hundred lines of the widget's chrome glue.
-  Accepted for v1. **Future work:** `VelaWidget` should delegate to a one-cell
+  Accepted for v1. **Future work:** `TerminalTradingWidget` should delegate to a one-cell
   workspace; the unified state document already makes the two interchangeable
   (a widget document restores into a workspace slot verbatim, and back).
 - Crosshair sync shipped as the port's first OPTIONAL interaction seam:

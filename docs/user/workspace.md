@@ -1,6 +1,6 @@
 # The workspace (multi-chart)
 
-`@luxalgo/vela/workspace` is the multi-chart shell: a grid of full Vela™ charts behind **one
+`terminal-trading/workspace` is the multi-chart shell: a grid of full Terminal Trading charts behind **one
 shared data feed**, wrapped in **one shared chrome** — topbar (symbol / timeframe /
 style / **layout** dropdowns, indicator picker, alerts), one drawing toolbar, object
 tree, data window, bottom bar, one keyboard map — that always **reflects and acts on the
@@ -8,11 +8,11 @@ ACTIVE cell**. Cells are switched in place (`setMarket` under the hood), so indi
 drawings, and your subscriptions survive every symbol/timeframe change.
 
 ```ts
-import { VelaWorkspace } from '@luxalgo/vela/workspace';
-import { PineWorkerEngine } from '@luxalgo/vela-pinets'; // Vela™ ships no engine — see ./scripting-engines.md
-import { BinanceProvider } from '@luxalgo/vela/providers/binance';
+import { TerminalTradingWorkspace } from 'terminal-trading/workspace';
+import { PineWorkerEngine } from '@luxalgo/vela-pinets'; // TerminalTrading ships no engine — see ./scripting-engines.md
+import { BinanceProvider } from 'terminal-trading/providers/binance';
 
-const ws = new VelaWorkspace('#app', {
+const ws = new TerminalTradingWorkspace('#app', {
     layout: '4', // '1' | '2h' | '2v' | '4' | '8' | picker ids ('g3x2') | a registerLayout() id
     //           // `false` = SINGLE-CHART mode: one cell, no layout picker or sync
     //           // switches anywhere, `setLayout` no-ops, no `cells` entry needed
@@ -34,8 +34,8 @@ const ws = new VelaWorkspace('#app', {
 });
 ```
 
-**One options vocabulary.** `VelaWorkspaceOptions` = the widget's chart options (all of
-`VelaOptions` except `height` — the grid sizes its cells) + the shared shell surface
+**One options vocabulary.** `TerminalTradingWorkspaceOptions` = the widget's chart options (all of
+`TerminalTradingOptions` except `height` — the grid sizes its cells) + the shared shell surface
 (`providers`, `engines`, `indicators`, `timeframes`, `timezone`, chrome toggles,
 `persist`/`storage`) + the grid's own options (`layout`, `cells`, `sync`,
 `drawingToolbar`, `maxWebglCells`, `alertCap`). A chart option means the same thing
@@ -65,7 +65,7 @@ page applies unchanged; the state document is simply the single-cell case
 (`layout: '1'`, one `charts` entry).
 
 ```ts
-const chart = new VelaWorkspace('#chart', {
+const chart = new TerminalTradingWorkspace('#chart', {
     layout: false,
     symbol: 'BTCUSDT',
     timeframe: '60',
@@ -74,9 +74,9 @@ const chart = new VelaWorkspace('#chart', {
 });
 ```
 
-> **Migrating from `VelaWidget`.** The old single-chart class is deprecated and now
-> wraps exactly this. Replace `new VelaWidget(el, opts)` with
-> `new VelaWorkspace(el, { ...opts, layout: false })`; pass `persist: 'vela-widget'`
+> **Migrating from `TerminalTradingWidget`.** The old single-chart class is deprecated and now
+> wraps exactly this. Replace `new TerminalTradingWidget(el, opts)` with
+> `new TerminalTradingWorkspace(el, { ...opts, layout: false })`; pass `persist: 'tt-widget'`
 > to keep reading the state the widget stored. The widget-only `urlState` option is
 > gone — encode `getState()` into your own URL scheme if you need shareable links.
 
@@ -112,7 +112,7 @@ layout (`cell:destroyed`). Host code that tracks cells should **follow
 `cell:created`/`cell:destroyed`** rather than snapshot `ws.cells()` once: a later
 `setLayout` (or a restored document) mints cells that a one-time snapshot never sees.
 
-Layouts live in a registry (`registerLayout` from `@luxalgo/vela/workspace`), and the topbar's
+Layouts live in a registry (`registerLayout` from `terminal-trading/workspace`), and the topbar's
 **layout dropdown** composes them on a 4×4 grid canvas: hover previews the full
 *columns × rows* rectangle from the top-left (the table-insert idiom); a click
 applies it immediately. Rectangles matching a classic preset (`1`, `2h`, `2v`, `4`,
@@ -120,7 +120,7 @@ applies it immediately. Rectangles matching a classic preset (`1`, `2h`, `2v`, `
 2 columns) that resolves without registration (persisted picks restore across boots).
 Plugin layouts the canvas cannot express (bespoke `areas`) list as labeled rows under
 the canvas, so `registerLayout` contributions keep appearing automatically. In code,
-the same composition is `layoutForGrid(rows, cols)` (exported from `@luxalgo/vela/workspace`),
+the same composition is `layoutForGrid(rows, cols)` (exported from `terminal-trading/workspace`),
 handed to `ws.setLayout(...)`.
 
 Splitters between cells resize the grid tracks (double-click a divider for an even
@@ -332,8 +332,8 @@ state restores into a single-chart shell.
 ### The `persist` option and the storage interface
 
 ```ts
-new VelaWorkspace('#app', { persist: true }); // key 'vela-workspace'
-new VelaWorkspace('#app', { persist: 'my-key', storage: myAdapter });
+new TerminalTradingWorkspace('#app', { persist: true }); // key 'tt-workspace'
+new TerminalTradingWorkspace('#app', { persist: 'my-key', storage: myAdapter });
 ```
 
 `persist` writes the state document through a **storage adapter** and restores it as
@@ -344,12 +344,12 @@ ones late-apply when they resolve). Writes are debounced ~500ms and flushed on
 **The default adapter is localStorage** — the same default as the widget, so
 `persist: true` survives reloads out of the box. An in-memory, session-lived adapter
 stays available for state that must NOT outlive the page
-(`import { memoryStorageAdapter } from '@luxalgo/vela/workspace'`). Any backend fits through
+(`import { memoryStorageAdapter } from 'terminal-trading/workspace'`). Any backend fits through
 this interface (one contract for both shells):
 
 ```ts
 /** Both methods may be synchronous (localStorage-like) or return promises (REST/IndexedDB). */
-interface VelaStorage {
+interface TerminalTradingStorage {
     get(key: string): string | null | Promise<string | null>;
     set(key: string, value: string): void | Promise<void>;
     remove?(key: string): void | Promise<void>;
@@ -359,10 +359,10 @@ interface VelaStorage {
 Example — a REST-backed store (per-user server-side workspaces):
 
 ```ts
-import { VelaWorkspace } from '@luxalgo/vela/workspace';
-import type { VelaStorage } from '@luxalgo/vela/widget'; // one storage contract for both shells
+import { TerminalTradingWorkspace } from 'terminal-trading/workspace';
+import type { TerminalTradingStorage } from 'terminal-trading/widget'; // one storage contract for both shells
 
-const restStorage: VelaStorage = {
+const restStorage: TerminalTradingStorage = {
     async get(key) {
         const res = await fetch(`/api/workspaces/${encodeURIComponent(key)}`);
         return res.ok ? res.text() : null;
@@ -372,7 +372,7 @@ const restStorage: VelaStorage = {
     },
 };
 
-new VelaWorkspace('#app', { persist: 'main', storage: restStorage /* … */ });
+new TerminalTradingWorkspace('#app', { persist: 'main', storage: restStorage /* … */ });
 ```
 
 Notes: writes are fire-and-forget (the UI never blocks on storage); a remote adapter
@@ -427,7 +427,7 @@ silently reorder them).
 | `maxWebglCells` | `8` | Above this many cells, every cell uses canvas2d (uniform look inside the browser's WebGL budget; `glow` unavailable there). |
 | `alertCap` | `50` | Alerts the topbar bell keeps (oldest drop beyond it). |
 
-Contributed actions/attachments (`@luxalgo/vela/plugin`) work unchanged — `ctx.chart` resolves
+Contributed actions/attachments (`terminal-trading/plugin`) work unchanged — `ctx.chart` resolves
 to the ACTIVE cell's chart; grid-aware plugins additionally get `ctx.cells`,
 `ctx.activeCellId`, `ctx.setActiveCell(id)`, and `ctx.replay` (the
 [grid-wide replay](#bar-replay-across-the-grid)).
@@ -553,16 +553,16 @@ they work from the very first keystroke, before any click.
 ### Following menus and panels
 
 Every menu, popover, dialog, drawer and side panel announces itself with a DOM event on its
-own element: `vela:surface-open` once it shows, and `vela:surface-close` as it starts to
+own element: `tt:surface-open` once it shows, and `tt:surface-close` as it starts to
 close, while it is still on screen and before it fades out or leaves the DOM. Both bubble, so
 one listener on the chart's container follows all of its chrome without watching the DOM:
 
 ```ts
-import { SURFACE_OPEN_EVENT, SURFACE_CLOSE_EVENT, type SurfaceEventDetail } from '@luxalgo/vela/ui';
+import { SURFACE_OPEN_EVENT, SURFACE_CLOSE_EVENT, type SurfaceEventDetail } from 'terminal-trading/ui';
 
 container.addEventListener(SURFACE_OPEN_EVENT, (e) => {
     const { kind, trigger } = (e as CustomEvent<SurfaceEventDetail>).detail;
-    // e.target is the surface: a .vela-menu, .vela-popover, .vela-dialog, .vela-drawer, .vela-panel …
+    // e.target is the surface: a .tt-menu, .tt-popover, .tt-dialog, .tt-drawer, .tt-panel …
 });
 ```
 
@@ -575,27 +575,27 @@ created without an explicit host portals to `<body>`; listen on `document` to ca
 ### Animating closes
 
 Surfaces leave the screen at once by default. To animate them out, style the `data-closing`
-attribute: as a surface starts to close (right after its `vela:surface-close`), Vela sets
+attribute: as a surface starts to close (right after its `tt:surface-close`), Terminal Trading sets
 `data-closing` on it and keeps it displayed but inert — it takes no clicks and no focus — until
 every CSS animation or transition that the attribute started on it or inside it has finished,
 then hides or removes it. These elements get the attribute:
 
 | Element | Surface |
 | --- | --- |
-| `.vela-menu` | A dropdown or context menu, each submenu on its own. |
-| `.vela-popover` | Select lists, color pickers and other kit popovers. |
-| `.vela-dialog` and `.vela-dialog-backdrop` | A dialog and its scrim. |
-| `.vela-drawer` and `.vela-drawer-backdrop` | A bottom sheet (mobile chrome) and its scrim. |
-| `.vela-panel` | A side panel. |
-| `.vela-lp` | The layout picker. |
-| `.vela-dtb-flyout` | A drawing toolbar flyout. |
+| `.tt-menu` | A dropdown or context menu, each submenu on its own. |
+| `.tt-popover` | Select lists, color pickers and other kit popovers. |
+| `.tt-dialog` and `.tt-dialog-backdrop` | A dialog and its scrim. |
+| `.tt-drawer` and `.tt-drawer-backdrop` | A bottom sheet (mobile chrome) and its scrim. |
+| `.tt-panel` | A side panel. |
+| `.tt-lp` | The layout picker. |
+| `.tt-dtb-flyout` | A drawing toolbar flyout. |
 
 ```css
 @media (prefers-reduced-motion: no-preference) {
-    .vela-menu[data-closing],
-    .vela-popover[data-closing],
-    .vela-dialog[data-closing],
-    .vela-dialog-backdrop[data-closing] {
+    .tt-menu[data-closing],
+    .tt-popover[data-closing],
+    .tt-dialog[data-closing],
+    .tt-dialog-backdrop[data-closing] {
         animation: host-fade-out 150ms ease forwards;
     }
 }
@@ -613,7 +613,7 @@ then hides or removes it. These elements get the attribute:
 - **A side panel reports closed at once** (its `open` state and the topbar button), but keeps
   its column until the exit ends. A panel that hands the column to another one, or that a
   restored state closes, leaves without an exit.
-- **Reduced motion is yours to honor**: Vela waits for whatever your stylesheet starts, so
+- **Reduced motion is yours to honor**: Terminal Trading waits for whatever your stylesheet starts, so
   guard the exit rules with `prefers-reduced-motion` as above.
 
 ## Composing the topbar
@@ -623,7 +623,7 @@ entries, per side, in render order. A side you don't declare keeps its default �
 option is pure opt-in, and a shell without it behaves exactly as before.
 
 ```ts
-new VelaWorkspace('#chart', {
+new TerminalTradingWorkspace('#chart', {
     topbar: {
         // right undeclared ⇒ default right side (actions, alerts, panels, screenshot)
         left: ['symbol', 'timeframes', 'style', 'my-plugin.indicator-menu.open', 'undo-redo'],
@@ -651,7 +651,7 @@ The rules that make it predictable:
 
 - **An explicit list is that side's complete contract.** Ids not listed do not render
   there — including contributed actions, when the side has no `'actions'` slot. It also
-  **freezes** the side: chrome a future Vela™ release adds will not appear for a curating
+  **freezes** the side: chrome a future Terminal Trading release adds will not appear for a curating
   host (the deliberate trade-off of describing what IS there).
 - **Hiding an entry removes its other entry points too**: the mobile counterpart (the
   more-drawer's undo/redo/screenshot buttons, alerts and panel rows, the mobile-bar
@@ -723,16 +723,16 @@ switching never recolors the series.
 
 Three levels, shallow to deep:
 
-1. **Design tokens** — all chrome is styled through `--vela-*` CSS custom properties
+1. **Design tokens** — all chrome is styled through `--tt-*` CSS custom properties
    (surfaces, borders, focus, radii, spacing, z-index). Override them on the container.
-2. **Stable class names** — every component uses prefixed classes (`.vela-dialog`,
-   `.vela-menu-item`, `.vela-sp-row`, …) your CSS can restyle.
+2. **Stable class names** — every component uses prefixed classes (`.tt-dialog`,
+   `.tt-menu-item`, `.tt-sp-row`, …) your CSS can restyle.
 3. **Contributed actions** — plugins and hosts add topbar buttons and context-menu items
    as data descriptors via
    [`registerWidgetAction`](../contributing/plugin-sdk.md#widget-actions--registerwidgetaction);
    the kit's primitives (`Dialog`, `Drawer`, `Menu`, `Tooltip`, `Popover`, `Switch`,
    `Select`, `NumberInput`, `TextField`, `ColorField` / `buildColorPicker`,
-   `KeymapManager`) are exported from `@luxalgo/vela/ui` for building your own panels against
+   `KeymapManager`) are exported from `terminal-trading/ui` for building your own panels against
    the headless core. Form controls share `md` (settings dialogs: 34px fields, hover
    steppers, chip colors) and a compact `sm` size so a host panel can match either
    surface.

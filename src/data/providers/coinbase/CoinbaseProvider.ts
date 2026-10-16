@@ -61,7 +61,7 @@ const TF_TO_GRAN: Record<string, number> = {
     '1': 60, '5': 300, '15': 900, '60': 3600, '360': 21600, D: 86400,
 };
 
-/** User-facing timeframe aliases → canonical keys (matches the other Vela layers). */
+/** User-facing timeframe aliases → canonical keys (matches the other Terminal Trading layers). */
 const TF_NORMALIZE: Record<string, string> = {
     '1m': '1', '3m': '3', '5m': '5', '15m': '15', '30m': '30', '45m': '45',
     '1h': '60', '2h': '120', '3h': '180', '4h': '240', '6h': '360', '8h': '480', '12h': '720',
@@ -81,7 +81,7 @@ export function normalizeTf(tf: string): string {
     return TF_NORMALIZE[tf] ?? TF_NORMALIZE[tf.toLowerCase()] ?? tf;
 }
 
-/** Map a Vela ticker to a Coinbase product id (`BTC-USD`). Upper-cased; whitespace trimmed. */
+/** Map a Terminal Trading ticker to a Coinbase product id (`BTC-USD`). Upper-cased; whitespace trimmed. */
 export function parseProductId(ticker: string): string {
     return ticker.trim().toUpperCase();
 }
@@ -164,7 +164,7 @@ function clampLimit(bars: OHLCV[], limit?: number): OHLCV[] {
  * time-seek, so trade-derived depth is `'recent'` — live and recent windows reconstruct; older bars
  * are served empty rather than walked unbounded.
  *
- *   import { CoinbaseProvider } from 'vela/providers/coinbase';
+ *   import { CoinbaseProvider } from 'terminal-trading/providers/coinbase';
  *   chart.data.registerProvider('coinbase', new CoinbaseProvider());
  */
 export class CoinbaseProvider implements DataProvider {
@@ -206,7 +206,7 @@ export class CoinbaseProvider implements DataProvider {
             const targetMin = /^\d+$/.test(tf) ? parseInt(tf, 10) : null;
             const subMin = targetMin != null ? selectSubTf(targetMin) : null;
             if (targetMin == null || subMin == null) {
-                console.warn(`[vela] Coinbase: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
+                console.warn(`[terminal-trading] Coinbase: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
                 return [];
             }
             const ratio = targetMin / subMin;
@@ -215,7 +215,7 @@ export class CoinbaseProvider implements DataProvider {
             return clampLimit(aggregate(sub, targetMin * 60_000), range.limit);
         } catch (e) {
             // Fail soft (consistent with the other providers): empty + warning rather than rejecting.
-            console.warn(`[vela] Coinbase: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
+            console.warn(`[terminal-trading] Coinbase: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
             return [];
         }
     }
@@ -388,7 +388,7 @@ export class CoinbaseProvider implements DataProvider {
             if (reconnect) { clearTimeout(reconnect); reconnect = null; }
             try { ws?.close(); } catch { /* ignore */ }
             ws = null;
-            console.warn(`[vela] Coinbase: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
+            console.warn(`[terminal-trading] Coinbase: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
             polling = this.pollBars(ticker, timeframe, onBar);
         };
 

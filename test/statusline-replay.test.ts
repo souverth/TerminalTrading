@@ -11,7 +11,7 @@ function make() {
     const host = document.createElement('div');
     document.body.appendChild(host);
     const line = new Statusline(host, 'BINANCE:BTCUSDT');
-    const badge = line.el.querySelector<HTMLElement>('.vela-sl-market')!;
+    const badge = line.el.querySelector<HTMLElement>('.tt-sl-market')!;
     return { line, badge };
 }
 
@@ -20,16 +20,16 @@ describe('Statusline badge', () => {
         const { line, badge } = make();
         expect(badge.dataset.status).toBe('open');
 
-        const bubble = badge.querySelector<HTMLElement>('.vela-callout')!;
-        const replay = badge.querySelector<HTMLElement>('.vela-sl-replay-badge')!;
+        const bubble = badge.querySelector<HTMLElement>('.tt-callout')!;
+        const replay = badge.querySelector<HTMLElement>('.tt-sl-replay-badge')!;
         expect([bubble.hidden, replay.hidden]).toEqual([false, true]);
 
         line.setReplaying(true);
         expect(badge.dataset.status).toBe('replay');
         expect([bubble.hidden, replay.hidden]).toEqual([true, false]);
         // circle and glyph in one drawing, in the inverse chip's colors (white on dark, dark on light)
-        expect(replay.querySelector('circle')!.getAttribute('style')).toContain('var(--vela-selected-bg)');
-        expect(replay.querySelector('path')!.getAttribute('style')).toContain('var(--vela-selected-fg)');
+        expect(replay.querySelector('circle')!.getAttribute('style')).toContain('var(--tt-selected-bg)');
+        expect(replay.querySelector('path')!.getAttribute('style')).toContain('var(--tt-selected-fg)');
 
         line.setMarketStatus('closed'); // a session change while replaying waits for the end
         expect(badge.dataset.status).toBe('replay');
@@ -43,6 +43,6 @@ describe('Statusline badge', () => {
     it('sits the meta dot one space after the ticker, not a full row gap away', () => {
         make().line.destroy();
         const css = [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
-        expect(css).toContain('.vela-statusline .vela-sl-symbol + .vela-sl-meta { margin-left: calc(var(--vela-space-1) - var(--vela-space-2)); }');
+        expect(css).toContain('.tt-statusline .tt-sl-symbol + .tt-sl-meta { margin-left: calc(var(--tt-space-1) - var(--tt-space-2)); }');
     });
 });

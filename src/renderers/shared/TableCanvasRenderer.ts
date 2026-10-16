@@ -1,5 +1,5 @@
 import type { DrawingTable, TableCell, TablePosition } from '../../core/model/drawings';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 import { fontPxOf, tableHasContent, mergeRenderPlan } from './TableOverlay';
 import type { LabelTipRegion } from './DrawingSceneRenderer';
 
@@ -16,7 +16,7 @@ export interface TablePaintArgs {
     paneHeight: number;
     /** Plot-area width (excludes the right price-axis strip) — Pine cell widths are percents of it. */
     plotWidth: number;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
 }
 
 interface CellBox {
@@ -203,7 +203,7 @@ function anchorOrigin(position: TablePosition, totalW: number, totalH: number, a
     return { x, y };
 }
 
-function cellFont(cell: TableCell, px: number, theme: VelaTheme): string {
+function cellFont(cell: TableCell, px: number, theme: TerminalTradingTheme): string {
     const family = cell.fontFamily === 'monospace' ? 'monospace' : theme.fontFamily || 'sans-serif';
     return `${cell.italic ? 'italic ' : ''}${cell.bold ? 'bold ' : ''}${px}px ${family}`;
 }

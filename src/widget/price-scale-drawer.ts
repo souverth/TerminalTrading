@@ -14,12 +14,12 @@ import {
     type PaneScaleInfo,
     type ScaleChoice,
 } from './context-menu-model';
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 
-const STYLE_ID = 'vela-widget-price-scale-drawer';
+const STYLE_ID = 'tt-widget-price-scale-drawer';
 const CSS = `
-.vela-psd-list { padding: 2px 0 4px; }
-.vela-psd-row {
+.tt-psd-list { padding: 2px 0 4px; }
+.tt-psd-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -29,24 +29,24 @@ const CSS = `
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-psd-row:active { background: var(--vela-hover); }
-.vela-psd-row[data-sep='1'] { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--vela-border); border-radius: 0 0 8px 8px; }
-.vela-psd-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--vela-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-psd-row .vela-icon { flex: none; color: var(--vela-fg-bright); }
-.vela-psd-section {
+.tt-psd-row:active { background: var(--tt-hover); }
+.tt-psd-row[data-sep='1'] { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--tt-border); border-radius: 0 0 8px 8px; }
+.tt-psd-row-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--tt-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-psd-row .tt-icon { flex: none; color: var(--tt-fg-bright); }
+.tt-psd-section {
     padding: 12px 2px 4px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.4px;
     text-transform: uppercase;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
 }
 `;
 
 export interface PriceScaleDrawerOptions {
     host: HTMLElement;
     /** Live chart (reads/writes scale features). */
-    chart: () => Vela | null;
+    chart: () => TerminalTrading | null;
     /** Plot-local y of the long-press — picks which pane's scale the sheet targets. */
     pressY: () => number;
     onOpenChange?: (open: boolean) => void;
@@ -99,14 +99,14 @@ export class PriceScaleDrawer {
         });
 
         const list = doc.createElement('div');
-        list.className = 'vela-psd-list';
+        list.className = 'tt-psd-list';
 
         const row = (label: string, opts: { checked?: boolean; sep?: boolean; onClick: () => void }): void => {
             const el = doc.createElement('div');
-            el.className = 'vela-psd-row';
+            el.className = 'tt-psd-row';
             if (opts.sep) el.dataset.sep = '1';
             const text = doc.createElement('span');
-            text.className = 'vela-psd-row-label';
+            text.className = 'tt-psd-row-label';
             text.textContent = label;
             el.appendChild(text);
             if (opts.checked) el.appendChild(iconEl('check', doc));
@@ -115,7 +115,7 @@ export class PriceScaleDrawer {
         };
         const section = (label: string): void => {
             const el = doc.createElement('div');
-            el.className = 'vela-psd-section';
+            el.className = 'tt-psd-section';
             el.textContent = label;
             list.appendChild(el);
         };

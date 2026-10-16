@@ -3,7 +3,7 @@
 // a crosshair move that changes digits alone rewrites the values in place, unmeasured.
 import { describe, it, expect } from 'vitest';
 import { Statusline } from '../src/widget/statusline';
-import type { Vela } from '../src/Vela';
+import type { TerminalTrading } from '../src/TerminalTrading';
 
 // jsdom ships no CSS.escape; the kit's style injection needs it for its id lookup.
 (globalThis as { CSS?: unknown }).CSS ??= { escape: (v: string) => v };
@@ -29,7 +29,7 @@ function make() {
             },
         },
         replay: { state: { active: false } },
-    } as unknown as Vela;
+    } as unknown as TerminalTrading;
     line.onChart(chart);
     // Every fit() reads the chip's scrollWidth — count the reads (jsdom never overflows).
     let measures = 0;
@@ -39,7 +39,7 @@ function make() {
             return 0;
         },
     });
-    const close = () => line.el.querySelectorAll('.vela-sl-ohlc b')[3]?.textContent;
+    const close = () => line.el.querySelectorAll('.tt-sl-ohlc b')[3]?.textContent;
     return { line, hover: (ohlc: Bar | null) => move({ ohlc }), measures: () => measures, close };
 }
 
@@ -80,13 +80,13 @@ describe('Statusline fit', () => {
         const after = measures();
         line.setDirectionColors(null, null, null, 'value');
         expect(measures()).toBeGreaterThan(after);
-        expect(line.el.querySelectorAll('.vela-sl-ohlc b')).toHaveLength(1);
+        expect(line.el.querySelectorAll('.tt-sl-ohlc b')).toHaveLength(1);
         line.destroy();
     });
 
     it('sets the values in tabular figures, so digits alone never move the width', () => {
         make().line.destroy();
         const css = [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
-        expect(css).toMatch(/\.vela-statusline \.vela-sl-values \{[^}]*font-variant-numeric: tabular-nums/);
+        expect(css).toMatch(/\.tt-statusline \.tt-sl-values \{[^}]*font-variant-numeric: tabular-nums/);
     });
 });

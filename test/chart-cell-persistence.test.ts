@@ -140,7 +140,7 @@ class FakeRenderer implements IChartRenderer {
     setIndicatorStatus(): void {}
 }
 
-/** The most recently constructed FakeRenderer (Vela instantiates the class). */
+/** The most recently constructed FakeRenderer (Terminal Trading instantiates the class). */
 let lastRenderer: FakeRenderer | null = null;
 class TrackedRenderer extends FakeRenderer {
     constructor() {
@@ -444,8 +444,8 @@ describe('ChartCell symbol metadata — the session verdict does not wait for th
 });
 
 describe('ChartCell indicator picker library', () => {
-    // Vela is now the name of whole charting products built on this library, so the
-    // library's own indicators can't be filed under "Vela" in their picker.
+    // Terminal Trading is now the name of whole charting products built on this library, so the
+    // library's own indicators can't be filed under "Terminal Trading" in their picker.
     it('files the built-in indicators under "Built-in", never under the product name', async () => {
         const cell = makeCell();
         await settle();

@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { createDrawing, type Projector, type TrendLine } from '../src/core/drawings';
 import { DrawingPainter } from '../src/renderers/native/drawings/DrawingPainter';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /** x = time, y = 100 − price, 200 × 100 px. */
 const proj: Projector = {
@@ -41,7 +41,7 @@ function paintedSpan(d: TrendLine): [number, number] {
             return true;
         },
     }) as unknown as CanvasRenderingContext2D;
-    new DrawingPainter().paintAll(ctx, [d], proj, { textColor: '#fff', background: '#000', fontFamily: 'sans-serif' } as unknown as VelaTheme);
+    new DrawingPainter().paintAll(ctx, [d], proj, { textColor: '#fff', background: '#000', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme);
     return [Math.min(...xs), Math.max(...xs)];
 }
 

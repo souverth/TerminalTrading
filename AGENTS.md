@@ -1,10 +1,10 @@
 # Agent Guide
 
-Working guide for an AI agent contributing to Vela: how to analyze requests, implement,
+Working guide for an AI agent contributing to Terminal Trading: how to analyze requests, implement,
 test, verify, and prevent regressions. Throughout this file, **"the user"** means the
 human directing the work.
 
-Vela is an open-source charting library: a headless core, a native renderer, swappable
+Terminal Trading is an open-source charting library: a headless core, a native renderer, swappable
 data providers and scripting engines, a vanilla UI kit, a batteries-included widget, and
 a public plugin SDK. Much of its behavior is visual and runtime — it can only be _truly_
 confirmed by running it, not by reading code. The method below is built around that
@@ -20,7 +20,7 @@ reality.
    repo code, tests, or docs.
 
 2. **Browser capability.** Confirm you can drive and inspect a real browser (e.g. a
-   Playwright tool) before starting. Most Vela features can only be verified for real in
+   Playwright tool) before starting. Most Terminal Trading features can only be verified for real in
    a browser. If you cannot, you can still work — but tell the user up front that your
    verification is weaker and some bugs may slip through.
 
@@ -37,12 +37,29 @@ address the reader directly, prefer the active voice and the present tense, lead
 what matters, and keep sentences short and concrete. When unsure what the guide
 prescribes, consult it at that URL instead of guessing.
 
+## Where to read
+
+Read the page that matches the task before you open code. Every page marked **Stable** was
+verified against the code on the date it shows.
+
+| Task | Read |
+| --- | --- |
+| Find the file to change | `docs/architecture/module-map.md` |
+| What you must never break | `docs/contributing/hard-rules.md` |
+| Change the core, a port, or the data layer | `docs/contributing/core-guide.md` |
+| Change the widget, workspace, UI kit, or chrome | `docs/contributing/frontend-guide.md` |
+| Add a renderer, engine, provider, drawing tool, or UI component | `docs/contributing/adding-a-*.md` |
+| Write or run tests | `docs/contributing/testing.md` |
+| Chase a blank or stale chart | `docs/contributing/debugging.md` |
+| Run the playground with live data | `docs/contributing/workflow.md` |
+
+---
 ## The working loop
 
 For anything beyond a trivial edit:
 
 1. **Understand before touching code.** Restate the goal, then read the _actual_ code it
-   touches — the relevant ports, the composition root (`src/Vela.ts`), the lint/boundary
+   touches — the relevant ports, the composition root (`src/TerminalTrading.ts`), the lint/boundary
    config — instead of assuming. The output of this step is _where_ the change belongs
    and _what the real decisions are_.
 
@@ -96,7 +113,7 @@ prove the thing:
   you drive the system with fake renderers, fake providers, and fake engines — use them.
 - **Throwaway scripts in `.scratchpad/`** for experiments and captured output.
 - **The browser for anything visual or interactive.** `npm run playground` serves
-  `playground/` on `http://localhost:5190` with Vela imported **straight from `src/`**
+  `playground/` on `http://localhost:5190` with Terminal Trading imported **straight from `src/`**
   (vite, HMR — no build step): edits are live on save, so you always exercise fresh
   code. What you verify there is the real renderer, the real widget chrome, the real
   event paths.
@@ -150,7 +167,7 @@ mechanically; the rest are reviewed by hand.
 - The **core is headless and environment-agnostic**: no `window`/`history`/`location`
   assumptions outside the renderer and widget layers. Browser glue (URL state,
   persistence, keyboard) belongs to the widget.
-- **No scripting engine lives here.** Vela defines the `ScriptingEngine` port and ships
+- **No scripting engine lives here.** Terminal Trading defines the `ScriptingEngine` port and ships
   nothing that implements it; `pinets` is banned by the lint ACL (Pine Script lives in the
   AGPL-3.0 `@luxalgo/vela-pinets` addon — importing it would pull that license onto this
   Apache-2.0 package). The playground carries its own `demo-engine.ts` for exercising the
@@ -177,7 +194,7 @@ descriptors working when multiple charts exist.
   the `closest()` fallback silently portals to `<body>`, outside the theme variables.
 - Any authored `display` on a component's root defeats the `[hidden]` UA rule — pair it
   with `[hidden] { display: none !important; }`.
-- New components follow the uniform skeleton (`controller.ts` + `view.ts` + `styles.css`
+- New components follow the uniform skeleton (`controller.ts` + `view.ts` + `styles.ts`
   - `index.ts`) documented in `docs/contributing/adding-a-ui-component.md`.
 
 **Style and prose.**
@@ -185,7 +202,7 @@ descriptors working when multiple charts exist.
 - **Everything in the repo is English** — code, comments, commits, docs — regardless of
   the conversation language.
 - **Never name other charting products in code, comments, or commit messages.** Describe
-  features by their own behavior, not by whose product they resemble.
+  features by their own behavior, not by whose product they resemble. The one exception is the credit to the Vela project (LuxAlgo) that the NOTICE requires: keep it.
 - Comments state constraints the code can't show. No "what the next line does," no
   review narration.
 - Match the surrounding code's naming, comment density, and idiom.
@@ -194,7 +211,7 @@ descriptors working when multiple charts exist.
 
 - The repo is Apache-2.0 with a **NOTICE-based attribution requirement**: the in-chart
   attribution mark defaults to on, and any example or doc that disables it must mention
-  the equivalent-notice obligation. Don't weaken either side casually.
+  the equivalent-notice obligation. The attribution names the Vela project that this code derives from; never remove or rename it. Don't weaken either side casually.
 
 ---
 
@@ -230,7 +247,7 @@ afterthought). Follow the house format exactly:
   calm. One entry per feature: merge related sub-features into one narrative entry
   instead of scattering micro-bullets.
 - **High level only.** No internal identifiers, module paths, event names, or
-  architecture vocabulary. Public names the user actually types (`VelaWorkspace`, an
+  architecture vocabulary. Public names the user actually types (`TerminalTradingWorkspace`, an
   option name) are fine; how it works inside is not. If a sentence only makes sense to
   someone who read the source, rewrite it.
 - **What goes where.** `Added` = new capabilities. `Changed` = behavior a v-1 user will

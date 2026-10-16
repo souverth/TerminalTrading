@@ -33,7 +33,7 @@ export class TypedEventBus<Events extends Record<string, unknown>> {
             try {
                 handler(payload);
             } catch (err) {
-                console.error(`[vela] event handler error for "${String(event)}"`, err);
+                console.error(`[terminal-trading] event handler error for "${String(event)}"`, err);
             }
         }
     }

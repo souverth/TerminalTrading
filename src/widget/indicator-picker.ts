@@ -16,78 +16,78 @@ export interface IndicatorRow {
     beta?: boolean;
 }
 
-const STYLE_ID = 'vela-widget-indpicker';
+const STYLE_ID = 'tt-widget-indpicker';
 const CSS = `
-.vela-ip-searchrow {
+.tt-ip-searchrow {
     display: flex;
     align-items: center;
     gap: 8px;
     height: 40px;
     padding: 0 12px;
-    margin-bottom: var(--vela-space-2);
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
+    margin-bottom: var(--tt-space-2);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
     border-radius: 8px;
 }
-.vela-ip-searchrow:focus-within { border-color: var(--vela-border-strong); }
-.vela-ip-searchrow .vela-icon { color: var(--vela-fg-muted); }
-.vela-ip-search { flex: 1; background: transparent; color: var(--vela-fg); border: none; font-size: 14px; outline: none; }
-.vela-ip-list { max-height: 50vh; overflow: auto; min-width: 380px; }
+.tt-ip-searchrow:focus-within { border-color: var(--tt-border-strong); }
+.tt-ip-searchrow .tt-icon { color: var(--tt-fg-muted); }
+.tt-ip-search { flex: 1; background: transparent; color: var(--tt-fg); border: none; font-size: 14px; outline: none; }
+.tt-ip-list { max-height: 50vh; overflow: auto; min-width: 380px; }
 /* Mobile (fullscreen dialog): no width floor — 380px would overflow a phone —
    and no height cap; the fullscreen body owns the scrolling. */
-[data-layout='mobile'] .vela-ip-list { min-width: 0; max-height: none; }
-.vela-ip-list::-webkit-scrollbar { width: 8px; }
-.vela-ip-list::-webkit-scrollbar-thumb { background: var(--vela-scroll); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
-.vela-ip-group {
-    color: var(--vela-fg-muted);
+[data-layout='mobile'] .tt-ip-list { min-width: 0; max-height: none; }
+.tt-ip-list::-webkit-scrollbar { width: 8px; }
+.tt-ip-list::-webkit-scrollbar-thumb { background: var(--tt-scroll); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+.tt-ip-group {
+    color: var(--tt-fg-muted);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding: 10px 4px 4px;
-    border-bottom: 1px solid var(--vela-border);
+    border-bottom: 1px solid var(--tt-border);
     margin-bottom: 2px;
 }
-.vela-ip-oncard {
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
+.tt-ip-oncard {
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
     border-radius: 8px;
     padding: 6px 8px;
-    margin-bottom: var(--vela-space-2);
+    margin-bottom: var(--tt-space-2);
 }
-.vela-ip-oncard .vela-ip-group { border-bottom: none; padding-top: 2px; }
-.vela-ip-row {
+.tt-ip-oncard .tt-ip-group { border-bottom: none; padding-top: 2px; }
+.tt-ip-row {
     display: flex;
     align-items: center;
-    gap: var(--vela-space-2);
+    gap: var(--tt-space-2);
     padding: 7px 6px;
-    border-radius: var(--vela-radius-sm);
+    border-radius: var(--tt-radius-sm);
     cursor: pointer;
 }
-.vela-ip-row:hover { background: var(--vela-hover); }
-.vela-ip-name { flex: 1; font-weight: 600; color: var(--vela-fg-bright); font-size: 13px; }
-.vela-ip-badge {
+.tt-ip-row:hover { background: var(--tt-hover); }
+.tt-ip-name { flex: 1; font-weight: 600; color: var(--tt-fg-bright); font-size: 13px; }
+.tt-ip-badge {
     flex: none;
     padding: 1px 7px;
-    border-radius: var(--vela-radius-sm);
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
-    color: var(--vela-accent);
+    border-radius: var(--tt-radius-sm);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
+    color: var(--tt-accent);
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
-.vela-ip-trash {
+.tt-ip-trash {
     all: unset;
     cursor: pointer;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     padding: 2px 4px;
-    border-radius: var(--vela-radius-sm);
-    font-size: var(--vela-font-size-md);
+    border-radius: var(--tt-radius-sm);
+    font-size: var(--tt-font-size-md);
 }
-.vela-ip-trash:hover { color: var(--vela-down); background: var(--vela-hover); }
-.vela-ip-empty { padding: var(--vela-space-3); color: var(--vela-fg-muted); text-align: center; }
+.tt-ip-trash:hover { color: var(--tt-down); background: var(--tt-hover); }
+.tt-ip-empty { padding: var(--tt-space-3); color: var(--tt-fg-muted); text-align: center; }
 `;
 
 export interface IndicatorPickerOptions {
@@ -113,15 +113,15 @@ export class IndicatorPicker {
         const doc = (opts.host ?? document.body).ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
         this.search = doc.createElement('input');
-        this.search.className = 'vela-ip-search';
+        this.search.className = 'tt-ip-search';
         this.search.placeholder = 'Search…';
         this.search.spellcheck = false;
         this.search.addEventListener('input', () => this.refresh());
         const searchRow = doc.createElement('div');
-        searchRow.className = 'vela-ip-searchrow';
+        searchRow.className = 'tt-ip-searchrow';
         searchRow.append(iconEl('search', doc), this.search);
         this.list = doc.createElement('div');
-        this.list.className = 'vela-ip-list';
+        this.list.className = 'tt-ip-list';
         this.dialog = new Dialog({
             title: 'Indicators',
             host: opts.host,
@@ -142,8 +142,8 @@ export class IndicatorPicker {
             },
         });
         this.list.addEventListener('click', (e) => {
-            const trash = (e.target as HTMLElement).closest<HTMLElement>('.vela-ip-trash');
-            const row = (e.target as HTMLElement).closest<HTMLElement>('.vela-ip-row');
+            const trash = (e.target as HTMLElement).closest<HTMLElement>('.tt-ip-trash');
+            const row = (e.target as HTMLElement).closest<HTMLElement>('.tt-ip-row');
             if (!row) return;
             if (trash) {
                 this.opts.onRemove(Number(row.dataset.instance));
@@ -181,30 +181,30 @@ export class IndicatorPicker {
 
         const rowEl = (r: IndicatorRow, opts: { library?: number; instance?: number }): HTMLElement => {
             const row = doc.createElement('div');
-            row.className = 'vela-ip-row';
+            row.className = 'tt-ip-row';
             if (opts.library !== undefined) row.dataset.library = String(opts.library);
             if (opts.instance !== undefined) row.dataset.instance = String(opts.instance);
             if (r.native) row.dataset.native = '1';
             const name = doc.createElement('span');
-            name.className = 'vela-ip-name';
+            name.className = 'tt-ip-name';
             name.textContent = r.name;
             row.appendChild(name);
             if (r.beta) {
                 const beta = doc.createElement('span');
-                beta.className = 'vela-ip-badge';
+                beta.className = 'tt-ip-badge';
                 beta.textContent = 'beta';
                 row.appendChild(beta);
             }
             if (opts.instance !== undefined) {
-                const badgeText = r.native ? 'vela' : r.language;
+                const badgeText = r.native ? 'terminal-trading' : r.language;
                 if (badgeText) {
                     const badge = doc.createElement('span');
-                    badge.className = 'vela-ip-badge';
+                    badge.className = 'tt-ip-badge';
                     badge.textContent = badgeText;
                     row.appendChild(badge);
                 }
                 const trash = doc.createElement('button');
-                trash.className = 'vela-ip-trash';
+                trash.className = 'tt-ip-trash';
                 trash.appendChild(iconEl('trash', doc));
                 trash.title = 'Remove from chart';
                 row.appendChild(trash);
@@ -216,9 +216,9 @@ export class IndicatorPicker {
         const onChart = instances.map((r, i) => [r, i] as const).filter(([r]) => match(r));
         if (onChart.length) {
             const card = doc.createElement('div');
-            card.className = 'vela-ip-oncard';
+            card.className = 'tt-ip-oncard';
             const title = doc.createElement('div');
-            title.className = 'vela-ip-group';
+            title.className = 'tt-ip-group';
             title.textContent = `On chart · ${onChart.length}`;
             card.appendChild(title);
             for (const [r, i] of onChart) card.appendChild(rowEl(r, { instance: i }));
@@ -236,14 +236,14 @@ export class IndicatorPicker {
         });
         for (const [cat, bucket] of byCat) {
             const title = doc.createElement('div');
-            title.className = 'vela-ip-group';
+            title.className = 'tt-ip-group';
             title.textContent = cat;
             this.list.appendChild(title);
             for (const [r, i] of bucket) this.list.appendChild(rowEl(r, { library: i }));
         }
         if (!onChart.length && byCat.size === 0) {
             const empty = doc.createElement('div');
-            empty.className = 'vela-ip-empty';
+            empty.className = 'tt-ip-empty';
             empty.textContent = library.length ? 'No indicators match.' : 'No indicators in the manifest.';
             this.list.appendChild(empty);
         }

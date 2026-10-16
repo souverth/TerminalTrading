@@ -10,35 +10,35 @@ import { injectStyles } from '../ui/styles';
 import type { ToolbarDefinition, ToolDefinition } from '../core/drawings/toolbar';
 import type { DrawingTypeKey } from '../core/drawings/Drawing';
 
-const STYLE_ID = 'vela-widget-drawings-drawer';
+const STYLE_ID = 'tt-widget-drawings-drawer';
 const CSS = `
 /* Search + tabs stay pinned while the tool list scrolls underneath. */
-.vela-dd-sticky {
+.tt-dd-sticky {
     position: sticky;
     top: 0;
     z-index: 1;
-    background: var(--vela-surface);
+    background: var(--tt-surface);
     padding-top: 2px;
 }
-.vela-dd-search {
+.tt-dd-search {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
     margin: 0 2px 8px;
-    border: 1px solid var(--vela-border);
+    border: 1px solid var(--tt-border);
     border-radius: 8px;
-    color: var(--vela-fg-muted);
-    background: var(--vela-surface);
+    color: var(--tt-fg-muted);
+    background: var(--tt-surface);
 }
-.vela-dd-search input {
+.tt-dd-search input {
     all: unset;
     flex: 1 1 auto;
     min-width: 0;
     font-size: 14px;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
 }
-.vela-dd-tabs {
+.tt-dd-tabs {
     display: flex;
     gap: 4px;
     overflow-x: auto;
@@ -47,11 +47,11 @@ const CSS = `
        (the drawer body is pan-y so everywhere ELSE a sideways move swipes the tabs). */
     touch-action: pan-x;
     padding: 0 2px 8px;
-    border-bottom: 1px solid var(--vela-border);
-    background: var(--vela-surface);
+    border-bottom: 1px solid var(--tt-border);
+    background: var(--tt-surface);
 }
-.vela-dd-tabs::-webkit-scrollbar { display: none; }
-.vela-dd-tab {
+.tt-dd-tabs::-webkit-scrollbar { display: none; }
+.tt-dd-tab {
     all: unset;
     flex: none;
     min-height: 36px;
@@ -61,21 +61,21 @@ const CSS = `
     border-radius: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-dd-tab[data-active='1'] { color: var(--vela-fg-bright); background: var(--vela-hover); }
-.vela-dd-list { padding: 6px 0 4px; }
-.vela-dd-section {
+.tt-dd-tab[data-active='1'] { color: var(--tt-fg-bright); background: var(--tt-hover); }
+.tt-dd-list { padding: 6px 0 4px; }
+.tt-dd-section {
     padding: 10px 2px 6px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.4px;
     text-transform: uppercase;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
 }
-.vela-dd-row {
+.tt-dd-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -85,13 +85,13 @@ const CSS = `
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-dd-row:active { background: var(--vela-hover); }
-.vela-dd-row[data-active='1'] { background: var(--vela-hover); }
-.vela-dd-row[data-active='1'] .vela-dd-label { color: var(--vela-accent); }
-.vela-dd-glyph { flex: none; width: 24px; height: 24px; color: var(--vela-fg); }
-.vela-dd-glyph svg { width: 24px; height: 24px; }
-.vela-dd-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--vela-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-dd-star {
+.tt-dd-row:active { background: var(--tt-hover); }
+.tt-dd-row[data-active='1'] { background: var(--tt-hover); }
+.tt-dd-row[data-active='1'] .tt-dd-label { color: var(--tt-accent); }
+.tt-dd-glyph { flex: none; width: 24px; height: 24px; color: var(--tt-fg); }
+.tt-dd-glyph svg { width: 24px; height: 24px; }
+.tt-dd-label { flex: 1 1 auto; min-width: 0; font-size: 14px; color: var(--tt-fg-bright); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-dd-star {
     all: unset;
     flex: none;
     width: 40px;
@@ -100,12 +100,12 @@ const CSS = `
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-.vela-dd-star[data-on='1'] { color: var(--vela-highlight); }
-.vela-dd-empty { padding: 18px 2px; color: var(--vela-fg-muted); font-size: 13px; }
+.tt-dd-star[data-on='1'] { color: var(--tt-highlight); }
+.tt-dd-empty { padding: 18px 2px; color: var(--tt-fg-muted); font-size: 13px; }
 `;
 
 export interface DrawingsDrawerOptions {
@@ -139,10 +139,10 @@ export class DrawingsDrawer {
         });
 
         const sticky = doc.createElement('div');
-        sticky.className = 'vela-dd-sticky';
+        sticky.className = 'tt-dd-sticky';
 
         const search = doc.createElement('div');
-        search.className = 'vela-dd-search';
+        search.className = 'tt-dd-search';
         search.appendChild(iconEl('search', doc));
         this.input = doc.createElement('input');
         this.input.type = 'text';
@@ -151,11 +151,11 @@ export class DrawingsDrawer {
         search.appendChild(this.input);
 
         this.tabs = doc.createElement('div');
-        this.tabs.className = 'vela-dd-tabs';
+        this.tabs.className = 'tt-dd-tabs';
         sticky.append(search, this.tabs);
 
         this.list = doc.createElement('div');
-        this.list.className = 'vela-dd-list';
+        this.list.className = 'tt-dd-list';
 
         this.drawer.body.append(sticky, this.list);
     }
@@ -195,7 +195,7 @@ export class DrawingsDrawer {
         this.tabs.replaceChildren();
         for (const group of this.definition.groups) {
             const tab = doc.createElement('button');
-            tab.className = 'vela-dd-tab';
+            tab.className = 'tt-dd-tab';
             tab.textContent = group.label;
             if (group.id === this.activeGroup) tab.dataset.active = '1';
             tab.addEventListener('click', () => {
@@ -216,22 +216,22 @@ export class DrawingsDrawer {
 
         const section = (label: string): void => {
             const el = doc.createElement('div');
-            el.className = 'vela-dd-section';
+            el.className = 'tt-dd-section';
             el.textContent = label;
             this.list.appendChild(el);
         };
         const row = (tool: ToolDefinition): void => {
             const el = doc.createElement('div');
-            el.className = 'vela-dd-row';
+            el.className = 'tt-dd-row';
             if (tool.type === active) el.dataset.active = '1';
             const glyph = doc.createElement('span');
-            glyph.className = 'vela-dd-glyph';
+            glyph.className = 'tt-dd-glyph';
             glyph.innerHTML = tool.icon;
             const label = doc.createElement('span');
-            label.className = 'vela-dd-label';
+            label.className = 'tt-dd-label';
             label.textContent = tool.label;
             const star = doc.createElement('button');
-            star.className = 'vela-dd-star';
+            star.className = 'tt-dd-star';
             const paintStar = (on: boolean): void => {
                 star.replaceChildren(iconEl(on ? 'star-filled' : 'star', doc));
                 if (on) star.dataset.on = '1';
@@ -265,7 +265,7 @@ export class DrawingsDrawer {
             }
             if (!any) {
                 const empty = doc.createElement('div');
-                empty.className = 'vela-dd-empty';
+                empty.className = 'tt-dd-empty';
                 empty.textContent = 'No tools match.';
                 this.list.appendChild(empty);
             }

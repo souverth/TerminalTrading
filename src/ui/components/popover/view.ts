@@ -1,6 +1,6 @@
 // Popover VIEW — a positioned floating shell. Content is caller-owned; this class
 // owns portal, placement, capture-phase outside-dismiss, and the single-open registry.
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { injectStyles } from '../../styles';
 import { ensureUIHost, floatingLayerHost } from '../../tokens';
 import { announceSurface } from '../../surface-events';
@@ -25,7 +25,7 @@ export interface PopoverOptions extends PopoverControllerOptions {
     content?: Node | ((body: HTMLElement) => void);
     /** Portal target. Defaults to `document.body`. Drawing chrome passes the chart host. */
     host?: HTMLElement;
-    theme?: VelaTheme;
+    theme?: TerminalTradingTheme;
     className?: string;
     zIndex?: string | number;
     /** Clamp rectangle. `'viewport'` (default) or an element (dialog / chart host). */
@@ -52,7 +52,7 @@ export function openPopoverTrigger(): HTMLElement | null {
 }
 
 /** Flag stamped on a pointer event whose only job was dismissing an open popover. */
-const POPOVER_DISMISS_FLAG = '__velaPopoverDismiss';
+const POPOVER_DISMISS_FLAG = '__ttPopoverDismiss';
 
 function markPopoverDismiss(e: Event): void {
     (e as Event & { [POPOVER_DISMISS_FLAG]?: boolean })[POPOVER_DISMISS_FLAG] = true;
@@ -78,8 +78,8 @@ export class Popover {
     private readonly host: HTMLElement;
     private readonly ctrl: ReturnType<typeof popoverController>;
     private readonly boundary: PopoverBoundary;
-    private readonly theme?: VelaTheme;
-    /** Hosted under a `.vela-ui` we resolved ourselves — its tokens win over `theme`. */
+    private readonly theme?: TerminalTradingTheme;
+    /** Hosted under a `.tt-ui` we resolved ourselves — its tokens win over `theme`. */
     private readonly inheritsTokens: boolean;
     private onOutside: ((e: Event) => void) | null = null;
     private onKey: ((e: KeyboardEvent) => void) | null = null;
@@ -95,7 +95,7 @@ export class Popover {
         const doc = opts.trigger.ownerDocument;
         injectStyles(POPOVER_STYLE_ID, POPOVER_CSS, doc);
         this.trigger = opts.trigger;
-        // No explicit host: portal to the trigger's `.vela-ui` (app-theme tokens) rather
+        // No explicit host: portal to the trigger's `.tt-ui` (app-theme tokens) rather
         // than <body>. Explicit hosts (drawing chrome, mark popups) keep their own tokens.
         this.host = opts.host ?? floatingLayerHost(opts.trigger, doc.body);
         this.inheritsTokens = !opts.host && this.host !== doc.body;
@@ -105,7 +105,7 @@ export class Popover {
         this.fadeMs = Math.max(0, opts.fadeMs ?? 0);
 
         this.el = doc.createElement('div');
-        this.el.className = 'vela-popover vela-ui-layer' + (opts.className ? ` ${opts.className}` : '');
+        this.el.className = 'tt-popover tt-ui-layer' + (opts.className ? ` ${opts.className}` : '');
         this.el.dataset.position = this.ctrl.position;
         if (opts.zIndex !== undefined) this.el.style.zIndex = String(opts.zIndex);
         // Clicks inside must not bubble to a dialog's outside-dismiss.
@@ -143,7 +143,7 @@ export class Popover {
         // one takes the place of the one still leaving from the same trigger.
         for (const p of [...leaving]) if (p.trigger === this.trigger) p.exit?.finish();
         // A caller theme is often the live plot surface (settings dialogs pass
-        // `this.theme`); stamping it on a `.vela-ui`-hosted shell would recolor the
+        // `this.theme`); stamping it on a `.tt-ui`-hosted shell would recolor the
         // list to layout.background.
         ensureUIHost(this.el, this.inheritsTokens ? undefined : this.theme);
         if (this.fadeMs > 0) {

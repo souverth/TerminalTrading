@@ -1,4 +1,4 @@
-// The DatePicker controller (vela/ui) — panel navigation and picking, no DOM.
+// The DatePicker controller (terminal-trading/ui) — panel navigation and picking, no DOM.
 import { describe, it, expect } from 'vitest';
 import { datePickerController } from '../src/ui/components/date-picker';
 

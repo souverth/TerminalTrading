@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes to Vela, newest first.
+All notable changes to Terminal Trading (and, before the rename, to the Vela library it derives from), newest first.
+
+## [Unreleased]
+
+### Changed
+
+- **The library is now Terminal Trading.** The package is `terminal-trading`, the main class is `TerminalTrading`, the workspace is `TerminalTradingWorkspace`, and the browser global is `window.TerminalTrading`. Styling hooks (CSS classes, custom properties and data attributes) use the `tt-` prefix, and saved workspace state uses new storage keys, so settings stored by earlier versions are not carried over. The in-chart attribution to the Vela project stays, as the NOTICE requires. _(Breaking: rename your imports, selectors and stored keys.)_
 
 ## [0.8.4]
 

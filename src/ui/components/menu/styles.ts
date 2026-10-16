@@ -1,29 +1,29 @@
-export const MENU_STYLE_ID = 'vela-ui-menu';
+export const MENU_STYLE_ID = 'tt-ui-menu';
 
 export const MENU_CSS = `
-.vela-menu {
+.tt-menu {
     /* The list is a <ul>: without this, block rows (the separator) paint a ::marker dot. */
     list-style: none;
     margin: 0;
-    background: var(--vela-surface);
-    color: var(--vela-fg);
-    border: 1px solid var(--vela-border-strong);
+    background: var(--tt-surface);
+    color: var(--tt-fg);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 6px;
-    box-shadow: var(--vela-shadow);
+    box-shadow: var(--tt-shadow);
     padding: 6px;
     min-width: 180px;
     max-height: 60vh;
     overflow-y: auto;
     font-size: 13px;
-    z-index: var(--vela-z-menu);
+    z-index: var(--tt-z-menu);
     outline: none;
 }
-.vela-menu[data-state='open'] { animation: vela-menu-in var(--vela-dur-fast) var(--vela-ease); }
-@keyframes vela-menu-in {
+.tt-menu[data-state='open'] { animation: tt-menu-in var(--tt-dur-fast) var(--tt-ease); }
+@keyframes tt-menu-in {
     from { opacity: 0; transform: translateY(-3px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.vela-menu-item {
+.tt-menu-item {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -33,39 +33,39 @@ export const MENU_CSS = `
     user-select: none;
     white-space: nowrap;
 }
-.vela-menu-item[data-highlighted] { background: var(--vela-hover); }
-.vela-menu-item[data-disabled] { opacity: 0.4; cursor: default; }
-.vela-menu-item .vela-icon { width: 16px; height: 16px; font-size: 16px; justify-content: center; color: var(--vela-fg-muted); }
-.vela-menu-item .vela-menu-label { flex: 1 1 auto; }
-.vela-menu-item .vela-menu-hint { color: var(--vela-fg-faint); font-size: var(--vela-font-size-sm); }
+.tt-menu-item[data-highlighted] { background: var(--tt-hover); }
+.tt-menu-item[data-disabled] { opacity: 0.4; cursor: default; }
+.tt-menu-item .tt-icon { width: 16px; height: 16px; font-size: 16px; justify-content: center; color: var(--tt-fg-muted); }
+.tt-menu-item .tt-menu-label { flex: 1 1 auto; }
+.tt-menu-item .tt-menu-hint { color: var(--tt-fg-faint); font-size: var(--tt-font-size-sm); }
 /* Active entry: the row surface carries the selection — a stronger background wash
    than the hover one, plus bright ink. Declared after the hover rule so a selected
    row stays visibly selected while highlighted. */
-.vela-menu-item[data-checked] {
-    background: var(--vela-hover-strong);
-    color: var(--vela-fg-bright);
+.tt-menu-item[data-checked] {
+    background: var(--tt-hover-strong);
+    color: var(--tt-fg-bright);
 }
 /* Checkmark mode (context/action menus): every row reserves the leading mark column so
    labels align; a checked row fills it with a ✓ and brightens its ink — the row surface
    stays free for the hover wash. */
-.vela-menu-item .vela-menu-mark {
+.tt-menu-item .tt-menu-mark {
     width: 14px;
     flex: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
-.vela-menu-item .vela-menu-mark .vela-icon {
+.tt-menu-item .tt-menu-mark .tt-icon {
     width: 14px;
     height: 14px;
     font-size: 14px;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
 }
-.vela-menu-item[data-checkmark] { color: var(--vela-fg-bright); }
+.tt-menu-item[data-checkmark] { color: var(--tt-fg-bright); }
 /* Badge mode (iconBadges): the row icon sits in a rounded tile and the row grows to fit
    it. An icon-less row of the same level keeps an invisible slot, so labels align. */
-.vela-menu[data-badges] > .vela-menu-item { padding: 5px 10px 5px 6px; }
-.vela-menu-item .vela-menu-badge {
+.tt-menu[data-badges] > .tt-menu-item { padding: 5px 10px 5px 6px; }
+.tt-menu-item .tt-menu-badge {
     width: 24px;
     height: 24px;
     padding: 3px;
@@ -74,26 +74,26 @@ export const MENU_CSS = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--vela-radius-md);
-    background: var(--vela-hover);
-    border: 1px solid var(--vela-border);
-    color: var(--vela-fg-muted);
-    transition: background var(--vela-dur-fast) var(--vela-ease), border-color var(--vela-dur-fast) var(--vela-ease), color var(--vela-dur-fast) var(--vela-ease);
+    border-radius: var(--tt-radius-md);
+    background: var(--tt-hover);
+    border: 1px solid var(--tt-border);
+    color: var(--tt-fg-muted);
+    transition: background var(--tt-dur-fast) var(--tt-ease), border-color var(--tt-dur-fast) var(--tt-ease), color var(--tt-dur-fast) var(--tt-ease);
 }
-.vela-menu-item .vela-menu-badge:empty { background: transparent; border-color: transparent; }
-.vela-menu-item .vela-menu-badge .vela-icon { color: inherit; }
-.vela-menu-item[data-highlighted] .vela-menu-badge:not(:empty) { color: var(--vela-fg-bright); }
+.tt-menu-item .tt-menu-badge:empty { background: transparent; border-color: transparent; }
+.tt-menu-item .tt-menu-badge .tt-icon { color: inherit; }
+.tt-menu-item[data-highlighted] .tt-menu-badge:not(:empty) { color: var(--tt-fg-bright); }
 /* The selected tile inverts: a bright fill under the surface-colored glyph. After the
    hover rule, so a selected row keeps its tile while highlighted. */
-.vela-menu-item[data-checked] .vela-menu-badge:not(:empty),
-.vela-menu-item[data-checkmark] .vela-menu-badge:not(:empty) {
-    background: color-mix(in srgb, var(--vela-fg-bright) 83%, var(--vela-surface));
-    border-color: color-mix(in srgb, var(--vela-fg-bright) 40%, transparent);
-    color: var(--vela-surface);
+.tt-menu-item[data-checked] .tt-menu-badge:not(:empty),
+.tt-menu-item[data-checkmark] .tt-menu-badge:not(:empty) {
+    background: color-mix(in srgb, var(--tt-fg-bright) 83%, var(--tt-surface));
+    border-color: color-mix(in srgb, var(--tt-fg-bright) 40%, transparent);
+    color: var(--tt-surface);
 }
 /* Switch rows (boolean settings in a dropdown): a right-aligned toggle pill — the
    same control language as the settings dialog's toggles. */
-.vela-menu-switch {
+.tt-menu-switch {
     order: 99;
     margin-left: auto;
     position: relative;
@@ -101,11 +101,11 @@ export const MENU_CSS = `
     width: 34px;
     height: 18px;
     border-radius: 9px;
-    background: var(--vela-surface-overlay);
-    border: 1px solid var(--vela-border-soft);
+    background: var(--tt-surface-overlay);
+    border: 1px solid var(--tt-border-soft);
     transition: background 0.16s ease, border-color 0.16s ease;
 }
-.vela-menu-switch::after {
+.tt-menu-switch::after {
     content: '';
     position: absolute;
     top: 2px;
@@ -113,37 +113,37 @@ export const MENU_CSS = `
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: var(--vela-fg-muted);
+    background: var(--tt-fg-muted);
     transition: transform 0.16s ease, background 0.16s ease;
 }
-.vela-menu-switch.on { background: var(--vela-accent-bright, var(--vela-accent)); border-color: var(--vela-accent-bright, var(--vela-accent)); }
-.vela-menu-switch.on::after { transform: translateX(16px); background: var(--vela-bg); }
+.tt-menu-switch.on { background: var(--tt-accent-bright, var(--tt-accent)); border-color: var(--tt-accent-bright, var(--tt-accent)); }
+.tt-menu-switch.on::after { transform: translateX(16px); background: var(--tt-bg); }
 /* Favorite star (rows carrying \`favorite\`): reserved space always — it fades in on row
    hover instead of shifting the layout — and a starred row keeps its filled star visible.
    Same control language as the drawing toolbar's flyout stars. */
-.vela-menu-item .vela-menu-star {
+.tt-menu-item .tt-menu-star {
     order: 98;
     /* Pad the 16px icon slot into a bigger hit target without moving the row's layout. */
     margin: -3px -5px -3px 0;
     padding: 3px 5px;
     box-sizing: content-box;
-    border-radius: var(--vela-radius-sm);
+    border-radius: var(--tt-radius-sm);
     opacity: 0;
     transition: opacity 0.1s ease, background 0.1s ease;
 }
-.vela-menu-item[data-highlighted] .vela-menu-star { opacity: 0.55; }
-.vela-menu-item .vela-menu-star:hover { opacity: 1; background: var(--vela-hover-strong); }
-.vela-menu-item .vela-menu-star.vela-fav { opacity: 0.95; color: var(--vela-highlight); }
-.vela-menu-sep { height: 1px; margin: 4px 6px; background: var(--vela-border); }
+.tt-menu-item[data-highlighted] .tt-menu-star { opacity: 0.55; }
+.tt-menu-item .tt-menu-star:hover { opacity: 1; background: var(--tt-hover-strong); }
+.tt-menu-item .tt-menu-star.tt-fav { opacity: 0.95; color: var(--tt-highlight); }
+.tt-menu-sep { height: 1px; margin: 4px 6px; background: var(--tt-border); }
 /* Submenu trigger row: a right-aligned chevron, and it stays highlighted while its own
    list is open so the path you came down remains readable. */
-.vela-menu-item .vela-menu-arrow {
+.tt-menu-item .tt-menu-arrow {
     order: 99;
     margin-left: auto;
     width: 12px;
     flex: none;
     font-size: 11px;
-    color: var(--vela-fg-faint);
+    color: var(--tt-fg-faint);
 }
-.vela-menu-item[data-state='open'] { background: var(--vela-hover); }
+.tt-menu-item[data-state='open'] { background: var(--tt-hover); }
 `;

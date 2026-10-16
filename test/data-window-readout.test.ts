@@ -155,7 +155,7 @@ describe('dataWindowSections', () => {
             { label: 'Time', value: '22:13', color: '' },
         ]);
         expect(sections[1]?.lines.map((l) => l.label)).toEqual(['Open', 'High', 'Low', 'Close', 'Volume']);
-        expect(sections[1]?.lines.every((l) => l.color === 'var(--vela-up)')).toBe(true);
+        expect(sections[1]?.lines.every((l) => l.color === 'var(--tt-up)')).toBe(true);
         expect(sections[3]?.lines).toEqual([
             { label: 'RSI', value: '61.20', color: '#7e57c2' },
             { label: 'Signal', value: '58.90', color: '#ff9800' },
@@ -170,7 +170,7 @@ describe('dataWindowSections', () => {
             groups: [],
         });
         expect(sections[1]?.lines.map((l) => l.label)).toEqual(['Open', 'High', 'Low', 'Close']);
-        expect(sections[1]?.lines.every((l) => l.color === 'var(--vela-down)')).toBe(true);
+        expect(sections[1]?.lines.every((l) => l.color === 'var(--tt-down)')).toBe(true);
     });
 
     it('shows a dash for a missing date or time rather than an empty row', () => {

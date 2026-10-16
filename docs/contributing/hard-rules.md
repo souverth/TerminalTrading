@@ -1,6 +1,6 @@
 # Hard Rules
 
-> **Status:** Stable Â· **Verified against code:** 2026-10-16 Â· **Audience:** contributors and AI agents
+> **Status:** Stable · **Verified against code:** 2026-10-16 · **Audience:** contributors and AI agents
 
 These rules are not preferences. Break one and the change is wrong, however well it works. Each rule names where it comes from and how it is enforced, so you know whether a green gate proves you kept it. "Review" means no tool catches a violation; you carry the burden.
 
@@ -10,11 +10,11 @@ If a change seems to need an exception, stop and raise it as a design question. 
 
 | # | Rule | Source | Enforced by |
 | --- | --- | --- | --- |
-| A1 | Vela ships **no scripting engine** and imports none. `pinets` and `@luxalgo/vela-pinets` never appear in `src/` and never in `dependencies`; the playground may use them as `devDependencies`. | [ADR 0003](../architecture/adr/0003-no-default-scripting-engine.md), [boundaries.md](../architecture/boundaries.md) | Lint (imports in `src/`). A `package.json` entry is review. |
+| A1 | Terminal Trading ships **no scripting engine** and imports none. `pinets` and `@luxalgo/vela-pinets` never appear in `src/` and never in `dependencies`; the playground may use them as `devDependencies`. | [ADR 0003](../architecture/adr/0003-no-default-scripting-engine.md), [boundaries.md](../architecture/boundaries.md) | Lint (imports in `src/`). A `package.json` entry is review. |
 | A2 | The **core is headless**. No `window`, `document`, `history`, or `location` outside the renderer and widget layers. | `AGENTS.md` | Review |
 | A3 | Only the **neutral model** crosses a port. No backend-specific type ever does. | [ADR 0001](../architecture/adr/0001-neutral-model-as-cross-layer-currency.md) | Review |
 | A4 | The **core never imports the UI kit**, and the **kit never imports engine internals**. Check the table in [module-map.md](../architecture/module-map.md#observed-import-directions) before you add an import. | [ADR 0004](../architecture/adr/0004-enforce-layering-with-import-acl.md) | Review |
-| A5 | Only the **composition root** (`Vela.ts` and the package barrels) imports concrete backends. | [boundaries.md](../architecture/boundaries.md) | Review |
+| A5 | Only the **composition root** (`TerminalTrading.ts` and the package barrels) imports concrete backends. | [boundaries.md](../architecture/boundaries.md) | Review |
 | A6 | **One chart is one market and one time axis.** Panes share the X axis. | `AGENTS.md` | Review |
 | A7 | **Extend through public seams**: chart types, renderer layers, native indicators, widget actions, settings sections. A new hole in a layer is a design decision. | `AGENTS.md` | Review |
 | A8 | The in-chart **attribution mark stays on by default**. Any example or document that disables it states the equivalent-notice obligation. | `NOTICE`, `AGENTS.md` | Review |

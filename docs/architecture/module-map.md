@@ -18,8 +18,8 @@ The table lists which top-level directories each one imports, measured from the 
 | `state` | nothing | One serializable document type shared by both shells. |
 | `ui` | `core`, `ui` | The kit never imports a renderer, the widget, or engine internals. |
 | `renderers` | `core`, `chart-types`, `ui`, `renderers` | Renderer chrome reuses the UI kit. |
-| `widget` | everything above, and `Vela` | The shell composes all layers from above. |
-| `workspace` | everything above, and `Vela` | Same as `widget`; it also imports `widget`. |
+| `widget` | everything above, and `TerminalTrading` | The shell composes all layers from above. |
+| `workspace` | everything above, and `TerminalTrading` | Same as `widget`; it also imports `widget`. |
 
 If a new import breaks one of these rows, treat it as a design question and raise it before you write the code.
 
@@ -27,10 +27,10 @@ If a new import breaks one of these rows, treat it as a design question and rais
 
 | File | Role |
 | --- | --- |
-| `src/Vela.ts` (444) | The `Vela` class: the composition root that wires the defaults. |
+| `src/TerminalTrading.ts` (444) | The `TerminalTrading` class: the composition root that wires the defaults. |
 | `src/index.ts` | Public entry point and default backends. Only this file and the other barrels import concrete backends. |
-| `src/plugin.ts` | The plugin SDK barrel (`@luxalgo/vela/plugin`): chart types, native indicators, renderer layers, widget actions, side panels, state persistence, and the engine port types. |
-| `src/browser.ts` | Entry of the browser globals build (`window.Vela`). |
+| `src/plugin.ts` | The plugin SDK barrel (`terminal-trading/plugin`): chart types, native indicators, renderer layers, widget actions, side panels, state persistence, and the engine port types. |
+| `src/browser.ts` | Entry of the browser globals build (`window.TerminalTrading`). |
 
 ## `src/core` — headless core
 
@@ -91,7 +91,7 @@ Tests: `chart-type-registry.test.ts`, `state-persistence.test.ts`.
 
 | Path | Role |
 | --- | --- |
-| `index.ts` | The `@luxalgo/vela/ui` barrel. |
+| `index.ts` | The `terminal-trading/ui` barrel. |
 | `components/<name>/` | One folder per component with `controller.ts`, `view.ts`, `styles.ts`, `index.ts`. Fifteen components today; see [adding-a-ui-component.md](../contributing/adding-a-ui-component.md). |
 | `keymap.ts` | `KeymapManager`: shortcuts are data descriptors. |
 | `tokens.ts`, `styles.ts`, `zag.ts`, `surface-events.ts`, `surface-exit.ts`, `sanitize-html.ts` | Design tokens, style injection, the controller-to-view bridge for Zag machines, open and close announcements, exit animation, the HTML allowlist for host rich text. |
@@ -111,7 +111,7 @@ Tests: `ui-field.test.ts`, `ui-form-primitives.test.ts`, `ui-keymap.test.ts`, an
 | `context-menu.ts`, `context-menu-model.ts`, `cell-controls.ts` | Right-click menus (descriptors in the model file) and per-cell controls. |
 | `mobile-bar.ts`, `more-drawer.ts`, `*-drawer.ts`, `drawing-pill.ts`, `layout-mode.ts` | The mobile chrome and the size class that selects it. |
 | `shell-options.ts`, `indicators.ts`, `persist.ts`, `history.ts` | Options shared by both shells, the indicator manifest, shell-state storage, the unified undo and redo timeline. |
-| `VelaWidget.ts` | **Deprecated** wrapper over `VelaWorkspace`. |
+| `TerminalTradingWidget.ts` | **Deprecated** wrapper over `TerminalTradingWorkspace`. |
 
 Tests: `widget-*.test.ts`, `topbar-composition.test.ts`.
 
@@ -119,7 +119,7 @@ Tests: `widget-*.test.ts`, `topbar-composition.test.ts`.
 
 | File | Role |
 | --- | --- |
-| `VelaWorkspace.ts` (2420) | The grid of cells behind one shared chrome. |
+| `TerminalTradingWorkspace.ts` (2420) | The grid of cells behind one shared chrome. |
 | `ChartCell.ts` (1469) | One cell: a stable identity plus its chart. |
 | `layouts.ts`, `sync.ts`, `splitters.ts`, `screenshot.ts` | Pure layout, link, divider, and screenshot geometry (DOM-free, unit-testable). |
 | `WorkspaceReplay.ts` | Bar replay across all cells on one clock. |
@@ -131,7 +131,7 @@ Tests: `workspace-*.test.ts`.
 
 | Path | Role |
 | --- | --- |
-| `playground/` | Development pages and helpers. Imports Vela from `src/`. Never referenced by library code. |
+| `playground/` | Development pages and helpers. Imports Terminal Trading from `src/`. Never referenced by library code. |
 | `server/` | A local market-data server for the playground. Not part of the published package and imports nothing from `src/`. |
 | `test/` | The vitest suite. |
 | `docs/` | This documentation. |

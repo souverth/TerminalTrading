@@ -2,7 +2,7 @@
 // The limit is part of the drawing: it rides its saved document and can be lifted again.
 import { describe, it, expect } from 'vitest';
 import { TypedEventBus } from '../src/core/events/EventBus';
-import type { VelaEventMap } from '../src/core/events/types';
+import type { TerminalTradingEventMap } from '../src/core/events/types';
 import { DrawingController } from '../src/core/drawings/DrawingController';
 import { shownOnTimeframe, timeframeBandOf, sanitizeShowOn } from '../src/core/drawings';
 import type { IDrawingsRendererPort } from '../src/core/drawings';
@@ -27,7 +27,7 @@ function controller(): DrawingController {
         onDrawingIntent: () => () => {},
     };
     const renderer = { capabilities: { userDrawings: true }, userDrawingsPort: port } as unknown as IChartRenderer;
-    return new DrawingController(renderer, new TypedEventBus<VelaEventMap>(), undefined);
+    return new DrawingController(renderer, new TypedEventBus<TerminalTradingEventMap>(), undefined);
 }
 
 describe('showing a drawing only on some timeframes', () => {

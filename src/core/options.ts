@@ -79,7 +79,7 @@ export interface MarketSnapshot {
     offline: boolean;
 }
 
-export interface VelaTheme {
+export interface TerminalTradingTheme {
     background: string;
     textColor: string;
     gridColor: string;
@@ -91,17 +91,17 @@ export interface VelaTheme {
 
 export type ThemeName = 'dark' | 'light';
 
-/** A renderer **class** — Vela instantiates it with the resolved display options.
+/** A renderer **class** — Terminal Trading instantiates it with the resolved display options.
  *  Built-in default: `NativeRenderer`.
- *  from `'vela/renderers/lwc'` and pass it as `options.renderer`. */
+ *  from `'terminal-trading/renderers/lwc'` and pass it as `options.renderer`. */
 export type RendererConstructor = new (opts?: RendererDisplayOptions) => IChartRenderer;
 
-export interface VelaOptions extends MarketConfig {
+export interface TerminalTradingOptions extends MarketConfig {
     /** false = static history; true = history + live forming candle. */
     live?: boolean;
-    theme?: ThemeName | VelaTheme;
+    theme?: ThemeName | TerminalTradingTheme;
     height?: number | string;
-    /** Rendering backend as a renderer **class** that Vela instantiates (with the
+    /** Rendering backend as a renderer **class** that Terminal Trading instantiates (with the
      *  resolved display options). Omit for the built-in native renderer (default); for
      **/
     renderer?: RendererConstructor;
@@ -155,7 +155,7 @@ export interface VelaOptions extends MarketConfig {
     priceAxis?: PriceAxisOptions;
 }
 
-/** Price-axis customization (see `VelaOptions.priceAxis`). */
+/** Price-axis customization (see `TerminalTradingOptions.priceAxis`). */
 export interface PriceAxisOptions {
     /** Supplies the ticks of each pane's price axis — the labels and the horizontal
      *  gridlines both follow them. Called per pane when the pane's range, size or mode
@@ -196,7 +196,7 @@ export interface PriceAxisTickContext {
     fontSize: number;
     /** A price's pane-relative y in CSS px (honours log and inverted scales). */
     priceToY(price: number): number;
-    /** Vela's own ticks for this frame — return them, or a filtered/extended copy, to build on the default. */
+    /** Terminal Trading's own ticks for this frame — return them, or a filtered/extended copy, to build on the default. */
     defaults: readonly PriceAxisTick[];
 }
 
@@ -207,7 +207,7 @@ export interface PriceAxisTickContext {
  */
 export type PriceAxisTicksFn = (ctx: PriceAxisTickContext) => readonly PriceAxisTick[] | null | undefined;
 
-/** Settings-dialog visibility policy (see `VelaOptions.settings`). */
+/** Settings-dialog visibility policy (see `TerminalTradingOptions.settings`). */
 export interface SettingsVisibilityPolicy {
     /** Setting ids to hide — a tab, a group, or a row; an id hides its subtree. */
     hidden?: readonly string[];
@@ -323,7 +323,7 @@ export function resolveIntro(value: unknown): IntroAnimation {
 /** The renderer's resolved per-motion animation values (see {@link RendererDisplayOptions}). */
 export type ResolvedAnimations = Pick<RendererDisplayOptions, 'animZoom' | 'animPan' | 'animScroll' | 'animAutoscale' | 'animLiveBar' | 'animIntro'>;
 
-/** Resolve `VelaOptions.animations` to the renderer's per-motion values. `true` (or
+/** Resolve `TerminalTradingOptions.animations` to the renderer's per-motion values. `true` (or
  *  absent) is every motion at its default — the live-bar glide's default is off;
  *  `false` disables everything, the reveal included. An object configures each on its
  *  own; `scroll` left unset follows `pan` on/off. */
@@ -345,7 +345,7 @@ export function resolveAnimations(animations: boolean | AnimationConfig | undefi
 export type NativeBackend = 'auto' | 'canvas2d' | 'webgl2';
 
 /** How the base price series is drawn on the price pane (native renderer).
- *  A plugin chart type (registered via `vela/plugin`) adds its own id to this union
+ *  A plugin chart type (registered via `terminal-trading/plugin`) adds its own id to this union
  *  volume-at-price (plus a right-edge visible-range profile); it needs the
  *  provider+symbol to expose trade data — without it, plain candles render.
  *  `'heikinashi'` draws Heikin Ashi candles: a 1:1 display transform of the raw
@@ -370,7 +370,7 @@ export interface RendererDisplayOptions {
     upColor: string;
     downColor: string;
     priceStyle: PriceStyle;
-    /** Host price-axis ticks (`VelaOptions.priceAxis.ticks`); absent/null = built-in ticks. */
+    /** Host price-axis ticks (`TerminalTradingOptions.priceAxis.ticks`); absent/null = built-in ticks. */
     priceAxisTicks?: PriceAxisTicksFn | null;
 }
 

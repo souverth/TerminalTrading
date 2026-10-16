@@ -7,14 +7,14 @@ import type { IndicatorModel } from '../model/indicator';
 import type { ValuePatch, SeriesValueDelta } from '../model/patch';
 import { isLineLikeSeries } from '../model/series';
 import type { InputSchema, InputValue } from '../model/inputs';
-import type { VelaTheme, MarketConfig, MarketSwitch, MarketSnapshot, AddIndicatorOptions, PriceStyle, MoveTarget, PaneInfo } from '../options';
+import type { TerminalTradingTheme, MarketConfig, MarketSwitch, MarketSnapshot, AddIndicatorOptions, PriceStyle, MoveTarget, PaneInfo } from '../options';
 import type { PaneController } from '../PanesControl';
 import type { PaneAction } from '../ports/IChartRenderer';
 import type { CodeUpdateResult, IndicatorHandle } from '../IndicatorHandle';
 import type { ContextSelect, EngineContextSnapshot } from '../ports/ScriptingEngine';
 import type { ScriptRun, ScriptRunCause } from '../script-run';
 import type { StrategyTrade } from '../model/strategy';
-import type { VelaEventMap } from '../events/types';
+import type { TerminalTradingEventMap } from '../events/types';
 import { TypedEventBus } from '../events/EventBus';
 import { IndicatorRegistry, type CodeSnapshot, type IndicatorRecord } from './IndicatorRegistry';
 import {
@@ -44,7 +44,7 @@ import type { ReplayBounds, ReplayController, ReplayEndReason, ReplayStartOption
 export interface ResolvedConfig {
     market: MarketConfig;
     live: boolean;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
     /** Language used when `addIndicator` doesn't specify one. */
     defaultLanguage: string;
     /** Interactive user-drawings configuration (toolbar/tools/groups). */
@@ -114,7 +114,7 @@ const MIN_TICK_UPDATE_MS = 16;
  * Imports neither a concrete renderer nor a concrete scripting engine.
  */
 export class EngineOrchestrator implements IndicatorController, PaneController, ReplayController {
-    readonly events = new TypedEventBus<VelaEventMap>();
+    readonly events = new TypedEventBus<TerminalTradingEventMap>();
     private readonly registry = new IndicatorRegistry();
     /** Top-to-bottom pane display order (price always first). The routing + `chart.panes`
      *  source of truth; the renderer mirrors it via `orderPanes`. */
@@ -338,7 +338,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         const engine = this.engines.get(lang);
         if (!engine) {
             throw new Error(
-                `[vela] no scripting engine registered for language "${lang}". Vela ships none — ` +
+                `[terminal-trading] no scripting engine registered for language "${lang}". TerminalTrading ships none — ` +
                     `install one (Pine Script: @luxalgo/vela-pinets) and register it before addIndicator, ` +
                     `e.g. chart.registerEngine('pine', new PineEngine()).`,
             );
@@ -346,7 +346,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         return engine;
     }
 
-    /** Market metadata for an execution (Vela owns the bars). */
+    /** Market metadata for an execution (Terminal Trading owns the bars). */
     private market(): ExecutionMarket {
         return {
             symbol: this.config.market.symbol ?? 'TEST',
@@ -975,7 +975,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
                 }
                 for (let i = 1; i < head.length; i += 1) {
                     if (head[i]!.time <= head[i - 1]!.time) {
-                        console.warn('[vela] non-monotonic history chunk — stopping the backfill');
+                        console.warn('[terminal-trading] non-monotonic history chunk — stopping the backfill');
                         this.completeHistory('aborted');
                         return;
                     }
@@ -986,7 +986,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
             }
             if (this.generation === gen) this.completeHistory('depth');
         } catch (e) {
-            console.warn(`[vela] history backfill failed — keeping ${this.rawBars.length} bars (${e instanceof Error ? e.message : String(e)})`);
+            console.warn(`[terminal-trading] history backfill failed — keeping ${this.rawBars.length} bars (${e instanceof Error ? e.message : String(e)})`);
             if (this.generation === gen) this.completeHistory('aborted');
         }
     }
@@ -1023,7 +1023,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
      */
     async replayStart(opts: ReplayStartOptions): Promise<void> {
         if (this.rawBars.length === 0) {
-            console.warn('[vela] chart.replay.start() ignored — the chart has no bars yet');
+            console.warn('[terminal-trading] chart.replay.start() ignored — the chart has no bars yet');
             return;
         }
         let gen = this.generation;
@@ -1057,7 +1057,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         while (cut < tape.length && tape[cut]!.time <= opts.from) cut += 1;
         cut = Math.max(1, cut);
         if (cut >= tape.length) {
-            console.warn('[vela] chart.replay.start() ignored — no bar opens after the requested time');
+            console.warn('[terminal-trading] chart.replay.start() ignored — no bar opens after the requested time');
             return;
         }
         const wasPlaying = this.replayPlaying;
@@ -1141,7 +1141,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         if (!this.replayQueue) return;
         if (intervalMs !== undefined) {
             if (!(Number.isFinite(intervalMs) && intervalMs > 0)) {
-                console.warn(`[vela] chart.replay.play(${intervalMs}) ignored — the interval must be a positive number of ms`);
+                console.warn(`[terminal-trading] chart.replay.play(${intervalMs}) ignored — the interval must be a positive number of ms`);
                 return;
             }
             this.replayIntervalMs = intervalMs;
@@ -1359,7 +1359,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
             entry.ticks = usableTicks(ticks);
         };
         const fail = (e: unknown): void => {
-            if (!signal.aborted) console.warn(`[vela] replay tick source failed — revealing the bar whole (${e instanceof Error ? e.message : String(e)})`);
+            if (!signal.aborted) console.warn(`[terminal-trading] replay tick source failed — revealing the bar whole (${e instanceof Error ? e.message : String(e)})`);
             land([]);
         };
         try {
@@ -1738,7 +1738,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         const existing = this.engines.get(language);
         if (existing && existing !== engine) {
             console.warn(
-                `[vela] re-registering scripting engine for language "${language}"; ` +
+                `[terminal-trading] re-registering scripting engine for language "${language}"; ` +
                     `replacing ${existing.constructor.name} with ${engine.constructor.name}.`,
             );
         }
@@ -1775,7 +1775,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         const handle = new IndicatorHandleImpl(id, title, this, undefined, type);
         this.handles.set(id, handle);
         if (!descriptor) {
-            console.warn(`[vela] addNativeIndicator("${type}") — no native indicator registered for this type.`);
+            console.warn(`[terminal-trading] addNativeIndicator("${type}") — no native indicator registered for this type.`);
             return handle;
         }
         const inputValues = { ...descriptor.defaultInputs(), ...(options.inputs ?? {}) };
@@ -1886,10 +1886,10 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
     updateCode(id: string, source: string): Promise<CodeUpdateResult> {
         const record = this.registry.get(id);
         const handle = this.handles.get(id);
-        if (!record || !handle) return Promise.resolve({ ok: false, error: new Error(`[vela] updateCode("${id}") — the indicator is no longer on the chart.`) });
+        if (!record || !handle) return Promise.resolve({ ok: false, error: new Error(`[terminal-trading] updateCode("${id}") — the indicator is no longer on the chart.`) });
         if (record.native) {
-            console.warn(`[vela] updateCode("${id}") — a native indicator has no script to update.`);
-            return Promise.resolve({ ok: false, error: new Error(`[vela] updateCode("${id}") — a native indicator has no script to update.`) });
+            console.warn(`[terminal-trading] updateCode("${id}") — a native indicator has no script to update.`);
+            return Promise.resolve({ ok: false, error: new Error(`[terminal-trading] updateCode("${id}") — a native indicator has no script to update.`) });
         }
         const busy = record.pendingSource !== undefined || record.codeTrial !== undefined;
         if (!busy && source === record.source) return Promise.resolve({ ok: true, error: null });
@@ -2027,7 +2027,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         // auto-add fires on every load (first paint of every market), so without the
         // opt-out a removed volume resurrected on the next symbol/timeframe switch.
         if (record?.native?.type === 'volume') this.volumeOptedOut = true;
-        if (record) this.settleCode(record, { ok: false, error: new Error(`[vela] updateCode("${id}") — the indicator was removed.`) });
+        if (record) this.settleCode(record, { ok: false, error: new Error(`[terminal-trading] updateCode("${id}") — the indicator was removed.`) });
         record?.session?.stop();
         // A native added hidden and never started (a restored ledger entry) has nothing
         // to tear down — and its `stop()` may not expect to run without a context.
@@ -2126,9 +2126,9 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
      * when the resolved theme is already active — which also breaks the echo when a host
      * reacts to `theme:changed` by calling back into `setTheme`.
      */
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         const cur = this.config.theme;
-        if ((Object.keys(theme) as Array<keyof VelaTheme>).every((k) => theme[k] === cur[k])) return;
+        if ((Object.keys(theme) as Array<keyof TerminalTradingTheme>).every((k) => theme[k] === cur[k])) return;
         this.config.theme = theme;
         this.renderer.setTheme(theme);
         this.events.emit('theme:changed', theme);
@@ -2182,7 +2182,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         this.priceStyleWillChangeUnsub = null;
         // native instances free their own caches/timers in stop()
         for (const record of this.registry.all()) {
-            this.settleCode(record, { ok: false, error: new Error('[vela] updateCode — the chart was destroyed.') });
+            this.settleCode(record, { ok: false, error: new Error('[terminal-trading] updateCode — the chart was destroyed.') });
             record.session?.stop();
             if (record.native?.started) record.native.instance.stop();
         }
@@ -2211,10 +2211,10 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
     private claimIndicatorId(requested: string | undefined): string {
         if (requested === undefined) return this.registry.nextId('ind', (candidate) => this.handles.has(candidate));
         if (typeof requested !== 'string' || requested.length === 0) {
-            throw new TypeError('[vela] addIndicator: `id` must be a non-empty string');
+            throw new TypeError('[terminal-trading] addIndicator: `id` must be a non-empty string');
         }
         if (this.handles.has(requested) || this.registry.get(requested)) {
-            throw new Error(`[vela] addIndicator: indicator id "${requested}" is already live on this chart`);
+            throw new Error(`[terminal-trading] addIndicator: indicator id "${requested}" is already live on this chart`);
         }
         return requested;
     }
@@ -2580,7 +2580,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
     /** IndicatorController/PaneController: move (or merge) an indicator to another pane. */
     moveIndicator(id: string, target: MoveTarget): void {
         if (!this.paneManagementSupported() || !this.renderer.setIndicatorPane) {
-            console.warn('[vela] the active renderer does not support moving indicators between panes.');
+            console.warn('[terminal-trading] the active renderer does not support moving indicators between panes.');
             return;
         }
         const record = this.registry.get(id);
@@ -2929,7 +2929,7 @@ export class EngineOrchestrator implements IndicatorController, PaneController, 
         const record = this.registry.get(id);
         if (record?.loading) this.setLoading(record, false); // stop the spinner; the row stays so the user can remove it
         const error = err instanceof Error ? err : new Error(String(err));
-        console.error(`[vela] indicator "${id}" failed:`, error.message);
+        console.error(`[terminal-trading] indicator "${id}" failed:`, error.message);
         this.events.emit('indicator:error', { id, error });
         handle?.emit('error', { error });
     }

@@ -6,17 +6,17 @@
 // visible range when applied, so they land on any timeframe: switch timeframes and watch
 // them re-snap onto the containing bars and fold together as bars widen — the three news
 // items sit 15 minutes apart: three glyphs on a 5m or 15m chart, one cluster from 1h up.
-import type { Vela, TimelineMark } from '../src';
+import type { TerminalTrading, TimelineMark } from '../src';
 import { registerIcon, svg16 } from '../src/ui';
 
 // Marks reference icons by id — the host registers the SVG once; a mark never carries markup.
 registerIcon('play.rocket', svg16('<path d="M9.5 2.5c1.8 0 3.5 1.7 4 4.5l-4 4-4-4c.5-2.8 2.2-4.5 4-4.5z"/><path d="M5.5 7 3 9.5l2 .5.5 2L8 9.5"/>'));
 
 /** Charts whose `mark:click` is already echoed to the console (re-applying never double-subscribes). */
-const wired = new WeakSet<Vela>();
+const wired = new WeakSet<TerminalTrading>();
 
 /** Spread the sample marks over `chart`'s visible range — call once the chart is ready. */
-export function addSampleMarks(chart: Vela): void {
+export function addSampleMarks(chart: TerminalTrading): void {
     const range = chart.getVisibleRange();
     if (!range) return;
     const span = range.to - range.from;

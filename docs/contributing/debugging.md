@@ -1,6 +1,8 @@
 # Debugging
 
-Most Vela™ bugs reduce to one question: **is it the data or engine side, or the renderer side?** Answer that first, then drill into the side at fault.
+> **Status:** Stable · **Verified against code:** 2026-10-16 · **Audience:** contributors and AI agents
+
+Most Terminal Trading bugs reduce to one question: **is it the data or engine side, or the renderer side?** Answer that first, then drill into the side at fault.
 
 ## Step 1 — reproduce it with known data
 

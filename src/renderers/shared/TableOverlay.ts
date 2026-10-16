@@ -1,5 +1,5 @@
 import type { DrawingTable, TableCell, BoxTextSize, TablePosition } from '../../core/model/drawings';
-import type { VelaTheme } from '../../core/options';
+import type { TerminalTradingTheme } from '../../core/options';
 
 const SIZE_PX: Record<BoxTextSize, number> = {
     auto: 13,
@@ -75,7 +75,7 @@ export class TableOverlay {
 
     constructor(
         private readonly container: HTMLElement,
-        private readonly theme: VelaTheme,
+        private readonly theme: TerminalTradingTheme,
         private readonly paneBounds: PaneBounds,
     ) {
         if (getComputedStyle(container).position === 'static') container.style.position = 'relative';

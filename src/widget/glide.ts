@@ -2,7 +2,7 @@
 // visible range (pure math ported from the reference shortcuts core + a small rAF
 // driver). Keyboard PAN doesn't glide here: it goes through `chart.panBy`, the
 // renderer's drag-equivalent scroll (same clamp and easing as a pointer drag).
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 
 const MIN_SPAN_MS = 60_000;
 const FOLLOW = 0.25;
@@ -33,8 +33,8 @@ export function followStep(cur: Range, target: Range, follow = FOLLOW, epsFrac =
 
 /** Whether the chart's renderer eases zooms (`animZoom` > 0). A renderer without the
  *  feature keeps the keyboard glide — it has no zoom animation of its own to agree with. */
-function zoomAnimated(chart: Vela): boolean {
-    const control = (chart as Partial<Vela>).renderer;
+function zoomAnimated(chart: TerminalTrading): boolean {
+    const control = (chart as Partial<TerminalTrading>).renderer;
     if (!control || !control.supports('animZoom')) return true;
     return Boolean(control.get('animZoom'));
 }
@@ -52,7 +52,7 @@ export class Glider {
     private target: Range | null = null;
     private raf = 0;
 
-    constructor(private readonly chart: () => Vela | null) {}
+    constructor(private readonly chart: () => TerminalTrading | null) {}
 
     zoom(factor: number): void {
         this.to((base) => zoomTarget(base, factor));

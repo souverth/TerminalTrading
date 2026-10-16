@@ -3,7 +3,7 @@
 // native indicators restart with a fresh context, the active chart-type data engine is
 // rebuilt, the live subscription re-targets, and history tracking re-arms per load.
 import { describe, it, expect, afterEach } from 'vitest';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import type {
     IChartRenderer,
     RendererCapabilities,
@@ -29,7 +29,7 @@ import type { IndicatorModel } from '../src/core/model/indicator';
 import type { DrawingLine } from '../src/core/model/drawings';
 import type { ScenePatch } from '../src/core/model/patch';
 import type { InputValue } from '../src/core/model/inputs';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 import type { Unsubscribe } from '../src/core/util/types';
 import { registerNativeIndicator, unregisterNativeIndicator, type NativeIndicatorDescriptor, type NativeIndicatorContext } from '../src/core/native-indicators/NativeIndicator';
 import { registerChartType, unregisterChartType, type SeriesDataEngineHost } from '../src/chart-types/registry';
@@ -137,7 +137,7 @@ class FakeRenderer implements IChartRenderer {
     timeline: string[] = [];
     applyFeature(): void {}
     readFeature(key: string): unknown { return key === 'priceStyle' ? this.priceStyleFeature : undefined; }
-    mount(_c: HTMLElement, _t: VelaTheme): void {}
+    mount(_c: HTMLElement, _t: TerminalTradingTheme): void {}
     setTheme(): void {}
     resize(): void {}
     destroy(): void {}
@@ -306,9 +306,9 @@ function probeNative(): { descriptor: NativeIndicatorDescriptor; instances: Arra
 }
 
 const EL = {} as unknown as HTMLElement;
-const charts: Vela[] = [];
-function make(options: ConstructorParameters<typeof Vela>[1], deps: ConstructorParameters<typeof Vela>[2]): Vela {
-    const chart = new Vela(EL, options, deps);
+const charts: TerminalTrading[] = [];
+function make(options: ConstructorParameters<typeof TerminalTrading>[1], deps: ConstructorParameters<typeof TerminalTrading>[2]): TerminalTrading {
+    const chart = new TerminalTrading(EL, options, deps);
     charts.push(chart);
     return chart;
 }

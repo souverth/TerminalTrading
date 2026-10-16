@@ -3,7 +3,7 @@ import { Canvas2dBackend } from '../src/renderers/native/backend/Canvas2dBackend
 import { CoordinateSystem } from '../src/renderers/native/core/CoordinateSystem';
 import { SceneGraph } from '../src/renderers/native/core/SceneGraph';
 import type { IndicatorModel } from '../src/core/model/indicator';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /**
  * barcolor() recolors only the candle BODY (TV semantics): the wick keeps the
@@ -15,7 +15,7 @@ import type { VelaTheme } from '../src/core/options';
  * candle part is painted with.
  */
 
-const THEME: VelaTheme = {
+const THEME: TerminalTradingTheme = {
     background: '#000000',
     textColor: '#cccccc',
     gridColor: '#222222',

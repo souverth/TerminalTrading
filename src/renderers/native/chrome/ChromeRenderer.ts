@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { IndicatorModel } from '../../../core/model/indicator';
 import type { OHLCV } from '../../../core/model/ohlcv';
 import type { LineStyle } from '../../../core/model/series';
@@ -39,7 +39,7 @@ export class ChromeRenderer {
     // The color for axis tick labels — the host-passed surface text, set each frame in render().
     private axisTextColor = DARK_THEME.textColor;
     // Shared Pine-drawing renderer, used here for autoscale geometry only; widthCache persists.
-    private readonly drawScene = new DrawingSceneRenderer({ timeToLogical: () => 0, barAt: () => null, theme: {} as VelaTheme });
+    private readonly drawScene = new DrawingSceneRenderer({ timeToLogical: () => 0, barAt: () => null, theme: {} as TerminalTradingTheme });
     /** The timeline-mark lane as laid out by the last frame — what hover/click hit-test against. */
     private markLayout: MarkLaneLayout = { glyphs: [], stacks: new Map() };
     /** Registry icons rasterized for the lane; the owner is asked for a chrome repaint when one lands. */
@@ -84,7 +84,7 @@ export class ChromeRenderer {
     }
 
     /** Wire the drawing coordinate resolvers + theme (call once per frame before use). */
-    prepare(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme): void {
+    prepare(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme): void {
         this.drawScene.setDeps({
             timeToLogical: (ms) => coords.timeToLogical(ms),
             barAt: (logical) => {
@@ -111,7 +111,7 @@ export class ChromeRenderer {
      *  `surface` (background + text) paints the axis-scale gutters — the host passes the live
      *  chart background so the scales read as part of the plot, with contrast-corrected text.
      *  Falls back to the theme's own colors when no surface is supplied. */
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, surface?: { background: string; textColor: string }): void {
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, surface?: { background: string; textColor: string }): void {
         const ctx = this.ctx;
         const canvas = this.canvas;
         if (!ctx || !canvas) return;
@@ -173,7 +173,7 @@ export class ChromeRenderer {
 
     /** The timeline-mark lane — after the axis, so the tokens read over the plot's bottom edge,
      *  but clipped to the data area so a glyph on the edge bar never paints over the price scale. */
-    private drawMarkLane(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, dataW: number, dataH: number): void {
+    private drawMarkLane(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, dataW: number, dataH: number): void {
         if (!scene.marks.visible || scene.timelineMarks.length === 0) {
             this.markLayout = { glyphs: [], stacks: new Map() };
             return;
@@ -234,7 +234,7 @@ export class ChromeRenderer {
         ctx: CanvasRenderingContext2D,
         coords: CoordinateSystem,
         scene: SceneGraph,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         trades: readonly TradeExecution[],
         pane: PaneNode,
         dataW: number,
@@ -267,7 +267,7 @@ export class ChromeRenderer {
     }
 
     // ── axes ──
-    private drawPriceAxes(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, dataW: number, panes: PaneNode[]): void {
+    private drawPriceAxes(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, dataW: number, panes: PaneNode[]): void {
         ctx.strokeStyle = scene.style.borderColor ?? theme.borderColor;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -311,7 +311,7 @@ export class ChromeRenderer {
      * the whole width. Its draggable hit-zone (input) and hover highlight (crosshair layer) match
      * this same full span.
      */
-    private drawPaneSeparators(ctx: CanvasRenderingContext2D, scene: SceneGraph, theme: VelaTheme, fullW: number, panes: PaneNode[]): void {
+    private drawPaneSeparators(ctx: CanvasRenderingContext2D, scene: SceneGraph, theme: TerminalTradingTheme, fullW: number, panes: PaneNode[]): void {
         ctx.fillStyle = scene.style.separatorColor ?? theme.borderColor;
         for (const pane of panes) {
             if (pane.order <= 0) continue; // no separator above the topmost (price) pane
@@ -359,7 +359,7 @@ export class ChromeRenderer {
      * price level with centered text. The countdown repaints on the renderer's second pulse
      * and disappears once the bar has closed, until the next bar arrives.
      */
-    private drawPriceLineAndCountdown(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, dataW: number, pricePane: PaneNode | null): void {
+    private drawPriceLineAndCountdown(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, dataW: number, pricePane: PaneNode | null): void {
         const n = scene.bars.length;
         // A hidden price series takes its current-price line/label/countdown down with it —
         // as does a hidden price PANE (collapsed, or zero-height while a study pane is maximized).
@@ -428,7 +428,7 @@ export class ChromeRenderer {
      * series itself is drawn: candle/bar body up-down, the line/area line color, or the
      * baseline side (above/below the baseline price).
      */
-    private priceElementColor(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, last: OHLCV): string {
+    private priceElementColor(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, last: OHLCV): string {
         const st = scene.style;
         switch (scene.priceStyle) {
             case 'bars':
@@ -447,7 +447,7 @@ export class ChromeRenderer {
         }
     }
 
-    private drawTimeAxis(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme, dataW: number, dataH: number, fullH: number): void {
+    private drawTimeAxis(ctx: CanvasRenderingContext2D, scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme, dataW: number, dataH: number, fullH: number): void {
         ctx.strokeStyle = scene.style.borderColor ?? theme.borderColor;
         ctx.lineWidth = 1;
         ctx.beginPath();

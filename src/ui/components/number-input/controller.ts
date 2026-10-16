@@ -57,7 +57,7 @@ export interface NumberInputController {
     clamp: boolean;
     disabled: boolean;
     apply(raw: number): number | null;
-    /** Write the displayed value without emitting (vela-sync / external refresh). */
+    /** Write the displayed value without emitting (tt-sync / external refresh). */
     sync(raw: number): number;
     nudge(dir: 1 | -1): number | null;
 }

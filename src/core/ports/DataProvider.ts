@@ -70,7 +70,7 @@ export interface ProviderInfo {
 }
 
 /**
- * A market-data source for ONE venue, neutral to Vela (no scripting-engine types). Register
+ * A market-data source for ONE venue, neutral to Terminal Trading (no scripting-engine types). Register
  * one with `chart.data.registerProvider(name, provider)`; the registry routes any
  * `name:SYMBOL` (or bare `SYMBOL` it indexes) to it.
  *

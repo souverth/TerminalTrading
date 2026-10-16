@@ -1,7 +1,7 @@
 import type { Unsubscribe } from '../util/types';
 import type { IChartRenderer } from '../ports/IChartRenderer';
 import type { TypedEventBus } from '../events/EventBus';
-import type { VelaEventMap } from '../events/types';
+import type { TerminalTradingEventMap } from '../events/types';
 import type { MarkGroup, TimelineMark } from './types';
 import { markGroupVisible } from './visibility';
 
@@ -21,7 +21,7 @@ export class MarksController {
 
     constructor(
         private readonly renderer: IChartRenderer,
-        events: TypedEventBus<VelaEventMap>,
+        events: TypedEventBus<TerminalTradingEventMap>,
     ) {
         this.enabled = !!renderer.capabilities.timelineMarks && typeof renderer.setTimelineMarks === 'function';
         if (this.enabled && renderer.onMarkClick) this.subs.push(renderer.onMarkClick((e) => events.emit('mark:click', e)));
@@ -64,9 +64,9 @@ export class MarksController {
 
     /** Define (or replace) a group's presentation — its settings label and default visibility. */
     defineGroup(group: MarkGroup): void {
-        if (!group || typeof group.id !== 'string' || group.id.length === 0) throw new Error('[vela] marks.defineGroup: `id` must be a non-empty string');
-        if (typeof group.label !== 'string') throw new Error(`[vela] marks.defineGroup: group "${group.id}" needs a string \`label\``);
-        if (group.parent !== undefined && (typeof group.parent !== 'string' || group.parent.length === 0)) throw new Error(`[vela] marks.defineGroup: group "${group.id}" has a \`parent\` that is not a group id`);
+        if (!group || typeof group.id !== 'string' || group.id.length === 0) throw new Error('[terminal-trading] marks.defineGroup: `id` must be a non-empty string');
+        if (typeof group.label !== 'string') throw new Error(`[terminal-trading] marks.defineGroup: group "${group.id}" needs a string \`label\``);
+        if (group.parent !== undefined && (typeof group.parent !== 'string' || group.parent.length === 0)) throw new Error(`[terminal-trading] marks.defineGroup: group "${group.id}" has a \`parent\` that is not a group id`);
         this.groups.set(group.id, { ...group });
         this.sync();
     }
@@ -83,7 +83,7 @@ export class MarksController {
      */
     setGroupVisible(id: string, visible: boolean): void {
         if (!this.renderer.features.includes('marks')) {
-            console.warn(`[vela] renderer "${this.renderer.name}" does not paint timeline marks — setGroupVisible ignored.`);
+            console.warn(`[terminal-trading] renderer "${this.renderer.name}" does not paint timeline marks — setGroupVisible ignored.`);
             return;
         }
         this.renderer.applyFeature('marks', { groups: { [id]: visible } });
@@ -114,9 +114,9 @@ export class MarksController {
 
 /** Reject the malformed shapes a host can plausibly pass — a mark that cannot be placed or drawn is a programming error, not data to tolerate. */
 function validateMark(mark: TimelineMark): TimelineMark {
-    if (!mark || typeof mark !== 'object') throw new Error('[vela] marks: a mark must be an object');
-    if (typeof mark.id !== 'string' || mark.id.length === 0) throw new Error('[vela] marks: `id` must be a non-empty string');
-    if (typeof mark.time !== 'number' || !Number.isFinite(mark.time)) throw new Error(`[vela] marks: mark "${mark.id}" needs a finite epoch-ms \`time\``);
-    if (!mark.glyph || typeof mark.glyph !== 'object' || typeof mark.glyph.color !== 'string') throw new Error(`[vela] marks: mark "${mark.id}" needs a glyph with a \`color\``);
+    if (!mark || typeof mark !== 'object') throw new Error('[terminal-trading] marks: a mark must be an object');
+    if (typeof mark.id !== 'string' || mark.id.length === 0) throw new Error('[terminal-trading] marks: `id` must be a non-empty string');
+    if (typeof mark.time !== 'number' || !Number.isFinite(mark.time)) throw new Error(`[terminal-trading] marks: mark "${mark.id}" needs a finite epoch-ms \`time\``);
+    if (!mark.glyph || typeof mark.glyph !== 'object' || typeof mark.glyph.color !== 'string') throw new Error(`[terminal-trading] marks: mark "${mark.id}" needs a glyph with a \`color\``);
     return { ...mark, glyph: { ...mark.glyph } };
 }

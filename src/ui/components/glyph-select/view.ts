@@ -1,5 +1,5 @@
 // Glyph-select VIEW — trigger showing the current glyph, portaled option list.
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { injectStyles } from '../../styles';
 import { iconEl } from '../../icons';
 import { Popover, closeOpenPopovers, openPopoverTrigger } from '../popover';
@@ -12,7 +12,7 @@ import {
 import { GLYPH_SELECT_CSS, GLYPH_SELECT_STYLE_ID } from './styles';
 
 export interface GlyphSelectOptions<T extends string | number = string | number> extends GlyphSelectControllerOptions<T> {
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
     title?: string;
     get?: () => T;
 }
@@ -20,7 +20,7 @@ export interface GlyphSelectOptions<T extends string | number = string | number>
 export class GlyphSelect<T extends string | number = string | number> {
     readonly el: HTMLButtonElement;
     private readonly ctrl: ReturnType<typeof glyphSelectController<T>>;
-    private readonly theme: VelaTheme;
+    private readonly theme: TerminalTradingTheme;
     private readonly get: () => T;
 
     constructor(opts: GlyphSelectOptions<T>) {
@@ -31,7 +31,7 @@ export class GlyphSelect<T extends string | number = string | number> {
 
         const trigger = document.createElement('button');
         trigger.type = 'button';
-        trigger.className = 'vela-glyph-select';
+        trigger.className = 'tt-glyph-select';
         if (opts.title) trigger.title = opts.title;
         this.el = trigger;
         this.paint();
@@ -44,7 +44,7 @@ export class GlyphSelect<T extends string | number = string | number> {
             e.stopPropagation();
             this.toggle();
         });
-        trigger.addEventListener('vela-sync', () => {
+        trigger.addEventListener('tt-sync', () => {
             this.ctrl.setValue(this.get());
             this.paint();
         });
@@ -62,7 +62,7 @@ export class GlyphSelect<T extends string | number = string | number> {
         glyph.style.display = 'flex';
         glyph.innerHTML = opt?.glyph ?? '';
         const caret = document.createElement('span');
-        caret.className = 'vela-glyph-select-caret';
+        caret.className = 'tt-glyph-select-caret';
         caret.appendChild(iconEl('chevron-down', this.el.ownerDocument));
         this.el.replaceChildren(glyph, caret);
     }
@@ -78,13 +78,13 @@ export class GlyphSelect<T extends string | number = string | number> {
             theme: this.theme,
             align: 'end',
             gap: 6,
-            className: 'vela-glyph-select-pop',
+            className: 'tt-glyph-select-pop',
             content: (el) => {
-                el.style.font = `var(--vela-font-size-md) ${this.theme.fontFamily}`;
+                el.style.font = `var(--tt-font-size-md) ${this.theme.fontFamily}`;
                 for (const o of this.ctrl.options) {
                     const item = document.createElement('button');
                     item.type = 'button';
-                    item.className = 'vela-glyph-select-item';
+                    item.className = 'tt-glyph-select-item';
                     item.dataset.active = o.value === current ? '1' : '0';
                     item.innerHTML =
                         `<span style="display:flex;flex:none;">${o.glyph}</span>` +
@@ -104,7 +104,7 @@ export class GlyphSelect<T extends string | number = string | number> {
 }
 
 /** Settings-dialog line-width field (1–5 px glyphs). */
-export function widthField(theme: VelaTheme, getVal: () => number, onVal: (v: number) => void): HTMLElement {
+export function widthField(theme: TerminalTradingTheme, getVal: () => number, onVal: (v: number) => void): HTMLElement {
     return new GlyphSelect<number>({
         theme,
         options: widthFieldOptions(),

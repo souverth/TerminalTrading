@@ -10,7 +10,7 @@ import { Canvas2dBackend } from '../src/renderers/native/backend/Canvas2dBackend
 import { CoordinateSystem } from '../src/renderers/native/core/CoordinateSystem';
 import { SceneGraph } from '../src/renderers/native/core/SceneGraph';
 import { NativeRenderer } from '../src/renderers/native/NativeRenderer';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 import type { OHLCV } from '../src/core/model/ohlcv';
 
 const HOUR = 3_600_000;
@@ -110,7 +110,7 @@ describe('autoscale — only series with an on-chart presence stretch the window
 });
 
 describe('canvas2d — the pane paint follows `display.pane`', () => {
-    const THEME: VelaTheme = { background: '#000000', textColor: '#cccccc', gridColor: '#222222', borderColor: '#333333', upColor: '#00AA00', downColor: '#AA0000', fontFamily: 'sans-serif' };
+    const THEME: TerminalTradingTheme = { background: '#000000', textColor: '#cccccc', gridColor: '#222222', borderColor: '#333333', upColor: '#00AA00', downColor: '#AA0000', fontFamily: 'sans-serif' };
 
     /** Paint one indicator series on a study pane with a recording 2d context; returns the paint ops. */
     function paintOps(series: IndicatorModel['series']): number {

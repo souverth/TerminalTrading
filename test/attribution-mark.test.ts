@@ -52,20 +52,20 @@ describe('attributionMarkColor', () => {
 });
 
 describe('attribution mark screenshot opt-in', () => {
-    // The PNG export rasterizes only overlays tagged `data-vela-screenshot`; a mark
+    // The PNG export rasterizes only overlays tagged `data-tt-screenshot`; a mark
     // that loses the tag silently vanishes from every exported chart.
     it('the built-in mark opts into the PNG export', () => {
         const mark = createAttributionMark(stubDocument(), '#151619');
-        expect(mark.dataset.velaScreenshot).toBe('1');
+        expect(mark.dataset.ttScreenshot).toBe('1');
     });
 
     it('a host-supplied custom mark opts in the same way', () => {
         const mark = createCustomMark(stubDocument(), 'ACME', '#151619');
-        expect(mark.dataset.velaScreenshot).toBe('1');
+        expect(mark.dataset.ttScreenshot).toBe('1');
     });
 });
 
-describe('the built-in mark is Vela\'s', () => {
+describe('the built-in mark is TerminalTrading\'s', () => {
     it('shows the Morning Star V and reveals the rest of the wordmark beside it, linking to the project', () => {
         const mark = createAttributionMark(stubDocument(), '#151619') as unknown as {
             href: string;
@@ -73,9 +73,9 @@ describe('the built-in mark is Vela\'s', () => {
             children: Array<{ className: string; innerHTML: string }>;
         };
         const [symbol, letters] = mark.children;
-        expect(symbol?.className).toBe('vela-attr-symbol');
+        expect(symbol?.className).toBe('tt-attr-symbol');
         expect(symbol?.innerHTML).toBe(VELA_MARK_SVG);
-        expect(letters?.className).toBe('vela-attr-wordmark');
+        expect(letters?.className).toBe('tt-attr-wordmark');
         expect(letters?.innerHTML).toBe(VELA_LETTERS_SVG);
         expect(mark.href).toContain('https://velacharts.dev/');
         expect(mark.title).toBe('Charting by Vela');

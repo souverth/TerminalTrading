@@ -1,7 +1,7 @@
 // The controller ↔ view bridge for Zag-machine components. HEADLESS-FIRST: a component's
 // controller is a running Zag machine (framework-agnostic state/behavior/ARIA); the vanilla
 // view subscribes and projects api props onto its own DOM via `spreadProps`. A future
-// `vela/react` reuses the SAME machines through Zag's React adapter and swaps only the view.
+// `terminal-trading/react` reuses the SAME machines through Zag's React adapter and swaps only the view.
 import { VanillaMachine, normalizeProps, spreadProps } from '@zag-js/vanilla';
 import type { Machine, MachineSchema, Service } from '@zag-js/core';
 

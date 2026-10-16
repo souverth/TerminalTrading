@@ -1,4 +1,4 @@
-// Menu CONTROLLER — Zag menu machine + Vela's descriptor mapping. Items are DATA
+// Menu CONTROLLER — Zag menu machine + Terminal Trading's descriptor mapping. Items are DATA
 // descriptors (the plugin contribution currency): any view layer projects them.
 import * as menu from '@zag-js/menu';
 import { nextUid, normalizeProps } from '../../zag';
@@ -20,7 +20,7 @@ export interface MenuItemDescriptor {
      *  instead of the selected-row highlight, and keep the menu OPEN on selection —
      *  the shape for boolean settings living inside a dropdown. */
     toggle?: boolean;
-    /** Icon id (see the `vela/ui` icon registry) rendered before the label. A level where
+    /** Icon id (see the `terminal-trading/ui` icon registry) rendered before the label. A level where
      *  any row has one gives its iconless rows an empty slot, so the labels align. */
     icon?: string;
     /** Favorite-star affordance at the row's right edge: `false` renders an outline
@@ -68,7 +68,7 @@ export function menuController(opts: MenuControllerOptions): MenuController {
     return {
         machine: menu.machine,
         props: {
-            id: opts.id ?? nextUid('vela-menu'),
+            id: opts.id ?? nextUid('tt-menu'),
             ids: opts.triggerId ? { trigger: opts.triggerId } : undefined,
             positioning: {
                 placement: opts.placement ?? 'bottom-start',

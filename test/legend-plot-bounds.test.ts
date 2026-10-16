@@ -31,7 +31,7 @@ function setup(scale: { px: number }) {
             ],
         ]),
     );
-    const legend = container.querySelector<HTMLElement>('[data-vela-pane="price"]')!;
+    const legend = container.querySelector<HTMLElement>('[data-tt-pane="price"]')!;
     const row = legend.firstElementChild as HTMLElement;
     const title = row.firstElementChild as HTMLElement;
     const values = Array.from(row.children).find((c) => c.textContent === '85706.5585801.44') as HTMLElement;

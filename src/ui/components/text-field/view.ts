@@ -17,7 +17,7 @@ export class TextField {
         injectStyles(TEXT_STYLE_ID, TEXT_CSS, doc);
         this.ctrl = textFieldController(opts);
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-text';
+        wrap.className = 'tt-text';
         wrap.dataset.size = this.ctrl.size;
         if (this.ctrl.fill) wrap.dataset.fill = '';
         const ti = doc.createElement('input');
@@ -26,7 +26,7 @@ export class TextField {
         ti.size = 1;
         if (opts.id) ti.id = opts.id;
         ti.value = this.ctrl.value;
-        ti.className = 'vela-text-field';
+        ti.className = 'tt-text-field';
         if (this.ctrl.disabled) ti.disabled = true;
         ti.addEventListener('blur', () => { this.ctrl.commit(ti.value); });
         ti.addEventListener('keydown', (e) => {

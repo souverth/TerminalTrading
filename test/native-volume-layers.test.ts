@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { OHLCV } from '../src/core/model/ohlcv';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 import { CoordinateSystem } from '../src/renderers/native/core/CoordinateSystem';
 import { VolumeRenderer } from '../src/renderers/native/volume/VolumeRenderer';
 import { VpvrRenderer } from '../src/renderers/native/vpvr/VpvrRenderer';
@@ -13,7 +13,7 @@ import { VOLUME_FILL_ALPHA } from '../src/renderers/native/volume/paintVolume';
  * neither ever consults the pane's PRICE scale for its volume axis.
  */
 
-const THEME: VelaTheme = {
+const THEME: TerminalTradingTheme = {
     background: '#000000',
     textColor: '#cccccc',
     gridColor: '#222222',

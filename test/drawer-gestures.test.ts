@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { classifyGesture, dragDismisses, swipeDirection } from '../src/ui/components/drawer/view';
 import { attachChromeTooltip } from '../src/renderers/shared/chrome-tooltip';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 // ── the drawer's gesture classifier (swipe-down-to-close from anywhere, swipe-to-tab) ──
 
@@ -87,7 +87,7 @@ describe('chrome tooltip arming', () => {
         const anchor = fakeAnchor();
         const dispose = attachChromeTooltip(anchor as unknown as HTMLElement, {
             host: {} as HTMLElement,
-            theme: () => ({}) as VelaTheme,
+            theme: () => ({}) as TerminalTradingTheme,
             text: () => 'Hide indicator legend',
         });
 

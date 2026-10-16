@@ -1,5 +1,5 @@
 // Field VIEW — labeled row, section heading, and the typed-control factory.
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import { injectStyles } from '../../styles';
 import { Switch } from '../switch';
 import { Select, type SelectListPopoverOpts, type SelectOption } from '../select';
@@ -24,7 +24,7 @@ export interface FieldGridOptions {
 export function fieldGrid(opts: FieldGridOptions = {}): HTMLElement {
     ensureFieldStyles();
     const el = document.createElement('div');
-    el.className = 'vela-field-grid';
+    el.className = 'tt-field-grid';
     const variant = opts.variant ?? 'inputs';
     el.dataset.variant = variant;
     if (opts.mobile) el.dataset.mobile = '';
@@ -41,7 +41,7 @@ export interface FieldSectionOptions {
 export function fieldSection(title: string, opts: FieldSectionOptions = {}): HTMLElement {
     ensureFieldStyles();
     const el = document.createElement('div');
-    el.className = 'vela-field-section';
+    el.className = 'tt-field-section';
     if (opts.variant) el.dataset.variant = opts.variant;
     if (opts.first) el.dataset.first = '';
     el.textContent = title;
@@ -52,7 +52,7 @@ export function fieldSection(title: string, opts: FieldSectionOptions = {}): HTM
 export function fieldSeparator(): HTMLElement {
     ensureFieldStyles();
     const el = document.createElement('div');
-    el.className = 'vela-field-sep';
+    el.className = 'tt-field-sep';
     return el;
 }
 
@@ -98,7 +98,7 @@ function labelEl(text: string, opts: { id?: string; size?: FieldLabelSize }): HT
     // clicks. Only the input itself is interactive. The a11y association a label would
     // have given lives on the control as `aria-labelledby` instead.
     const el = document.createElement('span');
-    el.className = 'vela-field-label';
+    el.className = 'tt-field-label';
     if (opts.size) el.dataset.size = opts.size;
     el.textContent = text;
     const id = opts.id;
@@ -125,7 +125,7 @@ function applyClass(el: HTMLElement, extra?: string): void {
 function dimControls(controls: HTMLElement[], on: boolean): void {
     for (const c of controls) {
         if (c.dataset.sdSelfGated === '1') continue;
-        c.classList.toggle('vela-field-dim', !on);
+        c.classList.toggle('tt-field-dim', !on);
     }
 }
 
@@ -136,10 +136,10 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
 
     if (opts.inline) {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-field-span vela-field-inline';
+        wrap.className = 'tt-field-span tt-field-inline';
         for (const item of opts.inline) {
             const it = document.createElement('div');
-            it.className = 'vela-field-inline-item';
+            it.className = 'tt-field-inline-item';
             if (item.toggleFirst) it.style.flexDirection = 'row-reverse';
             if (item.label) {
                 it.appendChild(labelEl(item.label, { id: item.id, size }));
@@ -160,7 +160,7 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
 
     if (opts.bool) {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-field-span vela-field-bool';
+        wrap.className = 'tt-field-span tt-field-bool';
         const sw = new Switch({
             id: opts.toggle?.id ?? opts.id,
             checked: opts.toggle?.checked ?? false,
@@ -172,7 +172,7 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
         if (opts.info) wrap.appendChild(opts.info);
         if (opts.toggle?.get) {
             const get = opts.toggle.get;
-            wrap.addEventListener('vela-sync', () => { sw.setChecked(get()); });
+            wrap.addEventListener('tt-sync', () => { sw.setChecked(get()); });
         }
         applyClass(wrap, opts.className);
         return wrap;
@@ -180,9 +180,9 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
 
     if (opts.stacked) {
         const wrap = document.createElement('div');
-        wrap.className = 'vela-field-span vela-field-stacked';
+        wrap.className = 'tt-field-span tt-field-stacked';
         const head = document.createElement('div');
-        head.className = 'vela-field-stacked-head';
+        head.className = 'tt-field-stacked-head';
         head.appendChild(labelEl(opts.label, { id: opts.id, size }));
         if (opts.info) head.appendChild(opts.info);
         wrap.appendChild(head);
@@ -192,12 +192,12 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
     }
 
     const wrap = document.createElement('div');
-    wrap.className = 'vela-field-row';
+    wrap.className = 'tt-field-row';
     const controls = asList(opts.control);
 
     if (opts.toggle) {
         const left = document.createElement('div');
-        left.className = 'vela-field-toggle-label';
+        left.className = 'tt-field-toggle-label';
         const sw = new Switch({
             id: opts.toggle.id ?? opts.id,
             checked: opts.toggle.checked,
@@ -213,7 +213,7 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
         if (controls.length > 0) dimControls(controls, opts.toggle.checked);
         if (opts.toggle.get) {
             const get = opts.toggle.get;
-            wrap.addEventListener('vela-sync', () => {
+            wrap.addEventListener('tt-sync', () => {
                 const v = get();
                 sw.setChecked(v);
                 if (controls.length > 0) dimControls(controls, v);
@@ -224,7 +224,7 @@ export function fieldRow(opts: FieldRowOptions): HTMLElement {
     }
 
     const cell = document.createElement('div');
-    cell.className = 'vela-field-cell';
+    cell.className = 'tt-field-cell';
     if (opts.controlWidth != null && controls.length === 1 && !opts.fit) {
         const cw = document.createElement('div');
         cw.style.width = `${opts.controlWidth}px`;
@@ -270,7 +270,7 @@ export type FieldControlDesc =
         options: readonly SelectOption[];
         value: string;
         fill?: boolean;
-        theme?: VelaTheme;
+        theme?: TerminalTradingTheme;
         list?: SelectListPopoverOpts;
         title?: string;
         onChange: (v: string) => void;
@@ -286,7 +286,7 @@ export type FieldControlDesc =
     | {
         kind: 'color';
         id?: string;
-        theme: VelaTheme;
+        theme: TerminalTradingTheme;
         get: () => string;
         onChange: (v: string) => void;
         popover?: ColorFieldOpts['popover'];
@@ -316,13 +316,13 @@ export type FieldControlDesc =
     }
     | {
         kind: 'width';
-        theme: VelaTheme;
+        theme: TerminalTradingTheme;
         get: () => number;
         onChange: (v: number) => void;
         title?: string;
     };
 
-/** One kit control from a neutral descriptor. `sync` re-reads on `vela-sync`. */
+/** One kit control from a neutral descriptor. `sync` re-reads on `tt-sync`. */
 export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
     if (desc.kind === 'number') {
         const ni = new NumberInput({
@@ -345,7 +345,7 @@ export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
         });
         if (desc.sync) {
             const sync = desc.sync;
-            ni.el.addEventListener('vela-sync', () => { ni.setValue(sync()); });
+            ni.el.addEventListener('tt-sync', () => { ni.setValue(sync()); });
         }
         return { el: ni.el, setValue: (v) => ni.setValue(Number(v)) };
     }
@@ -363,7 +363,7 @@ export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
         if (desc.title) sel.el.title = desc.title;
         if (desc.sync) {
             const sync = desc.sync;
-            sel.el.addEventListener('vela-sync', () => { sel.setValue(sync()); });
+            sel.el.addEventListener('tt-sync', () => { sel.setValue(sync()); });
         }
         return { el: sel.el, setValue: (v) => sel.setValue(String(v)) };
     }
@@ -377,7 +377,7 @@ export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
         });
         if (desc.sync) {
             const sync = desc.sync;
-            sw.el.addEventListener('vela-sync', () => { sw.setChecked(sync()); });
+            sw.el.addEventListener('tt-sync', () => { sw.setChecked(sync()); });
         }
         return { el: sw.el, setValue: (v) => sw.setChecked(Boolean(v)) };
     }
@@ -402,7 +402,7 @@ export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
         if (desc.placeholder) tf.input.placeholder = desc.placeholder;
         if (desc.sync) {
             const sync = desc.sync;
-            tf.el.addEventListener('vela-sync', () => { tf.setValue(sync()); });
+            tf.el.addEventListener('tt-sync', () => { tf.setValue(sync()); });
         }
         return { el: tf.el, setValue: (v) => tf.setValue(String(v)) };
     }
@@ -418,7 +418,7 @@ export function buildFieldControl(desc: FieldControlDesc): FieldControlHandle {
         });
         if (desc.sync) {
             const sync = desc.sync;
-            ta.el.addEventListener('vela-sync', () => { ta.setValue(sync()); });
+            ta.el.addEventListener('tt-sync', () => { ta.setValue(sync()); });
         }
         return { el: ta.el, setValue: (v) => ta.setValue(String(v)) };
     }

@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { DrawingPainter } from '../src/renderers/native/drawings/DrawingPainter';
 import { createDrawing, type Projector } from '../src/core/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /** Linear projector: x = time, y = 200 − price, single pane 'price'. */
 function fakeProjector(): Projector {
@@ -49,7 +49,7 @@ function crosses(seg: [number, number, number, number], r: { x: number; y: numbe
     return false;
 }
 
-const theme = { textColor: '#fff', background: '#000', fontFamily: 'sans-serif' } as unknown as VelaTheme;
+const theme = { textColor: '#fff', background: '#000', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme;
 
 describe('the trend angle readout stays clear of its line', () => {
     const cases: Array<[string, { time: number; price: number }]> = [

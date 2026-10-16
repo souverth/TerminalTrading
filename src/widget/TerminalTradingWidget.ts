@@ -1,9 +1,9 @@
-// DEPRECATED — `VelaWidget` is now a thin wrapper over `VelaWorkspace` pinned to the
+// DEPRECATED — `TerminalTradingWidget` is now a thin wrapper over `TerminalTradingWorkspace` pinned to the
 // single-cell layout (`layout: false`), kept one deprecation cycle so existing hosts
 // migrate on their own schedule. It will be removed in a future release; new code
 // should construct the workspace directly:
 //
-//     new VelaWorkspace(container, { ...chartAndShellOptions, layout: false })
+//     new TerminalTradingWorkspace(container, { ...chartAndShellOptions, layout: false })
 //
 // Dropped with the old implementation (no longer supported here):
 // - `urlState` (the `?symbol=…&interval=…` mirror) — accepted, ignored, warned about.
@@ -11,17 +11,17 @@
 //   `:drawings`). Unified-format documents (every save since the format landed)
 //   restore unchanged — the widget always persisted the workspace document with a
 //   single `c1` cell, and that is exactly what the workspace reads back.
-import { VelaWorkspace } from '../workspace/VelaWorkspace';
-import type { Vela } from '../Vela';
-import type { VelaOptions, VelaTheme, ThemeName, MarketSession } from '../core/options';
+import { TerminalTradingWorkspace } from '../workspace/TerminalTradingWorkspace';
+import type { TerminalTrading } from '../TerminalTrading';
+import type { TerminalTradingOptions, TerminalTradingTheme, ThemeName, MarketSession } from '../core/options';
 import type { WorkspaceState } from '../state/document';
-import type { VelaShellOptions } from './shell-options';
+import type { TerminalTradingShellOptions } from './shell-options';
 import type { WidgetContext } from './contributions';
 import type { WidgetHistory } from './history';
 import type { KeymapManager } from '../ui/keymap';
 import type { RangePreset } from './bottombar';
 
-export interface VelaWidgetOptions extends VelaOptions, VelaShellOptions {
+export interface TerminalTradingWidgetOptions extends TerminalTradingOptions, TerminalTradingShellOptions {
     /** @deprecated No longer supported — the option is ignored (a console warning
      *  says so). Mirror `getState()` into your own URL scheme if you need links. */
     urlState?: boolean;
@@ -30,35 +30,35 @@ export interface VelaWidgetOptions extends VelaOptions, VelaShellOptions {
 let deprecationWarned = false;
 
 /**
- * @deprecated Use {@link VelaWorkspace} with `layout: false` — the same chart, the
- * same options, the same persisted state (pass `persist: 'vela-widget'` to keep
+ * @deprecated Use {@link TerminalTradingWorkspace} with `layout: false` — the same chart, the
+ * same options, the same persisted state (pass `persist: 'tt-widget'` to keep
  * reading this class's storage key). This wrapper delegates everything and will be
  * removed in a future release.
  */
-export class VelaWidget {
-    private readonly ws: VelaWorkspace;
+export class TerminalTradingWidget {
+    private readonly ws: TerminalTradingWorkspace;
 
-    constructor(container: HTMLElement | string, opts: VelaWidgetOptions) {
+    constructor(container: HTMLElement | string, opts: TerminalTradingWidgetOptions) {
         if (!deprecationWarned) {
             deprecationWarned = true;
             console.warn(
-                '[vela] VelaWidget is deprecated and will be removed in a future release. ' +
-                    "Use `new VelaWorkspace(container, { ...options, layout: false })` — pass `persist: 'vela-widget'` to keep the same stored state. " +
+                '[terminal-trading] TerminalTradingWidget is deprecated and will be removed in a future release. ' +
+                    "Use `new TerminalTradingWorkspace(container, { ...options, layout: false })` — pass `persist: 'tt-widget'` to keep the same stored state. " +
                     (opts.urlState ? 'The `urlState` option is no longer supported and was ignored.' : ''),
             );
         }
         const { urlState: _urlState, height: _height, persist, ...rest } = opts;
-        this.ws = new VelaWorkspace(container, {
+        this.ws = new TerminalTradingWorkspace(container, {
             ...rest,
             layout: false,
             // The widget's historical storage key — existing persisted state restores.
-            persist: persist === true ? 'vela-widget' : persist,
+            persist: persist === true ? 'tt-widget' : persist,
         });
     }
 
-    /** The shell root element (the workspace root; carries `vela-widget` as an alias). */
+    /** The shell root element (the workspace root; carries `tt-widget` as an alias). */
     get root(): HTMLElement {
-        this.ws.root.classList.add('vela-widget');
+        this.ws.root.classList.add('tt-widget');
         return this.ws.root;
     }
 
@@ -72,7 +72,7 @@ export class VelaWidget {
     }
 
     /** The inner headless chart. */
-    get chart(): Vela {
+    get chart(): TerminalTrading {
         return this.ws.chart;
     }
 
@@ -113,7 +113,7 @@ export class VelaWidget {
         this.ws.active.setIndicatorValuesVisible(visible);
     }
 
-    setTheme(theme: ThemeName | VelaTheme): void {
+    setTheme(theme: ThemeName | TerminalTradingTheme): void {
         this.ws.setTheme(theme);
     }
 

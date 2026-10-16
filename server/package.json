@@ -1,5 +1,5 @@
 {
-  "name": "vela-tradingview-server",
+  "name": "terminal-trading-server",
   "version": "0.1.0",
   "private": true,
   "description": "Local market-data server for the playground, powered by @mathieuc/tradingview",

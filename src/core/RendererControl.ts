@@ -42,7 +42,7 @@ export class RendererControl {
         const entries: [string, unknown][] = typeof feature === 'string' ? [[feature, value]] : Object.entries(feature);
         for (const [key, val] of entries) {
             if (this.renderer.features.includes(key)) this.renderer.applyFeature(key, val);
-            else console.warn(`[vela] renderer "${this.renderer.name}" has no feature "${key}" — set ignored.`);
+            else console.warn(`[terminal-trading] renderer "${this.renderer.name}" has no feature "${key}" — set ignored.`);
         }
         return this;
     }
@@ -98,7 +98,7 @@ export class RendererControl {
      */
     screenshot(): string | null {
         if (typeof this.renderer.screenshot === 'function') return this.renderer.screenshot();
-        console.warn(`[vela] renderer "${this.renderer.name}" does not support screenshot().`);
+        console.warn(`[terminal-trading] renderer "${this.renderer.name}" does not support screenshot().`);
         return null;
     }
 
@@ -119,7 +119,7 @@ export class RendererControl {
      */
     getConfig(): unknown {
         if (typeof this.renderer.getConfig === 'function') return this.renderer.getConfig();
-        console.warn(`[vela] renderer "${this.renderer.name}" does not support getConfig().`);
+        console.warn(`[terminal-trading] renderer "${this.renderer.name}" does not support getConfig().`);
         return null;
     }
 
@@ -130,7 +130,7 @@ export class RendererControl {
      */
     applyConfig(config: unknown): this {
         if (typeof this.renderer.applyConfig === 'function') this.renderer.applyConfig(config);
-        else console.warn(`[vela] renderer "${this.renderer.name}" does not support applyConfig().`);
+        else console.warn(`[terminal-trading] renderer "${this.renderer.name}" does not support applyConfig().`);
         return this;
     }
 
@@ -182,7 +182,7 @@ export class RendererControl {
      */
     setSymbolPicker(picker: SymbolPickerFn | null): this {
         if (typeof this.renderer.setSymbolPicker === 'function') this.renderer.setSymbolPicker(picker);
-        else console.warn(`[vela] renderer "${this.renderer.name}" does not support setSymbolPicker().`);
+        else console.warn(`[terminal-trading] renderer "${this.renderer.name}" does not support setSymbolPicker().`);
         return this;
     }
 
@@ -244,7 +244,7 @@ export class RendererControl {
      * (`'canvas.grid.vertical'`); an id hides its whole subtree, and a tab with nothing
      * left disappears from the rail. Presentation-only: hidden values keep being stored
      * and applied (e.g. hide `'advanced'` while forcing the widget's `bars` option).
-     * Seeded from `VelaOptions.settings`; silent no-op without a settings dialog.
+     * Seeded from `TerminalTradingOptions.settings`; silent no-op without a settings dialog.
      */
     setSettingsVisibility(policy: { hidden?: readonly string[] }): this {
         this.renderer.setSettingsVisibility?.(policy);

@@ -22,25 +22,25 @@ describe('mix', () => {
 describe('themeTokens', () => {
     it('derives the chart surface and font from the theme', () => {
         const dark = themeTokens(DARK_THEME);
-        expect(dark['--vela-bg']).toBe(DARK_THEME.background);
-        expect(dark['--vela-font']).toBe(DARK_THEME.fontFamily);
-        expect(dark['--vela-border']).toBe(DARK_THEME.borderColor);
-        expect(dark['--vela-up']).toBe(DARK_THEME.upColor);
-        expect(dark['--vela-down']).toBe(DARK_THEME.downColor);
+        expect(dark['--tt-bg']).toBe(DARK_THEME.background);
+        expect(dark['--tt-font']).toBe(DARK_THEME.fontFamily);
+        expect(dark['--tt-border']).toBe(DARK_THEME.borderColor);
+        expect(dark['--tt-up']).toBe(DARK_THEME.upColor);
+        expect(dark['--tt-down']).toBe(DARK_THEME.downColor);
     });
 
     it('keeps floating surfaces opaque so panels never show the chart through them', () => {
         for (const theme of [DARK_THEME, LIGHT_THEME]) {
             const t = themeTokens(theme);
-            expect(opaque(t['--vela-surface-elev']!)).toBe(true);
-            expect(opaque(t['--vela-surface-overlay']!)).toBe(true);
+            expect(opaque(t['--tt-surface-elev']!)).toBe(true);
+            expect(opaque(t['--tt-surface-overlay']!)).toBe(true);
         }
     });
 
     it('separates a floating surface from the chart surface it sits on', () => {
         for (const theme of [DARK_THEME, LIGHT_THEME]) {
             const t = themeTokens(theme);
-            expect(t['--vela-surface-elev']).not.toBe(t['--vela-surface']);
+            expect(t['--tt-surface-elev']).not.toBe(t['--tt-surface']);
         }
     });
 
@@ -48,21 +48,21 @@ describe('themeTokens', () => {
         const dark = themeTokens(DARK_THEME);
         const light = themeTokens(LIGHT_THEME);
         // A filled selected state: light ink on a dark fill, and the reverse.
-        expect(dark['--vela-selected-bg']).not.toBe(light['--vela-selected-bg']);
-        expect(dark['--vela-selected-fg']).toBe(DARK_THEME.background);
-        expect(light['--vela-selected-fg']).toBe('#ffffff');
+        expect(dark['--tt-selected-bg']).not.toBe(light['--tt-selected-bg']);
+        expect(dark['--tt-selected-fg']).toBe(DARK_THEME.background);
+        expect(light['--tt-selected-fg']).toBe('#ffffff');
     });
 
     it('keeps the brand accent theme-independent', () => {
-        expect(themeTokens(DARK_THEME)['--vela-accent']).toBe(ACCENT);
-        expect(themeTokens(LIGHT_THEME)['--vela-accent']).toBe(ACCENT);
+        expect(themeTokens(DARK_THEME)['--tt-accent']).toBe(ACCENT);
+        expect(themeTokens(LIGHT_THEME)['--tt-accent']).toBe(ACCENT);
     });
 
     it('emits every token in both themes so no chrome falls back to an unset variable', () => {
         const dark = Object.keys(themeTokens(DARK_THEME)).sort();
         const light = Object.keys(themeTokens(LIGHT_THEME)).sort();
         expect(light).toEqual(dark);
-        expect(dark.every((k) => k.startsWith('--vela-'))).toBe(true);
+        expect(dark.every((k) => k.startsWith('--tt-'))).toBe(true);
     });
 
     it('does not restate a static token as a theme token', () => {

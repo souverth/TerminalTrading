@@ -28,7 +28,7 @@ export function drawerController(opts: DrawerControllerOptions = {}): DrawerCont
     return {
         machine: dialog.machine,
         props: {
-            id: nextUid('vela-drawer'),
+            id: nextUid('tt-drawer'),
             modal: true,
             closeOnEscape: opts.closeOnEscape ?? true,
             closeOnInteractOutside: opts.closeOnInteractOutside ?? true,

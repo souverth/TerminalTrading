@@ -2,14 +2,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MarkPopover } from '../src/renderers/native/chrome/marks/MarkPopover';
 import type { MarkCluster } from '../src/renderers/native/chrome/marks/layout';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 // The renderer's gesture on a lane glyph, as the DOM sees it: pointerdown on the canvas
 // (the kit Popover's outside-dismiss runs here — the glyph is canvas pixels, so the
 // popup's hit-transparent anchor is never the target), pointerup, then the renderer
 // turns that release into `open()` for the glyph under it.
 
-const theme: VelaTheme = { background: '#000', textColor: '#fff', gridColor: '#222', borderColor: '#333', upColor: '#0f0', downColor: '#f00', fontFamily: 'sans-serif' };
+const theme: TerminalTradingTheme = { background: '#000', textColor: '#fff', gridColor: '#222', borderColor: '#333', upColor: '#0f0', downColor: '#f00', fontFamily: 'sans-serif' };
 
 function cluster(key: string): MarkCluster {
     return { key, bar: 10, group: 'news', marks: [{ id: key, time: 1, glyph: { color: '#4af', letter: 'N' }, title: key, content: { text: 'body' } }] };

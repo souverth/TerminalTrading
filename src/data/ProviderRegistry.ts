@@ -265,7 +265,7 @@ export class ProviderRegistry {
     private reportUnresolved(raw: string): void {
         const names = this.names();
         console.warn(
-            `[vela] symbol "${raw}" not yet resolvable — registered providers: ` +
+            `[terminal-trading] symbol "${raw}" not yet resolvable — registered providers: ` +
                 `[${names.join(', ') || 'none'}]. Register a provider that serves it.`,
         );
         for (const cb of this.unresolvedCbs) cb({ symbol: raw, providers: names });

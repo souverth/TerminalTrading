@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// The `.vela-shade-right` element: a host-styleable twin of the `crosshairOverride.shadeRight`
+// The `.tt-shade-right` element: a host-styleable twin of the `crosshairOverride.shadeRight`
 // veil. The crosshair layer reports the area it veiled each frame; the native renderer keeps
 // the element on exactly that area, hidden whenever no veil is painted, and writes the DOM
 // only when that area changes (the crosshair repaints on every pointer move).
@@ -88,7 +88,7 @@ describe('CrosshairRenderer.shadeRightArea', () => {
     });
 });
 
-describe('the .vela-shade-right element', () => {
+describe('the .tt-shade-right element', () => {
     /** A stand-in element that counts every style/visibility write. */
     function fakeElement() {
         let writes = 0;

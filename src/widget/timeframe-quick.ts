@@ -5,26 +5,26 @@ import { Dialog } from '../ui/components/dialog';
 import { injectStyles } from '../ui/styles';
 import { parseTimeframe } from './timeframe';
 
-const STYLE_ID = 'vela-widget-tfquick';
+const STYLE_ID = 'tt-widget-tfquick';
 const CSS = `
-.vela-tq-input {
+.tt-tq-input {
     display: block;
     margin: 0 auto;
     width: 220px;
     box-sizing: border-box;
     height: 40px;
-    background: var(--vela-surface-elev);
-    color: var(--vela-fg);
-    border: 1px solid var(--vela-border);
+    background: var(--tt-surface-elev);
+    color: var(--tt-fg);
+    border: 1px solid var(--tt-border);
     border-radius: 8px;
     padding: 0 12px;
     font-size: 18px;
     text-align: center;
     outline: none;
 }
-.vela-tq-input:focus { border-color: var(--vela-border-strong); }
-.vela-tq-hint { margin-top: var(--vela-space-2); text-align: center; color: var(--vela-fg-muted); min-height: 1.2em; }
-.vela-tq-hint[data-invalid] { color: var(--vela-danger); }
+.tt-tq-input:focus { border-color: var(--tt-border-strong); }
+.tt-tq-hint { margin-top: var(--tt-space-2); text-align: center; color: var(--tt-fg-muted); min-height: 1.2em; }
+.tt-tq-hint[data-invalid] { color: var(--tt-danger); }
 `;
 
 export interface TimeframeQuickOptions {
@@ -42,10 +42,10 @@ export class TimeframeQuick {
         const doc = (opts.host ?? document.body).ownerDocument;
         injectStyles(STYLE_ID, CSS, doc);
         this.input = doc.createElement('input');
-        this.input.className = 'vela-tq-input';
+        this.input.className = 'tt-tq-input';
         this.input.setAttribute('spellcheck', 'false');
         this.hint = doc.createElement('div');
-        this.hint.className = 'vela-tq-hint';
+        this.hint.className = 'tt-tq-hint';
         this.dialog = new Dialog({
             title: 'Change timeframe',
             host: opts.host,

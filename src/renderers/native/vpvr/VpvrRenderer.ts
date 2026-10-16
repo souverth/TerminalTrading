@@ -1,6 +1,6 @@
 import type { OHLCV } from '../../../core/model/ohlcv';
 import type { VpvrLayerData } from '../../../core/model/volume-layers';
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { CoordinateSystem, PriceScale, PaneBounds } from '../core/CoordinateSystem';
 import { buildVpvrProfile, type VpvrProfile } from './profile';
 import { paintVpvr } from './paintVpvr';
@@ -15,7 +15,7 @@ interface VpvrRenderArgs {
     /** The price pane's scale (row y-positions are real prices) + pixel extent. */
     scale: PriceScale;
     bounds: PaneBounds;
-    theme: VelaTheme;
+    theme: TerminalTradingTheme;
 }
 
 /**

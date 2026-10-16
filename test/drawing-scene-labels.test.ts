@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { DrawingSceneRenderer, EMPTY_DRAWING_SET, type DrawingSet } from '../src/renderers/shared/DrawingSceneRenderer';
 import type { DrawingLabel } from '../src/core/model/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 // One label at logical 100 / price 100; identity coordinate closures keep the math legible.
 const xOf = (l: number): number => l;
 const yOf = (p: number): number => p;
 
-const theme = { fontFamily: 'sans-serif', textColor: '#ddd' } as VelaTheme;
+const theme = { fontFamily: 'sans-serif', textColor: '#ddd' } as TerminalTradingTheme;
 
 function label(over: Partial<DrawingLabel>): DrawingLabel {
     return {

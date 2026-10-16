@@ -287,7 +287,7 @@ export class DrawingsControl {
 
     private ok(op: string): boolean {
         if (this.ctrl.supported) return true;
-        console.warn(`[vela] chart.drawings.${op}() ignored — the active renderer has no userDrawings capability.`);
+        console.warn(`[terminal-trading] chart.drawings.${op}() ignored — the active renderer has no userDrawings capability.`);
         return false;
     }
 }

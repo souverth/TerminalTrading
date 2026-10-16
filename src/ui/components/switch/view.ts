@@ -18,7 +18,7 @@ export class Switch {
         const b = document.createElement('button');
         b.type = 'button';
         if (opts.id) b.id = opts.id;
-        b.className = 'vela-switch';
+        b.className = 'tt-switch';
         b.dataset.size = this.ctrl.size;
         b.dataset.tone = this.ctrl.tone;
         b.setAttribute('role', 'switch');

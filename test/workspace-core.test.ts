@@ -1,5 +1,5 @@
 // The workspace's pure modules: the layout registry/grid math and the splitter track
-// math (src/workspace/layouts.ts, splitters.ts). DOM-free — node env; the VelaWorkspace
+// math (src/workspace/layouts.ts, splitters.ts). DOM-free — node env; the TerminalTradingWorkspace
 // shell itself is verified in the browser (playground probes).
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import {
@@ -19,7 +19,7 @@ import {
 } from '../src/workspace/layouts';
 import { evenTracks, resizeTracks, trackOffsets, seamSegments, segmentSpanPx } from '../src/workspace/splitters';
 import { seedDefaults, cellChartDefaults, cellDrawings } from '../src/workspace/ChartCell';
-import { declaredOrder, nextAutoCellId, resolveTyping } from '../src/workspace/VelaWorkspace';
+import { declaredOrder, nextAutoCellId, resolveTyping } from '../src/workspace/TerminalTradingWorkspace';
 import { parseSymbol } from '../src/data/ProviderRegistry';
 
 registerBuiltinLayouts();

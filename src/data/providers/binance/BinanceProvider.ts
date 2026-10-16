@@ -32,7 +32,7 @@ const TF_TO_INTERVAL: Record<string, string> = {
     D: '1d', W: '1w', M: '1M',
 };
 
-/** User-facing timeframe aliases → canonical keys (matches the other Vela layers). */
+/** User-facing timeframe aliases → canonical keys (matches the other Terminal Trading layers). */
 const TF_NORMALIZE: Record<string, string> = {
     '1m': '1', '3m': '3', '5m': '5', '15m': '15', '30m': '30', '45m': '45',
     '1h': '60', '2h': '120', '3h': '180', '4h': '240', '6h': '360', '8h': '480', '12h': '720',
@@ -52,7 +52,7 @@ export function normalizeTf(tf: string): string {
     return TF_NORMALIZE[tf] ?? TF_NORMALIZE[tf.toLowerCase()] ?? tf;
 }
 
-/** Split a Vela ticker into the Binance API symbol + whether it's a perpetual future (`.P`). */
+/** Split a Terminal Trading ticker into the Binance API symbol + whether it's a perpetual future (`.P`). */
 export function parseTicker(ticker: string): { apiSymbol: string; isFutures: boolean } {
     const t = ticker.trim().toUpperCase();
     if (t.endsWith('.P')) return { apiSymbol: t.slice(0, -2), isFutures: true };
@@ -115,7 +115,7 @@ function selectSubTf(targetMin: number): number | null {
  * key; live ticks stream from a native kline WebSocket (`subscribe`), with a poll
  * fallback for aggregated timeframes.
  *
- *   import { BinanceProvider } from 'vela/providers/binance';
+ *   import { BinanceProvider } from 'terminal-trading/providers/binance';
  *   chart.data.registerProvider('binance', new BinanceProvider());
  */
 export class BinanceProvider implements DataProvider {
@@ -151,7 +151,7 @@ export class BinanceProvider implements DataProvider {
             const targetMin = /^\d+$/.test(tf) ? parseInt(tf, 10) : null;
             const subMin = targetMin != null ? selectSubTf(targetMin) : null;
             if (targetMin == null || subMin == null) {
-                console.warn(`[vela] Binance: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
+                console.warn(`[terminal-trading] Binance: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
                 return [];
             }
             const ratio = targetMin / subMin;
@@ -162,7 +162,7 @@ export class BinanceProvider implements DataProvider {
         } catch (e) {
             // Fail soft (consistent with getSymbolInfo): an empty result parks/empties the
             // chart with a warning rather than rejecting the parked load.
-            console.warn(`[vela] Binance: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
+            console.warn(`[terminal-trading] Binance: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
             return [];
         }
     }
@@ -254,7 +254,7 @@ export class BinanceProvider implements DataProvider {
             if (reconnect) { clearTimeout(reconnect); reconnect = null; }
             try { ws?.close(); } catch { /* ignore */ }
             ws = null;
-            console.warn(`[vela] Binance: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
+            console.warn(`[terminal-trading] Binance: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
             polling = this.pollBars(ticker, timeframe, onBar);
         };
 

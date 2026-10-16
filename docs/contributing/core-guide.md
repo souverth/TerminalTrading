@@ -20,7 +20,7 @@ This guide covers the headless core, the ports, the neutral model, and the data 
 | Timeline marks | `src/core/marks/` |
 | Provider routing and the cache | `src/data/MultiProviderFeed.ts`, `ProviderRegistry.ts`, `CachingDataFeed.ts`, `BarStore.ts` |
 | A bundled provider | `src/data/providers/<name>/` |
-| The default wiring | `src/Vela.ts`, `src/index.ts` |
+| The default wiring | `src/TerminalTrading.ts`, `src/index.ts` |
 
 Large files: `EngineOrchestrator.ts` (2889) and `IChartRenderer.ts` (485).
 

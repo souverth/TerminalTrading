@@ -224,7 +224,7 @@ describe('ChartCell — the exchange time-zone rule', () => {
         expect(renderer.timezone).toBe('Europe/Paris'); // …but not applied under a fixed zone
 
         zone = 'exchange';
-        cell.applyTimezone(); // what VelaWorkspace.setTimezone does per cell
+        cell.applyTimezone(); // what TerminalTradingWorkspace.setTimezone does per cell
         expect(renderer.timezone).toBe('America/Chicago');
 
         zone = 'Asia/Tokyo';

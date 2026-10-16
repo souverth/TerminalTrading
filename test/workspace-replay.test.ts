@@ -1,7 +1,7 @@
 // WorkspaceReplay — every cell of a workspace replays on one clock: at any moment each
 // chart shows exactly the bars that had CLOSED by the shared replay time.
 import { describe, it, expect, afterEach } from 'vitest';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import { WorkspaceReplay, barClose, lastOpenClosedBy, type WorkspaceReplayHost } from '../src/workspace/WorkspaceReplay';
 import type { IChartRenderer, RendererCapabilities, IndicatorRenderHandle, VisibleRange } from '../src/core/ports/IChartRenderer';
 import type { MarketDataFeed, BarRange } from '../src/core/ports/MarketDataFeed';
@@ -86,12 +86,12 @@ class Renderer implements IChartRenderer {
     onViewportChange(): Unsubscribe { return () => {}; }
 }
 
-type TestCell = { id: string; chart: Vela; renderer: Renderer };
-const charts: Vela[] = [];
+type TestCell = { id: string; chart: TerminalTrading; renderer: Renderer };
+const charts: TerminalTrading[] = [];
 
 function cell(id: string, symbol: string, timeframe: string): TestCell {
     const renderer = new Renderer();
-    const chart = new Vela({} as HTMLElement, { symbol, timeframe, bars: BASE_BARS, live: true, volume: false }, { renderer, dataFeed: new Feed() });
+    const chart = new TerminalTrading({} as HTMLElement, { symbol, timeframe, bars: BASE_BARS, live: true, volume: false }, { renderer, dataFeed: new Feed() });
     charts.push(chart);
     return { id, chart, renderer };
 }

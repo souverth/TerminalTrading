@@ -2,7 +2,7 @@
 const NAMED_TF_MS: Record<string, number> = { D: 86_400_000, W: 604_800_000, M: 2_592_000_000 };
 
 /**
- * Bar duration in ms for a Vela timeframe: a bare number is **minutes** (Pine
+ * Bar duration in ms for a Terminal Trading timeframe: a bare number is **minutes** (Pine
  * resolution — `60` = 1h, `240` = 4h), `D`/`W`/`M` are the named periods, and the
  * `15m`/`4h`/`1d`/`1w` aliases are also accepted. Falls back to 1h for anything unparsed.
  */

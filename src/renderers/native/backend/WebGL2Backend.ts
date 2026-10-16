@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { OHLCV } from '../../../core/model/ohlcv';
 import type { IndicatorModel } from '../../../core/model/indicator';
 import type { Fill, Background, PriceLine } from '../../../core/model/scene';
@@ -310,7 +310,7 @@ export class WebGL2Backend implements IRenderBackend {
         this.fboW = this.fboH = 0;
     }
 
-    render(scene: SceneGraph, coords: CoordinateSystem, theme: VelaTheme): void {
+    render(scene: SceneGraph, coords: CoordinateSystem, theme: TerminalTradingTheme): void {
         const gl = this.gl;
         const canvas = this.canvas;
         if (!gl || !canvas || !this.program || this.contextLost || gl.isContextLost()) return;
@@ -671,7 +671,7 @@ export class WebGL2Backend implements IRenderBackend {
         i1: number,
         coords: CoordinateSystem,
         pane: PaneNode,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         barColors: ReadonlyMap<number, string>,
         dataW: number,
     ): void {
@@ -789,7 +789,7 @@ export class WebGL2Backend implements IRenderBackend {
      * the baseline blending to the fainter near-baseline fill at it. A dashed baseline
      * marker + the per-segment line on top.
      */
-    private emitBaseline(b: Batch, bars: OHLCV[], i0: number, i1: number, coords: CoordinateSystem, pane: PaneNode, scene: SceneGraph, theme: VelaTheme, dataW: number): void {
+    private emitBaseline(b: Batch, bars: OHLCV[], i0: number, i1: number, coords: CoordinateSystem, pane: PaneNode, scene: SceneGraph, theme: TerminalTradingTheme, dataW: number): void {
         const baseline = scene.baselinePriceFor(pane.scale);
         const baseY = coords.priceToY(baseline, pane.scale, pane.bounds);
         const bs = scene.style.baseline;
@@ -854,7 +854,7 @@ export class WebGL2Backend implements IRenderBackend {
         }
     }
 
-    private emitCandles(b: Batch, scene: SceneGraph, bars: OHLCV[], i0: number, i1: number, coords: CoordinateSystem, pane: PaneNode, theme: VelaTheme, barColors: ReadonlyMap<number, string>): void {
+    private emitCandles(b: Batch, scene: SceneGraph, bars: OHLCV[], i0: number, i1: number, coords: CoordinateSystem, pane: PaneNode, theme: TerminalTradingTheme, barColors: ReadonlyMap<number, string>): void {
         const spacing = coords.bodySpacing();
         const tier = candleTier(spacing);
         // A candle-based plugin style paints with its OWN cosmetics (unset keys inherit
@@ -954,7 +954,7 @@ export class WebGL2Backend implements IRenderBackend {
         }
     }
 
-    private emitSeries(b: Batch, spec: SeriesSpec, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: VelaTheme, off = 0): void {
+    private emitSeries(b: Batch, spec: SeriesSpec, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: TerminalTradingTheme, off = 0): void {
         // Off-pane series (legend/data-window-only readouts, hidden fill anchors) are
         // kept in the model for fills and readouts but never painted here.
         if (!seriesShownOn(spec, 'pane')) return;
@@ -1086,7 +1086,7 @@ export class WebGL2Backend implements IRenderBackend {
         }
     }
 
-    private emitPlotCandles(b: Batch, s: CandleSeries, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: VelaTheme, off = 0): void {
+    private emitPlotCandles(b: Batch, s: CandleSeries, pane: PaneNode, coords: CoordinateSystem, i0: number, i1: number, theme: TerminalTradingTheme, off = 0): void {
         const spacing = coords.bodySpacing();
         const up = s.style?.up ?? theme.upColor;
         const down = s.style?.down ?? theme.downColor;
@@ -1125,7 +1125,7 @@ export class WebGL2Backend implements IRenderBackend {
         }
     }
 
-    private emitHline(b: Batch, pl: PriceLine, pane: PaneNode, coords: CoordinateSystem, dataW: number, theme: VelaTheme): void {
+    private emitHline(b: Batch, pl: PriceLine, pane: PaneNode, coords: CoordinateSystem, dataW: number, theme: TerminalTradingTheme): void {
         const y = Math.round(coords.priceToY(pl.price, pane.scale, pane.bounds));
         if (y < pane.bounds.top || y > pane.bounds.top + pane.bounds.height) return;
         b.dashedSeg(0, y, dataW, y, pl.width ?? 1, parseColor(pl.color ?? theme.textColor), DASH[pl.lineStyle ?? 'solid'] ?? null);

@@ -5,7 +5,7 @@ import type { Unsubscribe } from '../util/types';
 
 /**
  * Owns the live tick subscription when `live: true`. Pulls forming-candle ticks
- * from the market-data feed (Vela owns the data) and forwards them to the
+ * from the market-data feed (Terminal Trading owns the data) and forwards them to the
  * orchestrator's bar reconciler.
  */
 export class LiveSession {

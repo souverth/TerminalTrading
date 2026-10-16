@@ -3,7 +3,7 @@
 // through `toolDefaults()` / `setToolDefaults()` so a host can keep it across reloads.
 import { describe, it, expect } from 'vitest';
 import { TypedEventBus } from '../src/core/events/EventBus';
-import type { VelaEventMap } from '../src/core/events/types';
+import type { TerminalTradingEventMap } from '../src/core/events/types';
 import { DrawingController } from '../src/core/drawings/DrawingController';
 import type { DrawingIntent, DrawingToolDefaults, IDrawingsRendererPort, SerializedDrawing } from '../src/core/drawings';
 import type { IChartRenderer } from '../src/core/ports/IChartRenderer';
@@ -30,7 +30,7 @@ class FakePort implements IDrawingsRendererPort {
 
 function setup(supported = true) {
     const port = new FakePort();
-    const events = new TypedEventBus<VelaEventMap>();
+    const events = new TypedEventBus<TerminalTradingEventMap>();
     const renderer = { capabilities: { userDrawings: supported }, userDrawingsPort: supported ? port : undefined } as unknown as IChartRenderer;
     const ctrl = new DrawingController(renderer, events, undefined);
     const announced: string[] = [];

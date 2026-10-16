@@ -1,37 +1,37 @@
 import { overlayScrollbarCss } from '../../styles';
 
-export const DIALOG_STYLE_ID = 'vela-ui-dialog-5';
+export const DIALOG_STYLE_ID = 'tt-ui-dialog-5';
 
 export const DIALOG_CSS = `
-.vela-dialog-backdrop {
+.tt-dialog-backdrop {
     position: fixed;
     inset: 0;
-    background: var(--vela-backdrop);
-    z-index: var(--vela-z-dialog);
+    background: var(--tt-backdrop);
+    z-index: var(--tt-z-dialog);
 }
 /* Non-dimming variant: still catches outside clicks, but the page stays readable. */
-.vela-dialog-backdrop--clear { background: transparent; }
-.vela-dialog-positioner {
+.tt-dialog-backdrop--clear { background: transparent; }
+.tt-dialog-positioner {
     position: fixed;
     inset: 0;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     padding-top: 10vh;
-    z-index: var(--vela-z-dialog);
+    z-index: var(--tt-z-dialog);
 }
-.vela-dialog-backdrop[data-contained],
-.vela-dialog-positioner[data-contained] { position: absolute; }
-.vela-dialog-positioner[data-align='center'] {
+.tt-dialog-backdrop[data-contained],
+.tt-dialog-positioner[data-contained] { position: absolute; }
+.tt-dialog-positioner[data-align='center'] {
     align-items: center;
     padding-top: 0;
 }
-.vela-dialog {
-    background: var(--vela-surface);
-    color: var(--vela-fg);
-    border: 1px solid var(--vela-border-strong);
+.tt-dialog {
+    background: var(--tt-surface);
+    color: var(--tt-fg);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 10px;
-    box-shadow: var(--vela-shadow-dialog);
+    box-shadow: var(--tt-shadow-dialog);
     font-size: 13px;
     min-width: 300px;
     max-width: min(92vw, 560px);
@@ -41,20 +41,20 @@ export const DIALOG_CSS = `
     overflow: hidden;
     outline: none;
 }
-.vela-dialog[data-state='open'] { animation: vela-dialog-in var(--vela-dur-med) var(--vela-ease); }
-@keyframes vela-dialog-in {
+.tt-dialog[data-state='open'] { animation: tt-dialog-in var(--tt-dur-med) var(--tt-ease); }
+@keyframes tt-dialog-in {
     from { opacity: 0; transform: translateY(6px) scale(0.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
-.vela-dialog-header {
+.tt-dialog-header {
     display: flex;
     align-items: center;
     padding: 9px 9px 9px 16px;
-    border-bottom: 1px solid var(--vela-border);
+    border-bottom: 1px solid var(--tt-border);
     user-select: none;
 }
-.vela-dialog-title { flex: 1; font-size: 17px; font-weight: 600; letter-spacing: 0.2px; color: var(--vela-fg-bright); }
-.vela-dialog-close {
+.tt-dialog-title { flex: 1; font-size: 17px; font-weight: 600; letter-spacing: 0.2px; color: var(--tt-fg-bright); }
+.tt-dialog-close {
     all: unset;
     cursor: pointer;
     width: 30px;
@@ -63,15 +63,15 @@ export const DIALOG_CSS = `
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     line-height: 1;
     font-size: 15px;
 }
-.vela-dialog-close:hover { background: var(--vela-hover); color: var(--vela-fg-bright); }
-.vela-dialog-body { padding: var(--vela-space-4); overflow: auto; min-height: 0; flex: 1 1 auto; }
-.vela-dialog-body[data-flush] { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-.vela-dialog-footer { flex: 0 0 auto; }
-.vela-dialog--settings {
+.tt-dialog-close:hover { background: var(--tt-hover); color: var(--tt-fg-bright); }
+.tt-dialog-body { padding: var(--tt-space-4); overflow: auto; min-height: 0; flex: 1 1 auto; }
+.tt-dialog-body[data-flush] { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.tt-dialog-footer { flex: 0 0 auto; }
+.tt-dialog--settings {
     width: fit-content;
     min-width: min(560px, 94vw);
     max-width: min(720px, 94vw);
@@ -79,7 +79,7 @@ export const DIALOG_CSS = `
     font-size: 13px;
     cursor: default;
 }
-.vela-dialog--form {
+.tt-dialog--form {
     width: fit-content;
     min-width: min(380px, 90%);
     max-width: min(640px, 94%);
@@ -88,48 +88,48 @@ export const DIALOG_CSS = `
 }
 /* Form dialogs (indicator inputs, drawing settings): the tab strip / body owns the
    line under the header, and the footer carries its own top delimiter. */
-.vela-dialog--form .vela-dialog-header { align-items: flex-start; padding: 16px 20px 20px; border-bottom: none; }
-.vela-dialog--form .vela-dialog-title { font-size: 20px; line-height: 28px; }
-.vela-dialog--form .vela-dialog-footer {
+.tt-dialog--form .tt-dialog-header { align-items: flex-start; padding: 16px 20px 20px; border-bottom: none; }
+.tt-dialog--form .tt-dialog-title { font-size: 20px; line-height: 28px; }
+.tt-dialog--form .tt-dialog-footer {
     padding: 16px 20px;
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    border-top: 1px solid var(--vela-border);
+    border-top: 1px solid var(--tt-border);
 }
-.vela-dialog-btn {
+.tt-dialog-btn {
     cursor: pointer;
     height: 34px;
     padding: 0 11px;
     border-radius: 6px;
-    border: 1px solid var(--vela-border-strong);
+    border: 1px solid var(--tt-border-strong);
     background: transparent;
-    color: var(--vela-fg);
+    color: var(--tt-fg);
     font-weight: 400;
     font-size: 14px;
     font-family: inherit;
-    transition: background var(--vela-dur-fast) ease, color var(--vela-dur-fast) ease, opacity var(--vela-dur-fast) ease, border-color var(--vela-dur-fast) ease;
+    transition: background var(--tt-dur-fast) ease, color var(--tt-dur-fast) ease, opacity var(--tt-dur-fast) ease, border-color var(--tt-dur-fast) ease;
 }
-.vela-dialog-btn:hover { background: var(--vela-hover); color: var(--vela-fg-bright); border-color: var(--vela-fg-muted); }
-.vela-dialog-btn-primary { border-color: var(--vela-selected-bg); background: var(--vela-selected-bg); color: var(--vela-selected-fg); }
-.vela-dialog-btn-primary:hover { background: var(--vela-selected-bg); color: var(--vela-selected-fg); opacity: 0.85; border-color: var(--vela-selected-bg); }
-${overlayScrollbarCss('.vela-dialog-body')}
+.tt-dialog-btn:hover { background: var(--tt-hover); color: var(--tt-fg-bright); border-color: var(--tt-fg-muted); }
+.tt-dialog-btn-primary { border-color: var(--tt-selected-bg); background: var(--tt-selected-bg); color: var(--tt-selected-fg); }
+.tt-dialog-btn-primary:hover { background: var(--tt-selected-bg); color: var(--tt-selected-fg); opacity: 0.85; border-color: var(--tt-selected-bg); }
+${overlayScrollbarCss('.tt-dialog-body')}
 /* Scrollers NESTED in a dialog (a flush body's grid, a tab pane) get the same thin
    overlay bars — the two-class selectors below stay overridable by more specific
    per-dialog sheets. */
-${overlayScrollbarCss('.vela-dialog *')}
+${overlayScrollbarCss('.tt-dialog *')}
 /* ── mobile chrome: dialogs fill the shell ─────────────────────────────────────────
    Inside a shell in the mobile size class ([data-layout='mobile'] on the widget root,
    which is position:relative) every kit dialog presents fullscreen: desktop cards are
    unusable at phone widths, and the shell's bounds — not the viewport — are the honest
    "screen" for an embedded chart. */
-[data-layout='mobile'] .vela-dialog-backdrop { position: absolute; }
-[data-layout='mobile'] .vela-dialog-positioner {
+[data-layout='mobile'] .tt-dialog-backdrop { position: absolute; }
+[data-layout='mobile'] .tt-dialog-positioner {
     position: absolute;
     padding: 0;
     align-items: stretch;
 }
-[data-layout='mobile'] .vela-dialog {
+[data-layout='mobile'] .tt-dialog {
     width: 100%;
     min-width: 0;
     max-width: none;
@@ -139,6 +139,6 @@ ${overlayScrollbarCss('.vela-dialog *')}
     border-radius: 0;
     transform: none !important; /* a desktop drag offset must not survive the flip */
 }
-[data-layout='mobile'] .vela-dialog-close { width: 40px; height: 40px; }
-[data-layout='mobile'] .vela-dialog-body { padding-bottom: calc(var(--vela-space-4) + env(safe-area-inset-bottom, 0px)); }
+[data-layout='mobile'] .tt-dialog-close { width: 40px; height: 40px; }
+[data-layout='mobile'] .tt-dialog-body { padding-bottom: calc(var(--tt-space-4) + env(safe-area-inset-bottom, 0px)); }
 `;

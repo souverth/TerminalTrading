@@ -2,13 +2,13 @@ import type { IChartRenderer, VisibleRange } from './core/ports/IChartRenderer';
 import type { ScriptingEngine } from './core/ports/ScriptingEngine';
 import type { MarketDataFeed } from './core/ports/MarketDataFeed';
 import type { VisibleRangePreset } from './core/visible-range';
-import type { VelaOptions, VelaTheme, ThemeName, MarketSwitch, MarketSnapshot, AddIndicatorOptions } from './core/options';
+import type { TerminalTradingOptions, TerminalTradingTheme, ThemeName, MarketSwitch, MarketSnapshot, AddIndicatorOptions } from './core/options';
 import { resolveAnimations } from './core/options';
 import type { InputValue } from './core/model/inputs';
 import type { IndicatorHandle } from './core/IndicatorHandle';
 import type { EngineContextSnapshot } from './core/ports/ScriptingEngine';
 import type { NativeIndicatorInfo } from './core/native-indicators';
-import type { VelaEventMap } from './core/events/types';
+import type { TerminalTradingEventMap } from './core/events/types';
 import type { ScriptRun, ScriptRunResult } from './core/script-run';
 import { EngineOrchestrator, type ResolvedConfig } from './core/engine/EngineOrchestrator';
 import type { SceneInspection } from './core/engine/inspect';
@@ -30,7 +30,7 @@ import { registerClassicIndicators } from './core/native-indicators/classics';
 
 const asError = (err: unknown): Error => (err instanceof Error ? err : new Error(String(err)));
 
-/** Outcome of {@link Vela.runIndicator}: success carries the live handle, failure the error. */
+/** Outcome of {@link Terminal Trading.runIndicator}: success carries the live handle, failure the error. */
 export interface RunIndicatorResult {
     ok: boolean;
     /** The mounted indicator on success; null on failure (it was removed again). */
@@ -42,7 +42,7 @@ export interface RunIndicatorResult {
 }
 
 /** Optional dependency overrides — inject a different renderer, engines, or data feed (tests, swaps). */
-export interface VelaDeps {
+export interface TerminalTradingDeps {
     renderer?: IChartRenderer;
     /** Scripting engines to register at construction (bulk form of `registerEngine`); default none. */
     engines?: ScriptingEngine[];
@@ -59,7 +59,7 @@ export interface VelaDeps {
  * built-in native renderer. Scripting engines are opt-in — register one with
  * `registerEngine` (no engine ⇒ candles only).
  */
-export class Vela {
+export class TerminalTrading {
     private readonly orchestrator: EngineOrchestrator;
     private readonly rendererControl: RendererControl;
     private readonly panesControl: PanesControl;
@@ -68,7 +68,7 @@ export class Vela {
     private readonly marksControl: MarksControl;
     private readonly replayControl: ReplayControl;
 
-    constructor(container: HTMLElement | string, options: VelaOptions = {}, deps: VelaDeps = {}) {
+    constructor(container: HTMLElement | string, options: TerminalTradingOptions = {}, deps: TerminalTradingDeps = {}) {
         registerBuiltinChartTypes(); // built-in chart types through the public SDK registry (idempotent)
         registerVolume(); // register the built-in native indicators (idempotent)
         registerVpvr();
@@ -89,8 +89,8 @@ export class Vela {
         const RendererClass = options.renderer ?? NativeRenderer;
         if (typeof RendererClass !== 'function') {
             throw new Error(
-                "[vela] options.renderer must be a renderer class, e.g. import { LwcRenderer } from " +
-                    "'vela/renderers/lwc'. The 'lwc'/'native' string options were removed.",
+                "[terminal-trading] options.renderer must be a renderer class, e.g. import { LwcRenderer } from " +
+                    "'terminal-trading/renderers/lwc'. The 'lwc'/'native' string options were removed.",
             );
         }
         const renderer = deps.renderer ?? new RendererClass(display);
@@ -134,7 +134,7 @@ export class Vela {
 
     /**
      * Register a scripting engine so `addIndicator({ language })` can run that
-     * language. Vela ships NO engine — install the one you need (Pine Script:
+     * language. Terminal Trading ships NO engine — install the one you need (Pine Script:
      * `@luxalgo/vela-pinets`) and register it, e.g.
      * `chart.registerEngine('pine', new PineEngine())`; without one the chart
      * displays candles, drawings and native indicators only. Re-registering a
@@ -381,7 +381,7 @@ export class Vela {
      * `chart.drawings.toJSON()/fromJSON(doc)`. Always present; on a renderer without
      * the `userDrawings` capability the interactive methods warn + no-op while
      * persistence still round-trips. Enable the on-chart toolbar with
-     * `new Vela(el, { drawings: true })` or `chart.drawings.showToolbar()`.
+     * `new Terminal Trading(el, { drawings: true })` or `chart.drawings.showToolbar()`.
      */
     get drawings(): DrawingsControl {
         return this.drawingsControl;
@@ -410,7 +410,7 @@ export class Vela {
         return this.replayControl;
     }
 
-    on<K extends keyof VelaEventMap>(event: K, handler: (payload: VelaEventMap[K]) => void): () => void {
+    on<K extends keyof TerminalTradingEventMap>(event: K, handler: (payload: TerminalTradingEventMap[K]) => void): () => void {
         return this.orchestrator.events.on(event, handler);
     }
 
@@ -453,13 +453,13 @@ export class Vela {
 
     /**
      * Swap the app theme at runtime — `'dark'`, `'light'`, or a full custom
-     * {@link VelaTheme}. Re-skins the chart surface, axes, legends and in-chart chrome
+     * {@link TerminalTradingTheme}. Re-skins the chart surface, axes, legends and in-chart chrome
      * live (no indicator re-run, no rebuild) and emits `theme:changed` with the resolved
      * theme so host chrome around the chart can follow. Explicitly customized plot
      * cosmetics (a config-set background or series color) are re-based only when they
      * were inherited from the previous theme.
      */
-    setTheme(theme: ThemeName | VelaTheme): this {
+    setTheme(theme: ThemeName | TerminalTradingTheme): this {
         this.orchestrator.setTheme(resolveTheme(theme));
         return this;
     }
@@ -472,6 +472,6 @@ export class Vela {
 function resolveElement(container: HTMLElement | string): HTMLElement {
     if (typeof container !== 'string') return container;
     const element = document.querySelector(container);
-    if (!element) throw new Error(`[vela] container not found for selector "${container}"`);
+    if (!element) throw new Error(`[terminal-trading] container not found for selector "${container}"`);
     return element as HTMLElement;
 }

@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import type { CrosshairEvent } from '../src/core/ports/IChartRenderer';
 import type { MenuItemDescriptor } from '../src/ui/components/menu';
-import type { Vela } from '../src/Vela';
+import type { TerminalTrading } from '../src/TerminalTrading';
 import { registerWidgetAction, type ContextMenuPointer, type WidgetContext } from '../src/widget/contributions';
 import { ChartContextMenu } from '../src/widget/context-menu';
 
@@ -43,7 +43,7 @@ function fakeHost(): HTMLElement & { fire(type: string, e: Record<string, unknow
     } as unknown as HTMLElement & { fire(type: string, e: Record<string, unknown>): void };
 }
 
-function fakeChart(): { chart: Vela; move(e: Partial<CrosshairEvent>): void; subscribers(): number } {
+function fakeChart(): { chart: TerminalTrading; move(e: Partial<CrosshairEvent>): void; subscribers(): number } {
     const cbs = new Set<(e: CrosshairEvent) => void>();
     const chart = {
         renderer: {
@@ -57,7 +57,7 @@ function fakeChart(): { chart: Vela; move(e: Partial<CrosshairEvent>): void; sub
         },
         drawings: { supported: false, all: () => [] },
         indicators: () => [],
-    } as unknown as Vela;
+    } as unknown as TerminalTrading;
     return {
         chart,
         move: (e) => {

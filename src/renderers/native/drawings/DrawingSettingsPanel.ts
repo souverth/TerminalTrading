@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { Drawing, DrawingToolDefaults, DrawingToolTemplate, SerializedDrawing, SettingsField } from '../../../core/drawings';
 import {
     DEFAULT_DRAWING_COLOR,
@@ -56,7 +56,7 @@ type ShowMode = 'all' | 'intraday' | 'higher' | 'custom';
 /** Which folds are open, per tool — remembered for the session so a panel reopens as it was left. */
 const openFolds = new Map<string, Set<string>>();
 
-const STYLE_ID = 'vela-dsp-styles';
+const STYLE_ID = 'tt-dsp-styles';
 const STYLE_REV = '1';
 
 const CHEVRON = '<svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg>';
@@ -80,75 +80,75 @@ function ensureStyles(): void {
     s.id = STYLE_ID;
     s.dataset.rev = STYLE_REV;
     s.textContent = `
-.vela-dsp-pass { pointer-events: none !important; }
-.vela-dialog.vela-dsp { pointer-events: auto; width: 360px; min-width: 0; max-width: calc(100% - 24px); max-height: calc(100% - 24px); font-size: 13px; }
-.vela-dsp .vela-dialog-header { padding: 8px 8px 8px 16px; gap: 6px; }
-.vela-dsp .vela-dialog-title { font-size: 15px; line-height: 22px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-dsp .vela-dialog-footer { padding: 10px 12px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--vela-border); }
-.vela-dsp .vela-dialog-btn { height: 30px; font-size: 13px; }
-.vela-dsp-scroll { overflow-y: auto; overflow-x: hidden; flex: 1 1 auto; min-height: 0; }
-.vela-dsp-block { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
-.vela-dsp-block + .vela-dsp-block, .vela-dsp-fold { border-top: 1px solid var(--vela-border); }
-.vela-dsp-h { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--vela-fg-muted); }
-.vela-dsp-row { display: flex; align-items: center; gap: 8px; min-height: 30px; }
-.vela-dsp-row[hidden] { display: none; }
-.vela-dsp-lab { flex: 0 0 96px; color: var(--vela-fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vela-dsp-row > .vela-dsp-lab + * { min-width: 0; }
-.vela-dsp-spacer { flex: 1; }
-.vela-dsp-fold-h { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; gap: 8px; padding: 11px 16px; cursor: pointer; }
-.vela-dsp-fold-h:hover { background: var(--vela-hover); }
-.vela-dsp-fold-h:focus-visible { outline: 2px solid var(--vela-selected-bg); outline-offset: -2px; }
-.vela-dsp-fold-t { font-weight: 600; color: var(--vela-fg-bright); white-space: nowrap; }
-.vela-dsp-fold-s { flex: 1; min-width: 0; text-align: right; color: var(--vela-fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
-.vela-dsp-chev { display: flex; color: var(--vela-fg-muted); transition: transform var(--vela-dur-fast) ease; }
-.vela-dsp-fold[data-open] .vela-dsp-chev { transform: rotate(90deg); }
-.vela-dsp-fold-b { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 8px; }
-.vela-dsp-fold:not([data-open]) .vela-dsp-fold-b { display: none; }
-.vela-dsp-seg { display: inline-flex; flex: none; border: 1px solid var(--vela-border-strong); border-radius: 6px; overflow: hidden; }
-.vela-dsp-seg[data-full] { display: flex; flex: 1; }
-.vela-dsp-seg > button { all: unset; box-sizing: border-box; cursor: pointer; height: 28px; min-width: 32px; padding: 0 8px; display: flex; align-items: center; justify-content: center; color: var(--vela-fg-muted); white-space: nowrap; }
-.vela-dsp-seg[data-full] > button { flex: 1 1 0; min-width: 0; }
-.vela-dsp-seg > button + button { border-left: 1px solid var(--vela-border); }
-.vela-dsp-seg > button:hover { background: var(--vela-hover); color: var(--vela-fg-bright); }
-.vela-dsp-seg > button[aria-pressed='true'] { background: var(--vela-active); color: var(--vela-fg-bright); }
-.vela-dsp-seg > button:focus-visible { outline: 2px solid var(--vela-selected-bg); outline-offset: -2px; }
-.vela-dsp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.vela-dsp-chip { all: unset; box-sizing: border-box; cursor: pointer; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px solid var(--vela-border-strong); color: var(--vela-fg-muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.vela-dsp-chip:hover { color: var(--vela-fg-bright); border-color: var(--vela-fg-muted); }
-.vela-dsp-chip[aria-pressed='true'] { background: var(--vela-active); border-color: transparent; color: var(--vela-fg-bright); }
-.vela-dsp-chip:focus-visible { outline: 2px solid var(--vela-selected-bg); outline-offset: 1px; }
-.vela-dsp-note { font-size: 12px; color: var(--vela-fg-muted); line-height: 1.45; }
-.vela-dsp-pt { display: grid; grid-template-columns: 34px minmax(0, 120px) minmax(0, 1fr); align-items: center; gap: 8px; min-height: 30px; }
-.vela-dsp-pt-k { font-weight: 600; color: var(--vela-fg-muted); }
-.vela-dsp-pt-t { color: var(--vela-fg-muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vela-dsp-tf[hidden], .vela-dsp-note[hidden] { display: none; }
-.vela-dsp-tf { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
-.vela-dsp-tf > button { all: unset; box-sizing: border-box; cursor: pointer; position: relative; height: 28px; border-radius: 6px; border: 1px solid var(--vela-border-strong); color: var(--vela-fg-muted); display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
-.vela-dsp-tf > button:hover { color: var(--vela-fg-bright); border-color: var(--vela-fg-muted); }
-.vela-dsp-tf > button[aria-pressed='true'] { background: var(--vela-active); border-color: transparent; color: var(--vela-fg-bright); }
-.vela-dsp-tf > button[data-here]::after { content: ''; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--vela-selected-bg); }
-.vela-dsp-grid { padding: 0; }
-.vela-dsp-lv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; }
-.vela-dsp-lv-c { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.vela-dsp-lv-c .vela-num:not([data-fill])[data-compact] { width: 76px; }
-.vela-dsp-lv-c .vela-num input { height: 28px; }
-.vela-dsp-lv-c[data-off] .vela-num input { color: var(--vela-fg-muted); }
-.vela-dsp-style { all: unset; box-sizing: border-box; cursor: pointer; flex: none; height: 28px; max-width: 150px; padding: 0 6px 0 10px; border-radius: 6px; border: 1px solid var(--vela-border-strong); display: inline-flex; align-items: center; gap: 4px; color: var(--vela-fg); font-size: 12px; }
-.vela-dsp-style > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-dsp-style:hover, .vela-dsp-style[aria-expanded='true'] { background: var(--vela-hover); color: var(--vela-fg-bright); }
-.vela-dsp-menu { min-width: 220px; max-height: 320px; overflow-y: auto; padding: 4px; display: flex; flex-direction: column; gap: 1px; }
-.vela-dsp-mh { padding: 6px 8px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--vela-fg-muted); }
-.vela-dsp-mi { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 8px; height: 30px; border-radius: 5px; color: inherit; }
-.vela-dsp-mi:hover, .vela-dsp-mi:focus-visible { background: var(--vela-hover-strong); }
-.vela-dsp-mi[data-current] { color: var(--vela-fg-bright); font-weight: 600; }
-.vela-dsp-mi > .vela-dsp-mi-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-dsp-mi-dot { flex: none; width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--vela-border-strong); }
-.vela-dsp-mi-x { all: unset; cursor: pointer; flex: none; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--vela-fg-muted); }
-.vela-dsp-mi-x:hover { background: var(--vela-hover); color: var(--vela-danger); }
-.vela-dsp-msep { height: 1px; background: var(--vela-border); margin: 4px 0; }
-.vela-dsp-mname { display: flex; gap: 6px; padding: 4px; }
-.vela-dsp-mname > input { flex: 1; min-width: 0; height: 28px; box-sizing: border-box; padding: 0 8px; border-radius: 6px; border: 1px solid var(--vela-border-strong); background: transparent; color: inherit; font: inherit; outline: none; }
-.vela-dsp-mname > input:focus { border-color: var(--vela-selected-bg); }`;
+.tt-dsp-pass { pointer-events: none !important; }
+.tt-dialog.tt-dsp { pointer-events: auto; width: 360px; min-width: 0; max-width: calc(100% - 24px); max-height: calc(100% - 24px); font-size: 13px; }
+.tt-dsp .tt-dialog-header { padding: 8px 8px 8px 16px; gap: 6px; }
+.tt-dsp .tt-dialog-title { font-size: 15px; line-height: 22px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-dsp .tt-dialog-footer { padding: 10px 12px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--tt-border); }
+.tt-dsp .tt-dialog-btn { height: 30px; font-size: 13px; }
+.tt-dsp-scroll { overflow-y: auto; overflow-x: hidden; flex: 1 1 auto; min-height: 0; }
+.tt-dsp-block { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.tt-dsp-block + .tt-dsp-block, .tt-dsp-fold { border-top: 1px solid var(--tt-border); }
+.tt-dsp-h { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tt-fg-muted); }
+.tt-dsp-row { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+.tt-dsp-row[hidden] { display: none; }
+.tt-dsp-lab { flex: 0 0 96px; color: var(--tt-fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tt-dsp-row > .tt-dsp-lab + * { min-width: 0; }
+.tt-dsp-spacer { flex: 1; }
+.tt-dsp-fold-h { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; gap: 8px; padding: 11px 16px; cursor: pointer; }
+.tt-dsp-fold-h:hover { background: var(--tt-hover); }
+.tt-dsp-fold-h:focus-visible { outline: 2px solid var(--tt-selected-bg); outline-offset: -2px; }
+.tt-dsp-fold-t { font-weight: 600; color: var(--tt-fg-bright); white-space: nowrap; }
+.tt-dsp-fold-s { flex: 1; min-width: 0; text-align: right; color: var(--tt-fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.tt-dsp-chev { display: flex; color: var(--tt-fg-muted); transition: transform var(--tt-dur-fast) ease; }
+.tt-dsp-fold[data-open] .tt-dsp-chev { transform: rotate(90deg); }
+.tt-dsp-fold-b { padding: 0 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+.tt-dsp-fold:not([data-open]) .tt-dsp-fold-b { display: none; }
+.tt-dsp-seg { display: inline-flex; flex: none; border: 1px solid var(--tt-border-strong); border-radius: 6px; overflow: hidden; }
+.tt-dsp-seg[data-full] { display: flex; flex: 1; }
+.tt-dsp-seg > button { all: unset; box-sizing: border-box; cursor: pointer; height: 28px; min-width: 32px; padding: 0 8px; display: flex; align-items: center; justify-content: center; color: var(--tt-fg-muted); white-space: nowrap; }
+.tt-dsp-seg[data-full] > button { flex: 1 1 0; min-width: 0; }
+.tt-dsp-seg > button + button { border-left: 1px solid var(--tt-border); }
+.tt-dsp-seg > button:hover { background: var(--tt-hover); color: var(--tt-fg-bright); }
+.tt-dsp-seg > button[aria-pressed='true'] { background: var(--tt-active); color: var(--tt-fg-bright); }
+.tt-dsp-seg > button:focus-visible { outline: 2px solid var(--tt-selected-bg); outline-offset: -2px; }
+.tt-dsp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tt-dsp-chip { all: unset; box-sizing: border-box; cursor: pointer; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px solid var(--tt-border-strong); color: var(--tt-fg-muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.tt-dsp-chip:hover { color: var(--tt-fg-bright); border-color: var(--tt-fg-muted); }
+.tt-dsp-chip[aria-pressed='true'] { background: var(--tt-active); border-color: transparent; color: var(--tt-fg-bright); }
+.tt-dsp-chip:focus-visible { outline: 2px solid var(--tt-selected-bg); outline-offset: 1px; }
+.tt-dsp-note { font-size: 12px; color: var(--tt-fg-muted); line-height: 1.45; }
+.tt-dsp-pt { display: grid; grid-template-columns: 34px minmax(0, 120px) minmax(0, 1fr); align-items: center; gap: 8px; min-height: 30px; }
+.tt-dsp-pt-k { font-weight: 600; color: var(--tt-fg-muted); }
+.tt-dsp-pt-t { color: var(--tt-fg-muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tt-dsp-tf[hidden], .tt-dsp-note[hidden] { display: none; }
+.tt-dsp-tf { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.tt-dsp-tf > button { all: unset; box-sizing: border-box; cursor: pointer; position: relative; height: 28px; border-radius: 6px; border: 1px solid var(--tt-border-strong); color: var(--tt-fg-muted); display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+.tt-dsp-tf > button:hover { color: var(--tt-fg-bright); border-color: var(--tt-fg-muted); }
+.tt-dsp-tf > button[aria-pressed='true'] { background: var(--tt-active); border-color: transparent; color: var(--tt-fg-bright); }
+.tt-dsp-tf > button[data-here]::after { content: ''; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--tt-selected-bg); }
+.tt-dsp-grid { padding: 0; }
+.tt-dsp-lv { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px; }
+.tt-dsp-lv-c { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tt-dsp-lv-c .tt-num:not([data-fill])[data-compact] { width: 76px; }
+.tt-dsp-lv-c .tt-num input { height: 28px; }
+.tt-dsp-lv-c[data-off] .tt-num input { color: var(--tt-fg-muted); }
+.tt-dsp-style { all: unset; box-sizing: border-box; cursor: pointer; flex: none; height: 28px; max-width: 150px; padding: 0 6px 0 10px; border-radius: 6px; border: 1px solid var(--tt-border-strong); display: inline-flex; align-items: center; gap: 4px; color: var(--tt-fg); font-size: 12px; }
+.tt-dsp-style > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-dsp-style:hover, .tt-dsp-style[aria-expanded='true'] { background: var(--tt-hover); color: var(--tt-fg-bright); }
+.tt-dsp-menu { min-width: 220px; max-height: 320px; overflow-y: auto; padding: 4px; display: flex; flex-direction: column; gap: 1px; }
+.tt-dsp-mh { padding: 6px 8px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tt-fg-muted); }
+.tt-dsp-mi { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 8px; height: 30px; border-radius: 5px; color: inherit; }
+.tt-dsp-mi:hover, .tt-dsp-mi:focus-visible { background: var(--tt-hover-strong); }
+.tt-dsp-mi[data-current] { color: var(--tt-fg-bright); font-weight: 600; }
+.tt-dsp-mi > .tt-dsp-mi-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-dsp-mi-dot { flex: none; width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--tt-border-strong); }
+.tt-dsp-mi-x { all: unset; cursor: pointer; flex: none; width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--tt-fg-muted); }
+.tt-dsp-mi-x:hover { background: var(--tt-hover); color: var(--tt-danger); }
+.tt-dsp-msep { height: 1px; background: var(--tt-border); margin: 4px 0; }
+.tt-dsp-mname { display: flex; gap: 6px; padding: 4px; }
+.tt-dsp-mname > input { flex: 1; min-width: 0; height: 28px; box-sizing: border-box; padding: 0 8px; border-radius: 6px; border: 1px solid var(--tt-border-strong); background: transparent; color: inherit; font: inherit; outline: none; }
+.tt-dsp-mname > input:focus { border-color: var(--tt-selected-bg); }`;
     if (!existing) document.head.appendChild(s);
 }
 
@@ -181,17 +181,17 @@ export class DrawingSettingsPanel {
     private ui: Dialog | null = null;
     private menu: Popover | null = null;
     private refresh: (() => void) | null = null;
-    private theme: VelaTheme;
+    private theme: TerminalTradingTheme;
 
     constructor(
         private readonly host: HTMLElement,
-        theme: VelaTheme,
+        theme: TerminalTradingTheme,
         private readonly env: DrawingPanelEnv,
     ) {
         this.theme = theme;
     }
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
     }
 
@@ -217,7 +217,7 @@ export class DrawingSettingsPanel {
         const meta = getDrawingType(first.type);
 
         const scroll = document.createElement('div');
-        scroll.className = 'vela-dsp-scroll';
+        scroll.className = 'tt-dsp-scroll';
         let watchers: Array<() => void> = [];
         const runWatchers = (): void => {
             for (const fn of watchers) fn();
@@ -255,7 +255,7 @@ export class DrawingSettingsPanel {
             align: 'center',
             draggable: true,
             flush: true,
-            className: 'vela-dsp',
+            className: 'tt-dsp',
             closeOnEscape: false,
             footer: (foot) => foot.append(button('Cancel', false, cancel), button('Ok', true, () => this.close())),
             onOpenChange: (open) => {
@@ -263,8 +263,8 @@ export class DrawingSettingsPanel {
             },
         });
         applyChromeTokens(ui.panel, this.theme);
-        ui.backdrop.classList.add('vela-dsp-pass');
-        ui.positioner.classList.add('vela-dsp-pass');
+        ui.backdrop.classList.add('tt-dsp-pass');
+        ui.positioner.classList.add('tt-dsp-pass');
         // Open on the side of the chart away from the drawing, so the drawing stays in view.
         const hostW = this.host.clientWidth;
         const leftHalf = anchor != null && hostW > 0 && anchor.x + anchor.w / 2 < hostW / 2;
@@ -452,7 +452,7 @@ export class DrawingSettingsPanel {
         const d = b.live();
         const rows: HTMLElement[] = [];
         const grid = document.createElement('div');
-        grid.className = 'vela-dsp-lv';
+        grid.className = 'tt-dsp-lv';
         const key = (): string => JSON.stringify(b.live().editableLevels() ?? []);
         let last = '';
         // A level edited here is already shown — only a change from elsewhere (a preset, an
@@ -474,7 +474,7 @@ export class DrawingSettingsPanel {
             const free = b.live() instanceof FibLevels; // horizontal levels may sit at or beyond either anchor
             (b.live().editableLevels() ?? []).forEach((lv, i) => {
                 const cell = document.createElement('div');
-                cell.className = 'vela-dsp-lv-c';
+                cell.className = 'tt-dsp-lv-c';
                 cell.toggleAttribute('data-off', !lv.enabled);
                 const on = buildFieldControl({
                     kind: 'switch',
@@ -567,7 +567,7 @@ export class DrawingSettingsPanel {
     /** A rich per-type section on the shared field grid. */
     private richBlock(title: string, fill: (grid: HTMLElement) => void): HTMLElement {
         const grid = fieldGrid({ variant: 'inputs' });
-        grid.classList.add('vela-dsp-grid');
+        grid.classList.add('tt-dsp-grid');
         fill(grid);
         return block(title, grid);
     }
@@ -682,9 +682,9 @@ export class DrawingSettingsPanel {
             shown.map((i, n) => {
                 const key = shown.length === 1 ? (free(i) === 'x' ? 'Time' : 'Price') : String.fromCharCode(65 + n);
                 const line = document.createElement('div');
-                line.className = 'vela-dsp-pt';
+                line.className = 'tt-dsp-pt';
                 const k = document.createElement('span');
-                k.className = 'vela-dsp-pt-k';
+                k.className = 'tt-dsp-pt-k';
                 k.textContent = key;
                 line.appendChild(k);
                 if (free(i) !== 'x') {
@@ -705,7 +705,7 @@ export class DrawingSettingsPanel {
                     line.appendChild(document.createElement('span'));
                 }
                 const t = document.createElement('span');
-                t.className = 'vela-dsp-pt-t';
+                t.className = 'tt-dsp-pt-t';
                 b.watch(() => {
                     const time = b.live().anchors[i]?.time;
                     t.textContent = time != null ? formatTimeStamp(time, this.env.timeZone(), this.env.chartBarMs()) : '';
@@ -755,7 +755,7 @@ export class DrawingSettingsPanel {
                 true,
             );
             const grid = document.createElement('div');
-            grid.className = 'vela-dsp-tf';
+            grid.className = 'tt-dsp-tf';
             for (const band of TIMEFRAME_BANDS) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -774,7 +774,7 @@ export class DrawingSettingsPanel {
                 grid.appendChild(btn);
             }
             const note = document.createElement('div');
-            note.className = 'vela-dsp-note';
+            note.className = 'tt-dsp-note';
             b.watch(() => {
                 grid.hidden = mode() !== 'custom';
                 const s = bands();
@@ -793,7 +793,7 @@ export class DrawingSettingsPanel {
     private styleMenuButton(b: Build): { el: HTMLElement; refresh(): void } {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'vela-dsp-style';
+        btn.className = 'tt-dsp-style';
         btn.setAttribute('aria-haspopup', 'menu');
         btn.setAttribute('aria-expanded', 'false');
         const label = document.createElement('span');
@@ -841,9 +841,9 @@ export class DrawingSettingsPanel {
             },
         });
         const el = pop.el;
-        el.classList.add('vela-dsp-menu');
+        el.classList.add('tt-dsp-menu');
         el.setAttribute('role', 'menu');
-        el.style.cssText += `background:${t.background};border:1px solid var(--vela-border);border-radius:var(--vela-radius-lg);box-shadow:var(--vela-shadow);color:${t.textColor};font:13px ${t.fontFamily};pointer-events:auto;`;
+        el.style.cssText += `background:${t.background};border:1px solid var(--tt-border);border-radius:var(--tt-radius-lg);box-shadow:var(--tt-shadow);color:${t.textColor};font:13px ${t.fontFamily};pointer-events:auto;`;
         applyChromeTokens(el, t);
 
         const fill = (): void => {
@@ -853,19 +853,19 @@ export class DrawingSettingsPanel {
             const item = (tpl: DrawingToolTemplate, removable: boolean): HTMLElement => {
                 const row = document.createElement('button');
                 row.type = 'button';
-                row.className = 'vela-dsp-mi';
+                row.className = 'tt-dsp-mi';
                 row.setAttribute('role', 'menuitem');
                 if (matchesTemplate(b.live(), tpl.settings)) row.dataset.current = '';
                 const dot = document.createElement('span');
-                dot.className = 'vela-dsp-mi-dot';
+                dot.className = 'tt-dsp-mi-dot';
                 dot.style.background = templateColor(tpl.settings) ?? 'transparent';
                 const name = document.createElement('span');
-                name.className = 'vela-dsp-mi-t';
+                name.className = 'tt-dsp-mi-t';
                 name.textContent = tpl.name;
                 row.append(dot, name);
                 if (removable) {
                     const x = document.createElement('span');
-                    x.className = 'vela-dsp-mi-x';
+                    x.className = 'tt-dsp-mi-x';
                     x.setAttribute('role', 'button');
                     x.setAttribute('aria-label', `Delete ${tpl.name}`);
                     x.innerHTML = CROSS;
@@ -900,9 +900,9 @@ export class DrawingSettingsPanel {
             if (b.actions.saveTemplate) el.appendChild(this.saveRow(b, fill, refresh));
             const reset = document.createElement('button');
             reset.type = 'button';
-            reset.className = 'vela-dsp-mi';
+            reset.className = 'tt-dsp-mi';
             reset.setAttribute('role', 'menuitem');
-            reset.innerHTML = '<span class="vela-dsp-mi-t">Reset to default</span>';
+            reset.innerHTML = '<span class="tt-dsp-mi-t">Reset to default</span>';
             reset.addEventListener('click', () => {
                 b.actions.resetSettings();
                 pop.hide();
@@ -921,13 +921,13 @@ export class DrawingSettingsPanel {
         const wrap = document.createElement('div');
         const start = document.createElement('button');
         start.type = 'button';
-        start.className = 'vela-dsp-mi';
+        start.className = 'tt-dsp-mi';
         start.setAttribute('role', 'menuitem');
-        start.innerHTML = '<span class="vela-dsp-mi-t">Save as style…</span>';
+        start.innerHTML = '<span class="tt-dsp-mi-t">Save as style…</span>';
         start.addEventListener('click', (e) => {
             e.stopPropagation();
             const form = document.createElement('div');
-            form.className = 'vela-dsp-mname';
+            form.className = 'tt-dsp-mname';
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Style name';
@@ -963,21 +963,21 @@ export class DrawingSettingsPanel {
         const open = openFolds.get(type) ?? new Set<string>();
         openFolds.set(type, open);
         const wrap = document.createElement('div');
-        wrap.className = 'vela-dsp-fold';
+        wrap.className = 'tt-dsp-fold';
         const head = document.createElement('button');
         head.type = 'button';
-        head.className = 'vela-dsp-fold-h';
+        head.className = 'tt-dsp-fold-h';
         const t = document.createElement('span');
-        t.className = 'vela-dsp-fold-t';
+        t.className = 'tt-dsp-fold-t';
         t.textContent = title;
         const s = document.createElement('span');
-        s.className = 'vela-dsp-fold-s';
+        s.className = 'tt-dsp-fold-s';
         const chev = document.createElement('span');
-        chev.className = 'vela-dsp-chev';
+        chev.className = 'tt-dsp-chev';
         chev.innerHTML = CHEVRON;
         head.append(t, s, chev);
         const content = document.createElement('div');
-        content.className = 'vela-dsp-fold-b';
+        content.className = 'tt-dsp-fold-b';
         let built = false;
         const setOpen = (on: boolean): void => {
             if (on) open.add(key);
@@ -1005,7 +1005,7 @@ export class DrawingSettingsPanel {
         full = false,
     ): HTMLElement {
         const el = document.createElement('div');
-        el.className = 'vela-dsp-seg';
+        el.className = 'tt-dsp-seg';
         el.setAttribute('role', 'group');
         el.setAttribute('aria-label', label);
         if (full) el.dataset.full = '';
@@ -1035,7 +1035,7 @@ export class DrawingSettingsPanel {
     private chip(b: Build, text: string, read: () => boolean, set: (on: boolean) => void, title?: string): HTMLElement {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'vela-dsp-chip';
+        btn.className = 'tt-dsp-chip';
         btn.textContent = text;
         if (title) {
             btn.title = title;
@@ -1088,10 +1088,10 @@ export class DrawingSettingsPanel {
 
 function block(title: string | null, ...rows: HTMLElement[]): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'vela-dsp-block';
+    el.className = 'tt-dsp-block';
     if (title) {
         const h = document.createElement('div');
-        h.className = 'vela-dsp-h';
+        h.className = 'tt-dsp-h';
         h.textContent = title;
         el.appendChild(h);
     }
@@ -1101,9 +1101,9 @@ function block(title: string | null, ...rows: HTMLElement[]): HTMLElement {
 
 function row(label: string, ...controls: HTMLElement[]): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'vela-dsp-row';
+    el.className = 'tt-dsp-row';
     const lab = document.createElement('span');
-    lab.className = 'vela-dsp-lab';
+    lab.className = 'tt-dsp-lab';
     lab.textContent = label;
     lab.title = label;
     el.append(lab, ...controls);
@@ -1112,21 +1112,21 @@ function row(label: string, ...controls: HTMLElement[]): HTMLElement {
 
 function chips(...items: HTMLElement[]): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'vela-dsp-chips';
+    el.className = 'tt-dsp-chips';
     el.append(...items);
     return el;
 }
 
 function menuHeading(text: string): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'vela-dsp-mh';
+    el.className = 'tt-dsp-mh';
     el.textContent = text;
     return el;
 }
 
 function separator(): HTMLElement {
     const el = document.createElement('div');
-    el.className = 'vela-dsp-msep';
+    el.className = 'tt-dsp-msep';
     return el;
 }
 
@@ -1134,7 +1134,7 @@ function button(label: string, primary: boolean, onClick: () => void): HTMLButto
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = label;
-    b.className = primary ? 'vela-dialog-btn vela-dialog-btn-primary' : 'vela-dialog-btn';
+    b.className = primary ? 'tt-dialog-btn tt-dialog-btn-primary' : 'tt-dialog-btn';
     b.addEventListener('click', onClick);
     return b;
 }

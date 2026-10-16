@@ -2,14 +2,14 @@ import type { EngineAlert, EngineWarning } from "../ports/ScriptingEngine";
 import type { ScriptRun } from "../script-run";
 import type { OHLCV } from "../model/ohlcv";
 import type { DrawingTypeKey, SerializedDrawing } from "../drawings/Drawing";
-import type { VelaTheme } from "../options";
+import type { TerminalTradingTheme } from "../options";
 import type { SnapMode } from "../drawings/geometry";
 import type { DrawingMode } from "../drawings/port";
 import type { MarkClickEvent } from "../marks/types";
 import type { ReplayEndReason } from "../ReplayControl";
 
 /** Chart-level events emitted on `chart.on(...)`. */
-export interface VelaEventMap extends Record<string, unknown> {
+export interface TerminalTradingEventMap extends Record<string, unknown> {
   ready: undefined;
   /**
    * The chart's market switched IN PLACE via `setMarket` — symbol, provider, timeframe,
@@ -60,7 +60,7 @@ export interface VelaEventMap extends Record<string, unknown> {
    * cosmetic edits (`layout.background` through the config), which deliberately
    * leave the app theme alone.
    */
-  "theme:changed": VelaTheme;
+  "theme:changed": TerminalTradingTheme;
   /**
    * The base price style is switching `from` → `to` (candles, line, area, a chart-type
    * id, …). Fires synchronously BEFORE the chart repaints in the new style, whatever

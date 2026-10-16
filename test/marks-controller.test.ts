@@ -3,7 +3,7 @@
 // group-visibility seam, and the inert path on a renderer without the capability.
 import { describe, it, expect, vi } from 'vitest';
 import { TypedEventBus } from '../src/core/events/EventBus';
-import type { VelaEventMap } from '../src/core/events/types';
+import type { TerminalTradingEventMap } from '../src/core/events/types';
 import { MarksController } from '../src/core/marks/MarksController';
 import { MarksControl } from '../src/core/MarksControl';
 import type { MarkClickEvent, MarkGroup, TimelineMark } from '../src/core/marks/types';
@@ -42,7 +42,7 @@ const mark = (id: string, extra: Partial<TimelineMark> = {}): TimelineMark => ({
 describe('MarksController', () => {
     it('pushes marks + group definitions to the renderer on every change, in insertion order', () => {
         const { renderer, pushes } = fakeRenderer();
-        const ctrl = new MarksController(renderer, new TypedEventBus<VelaEventMap>());
+        const ctrl = new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>());
         expect(ctrl.supported).toBe(true);
         ctrl.add(mark('b'));
         ctrl.add(mark('a'));
@@ -65,7 +65,7 @@ describe('MarksController', () => {
 
     it('hands out copies and rejects marks it could not place or draw', () => {
         const { renderer } = fakeRenderer();
-        const ctrl = new MarksController(renderer, new TypedEventBus<VelaEventMap>());
+        const ctrl = new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>());
         ctrl.add(mark('a'));
         const copy = ctrl.all()[0]!;
         copy.glyph.color = 'red';
@@ -78,7 +78,7 @@ describe('MarksController', () => {
 
     it('re-emits the renderer’s glyph clicks as `mark:click` and unsubscribes on destroy', () => {
         const fake = fakeRenderer();
-        const events = new TypedEventBus<VelaEventMap>();
+        const events = new TypedEventBus<TerminalTradingEventMap>();
         const seen: MarkClickEvent[] = [];
         events.on('mark:click', (e) => seen.push(e));
         const ctrl = new MarksController(fake.renderer, events);
@@ -91,7 +91,7 @@ describe('MarksController', () => {
 
     it('routes group visibility through the renderer’s `marks` feature, with the group default as fallback', () => {
         const { renderer, features } = fakeRenderer();
-        const ctrl = new MarksController(renderer, new TypedEventBus<VelaEventMap>());
+        const ctrl = new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>());
         ctrl.defineGroup({ id: 'quiet', label: 'Quiet', visible: false });
         expect(ctrl.isGroupVisible('quiet')).toBe(false); // declared default
         expect(ctrl.isGroupVisible('other')).toBe(true); // unknown ⇒ visible
@@ -102,7 +102,7 @@ describe('MarksController', () => {
 
     it('a nested group reads hidden while its parent is switched off, and rejects a malformed parent', () => {
         const { renderer } = fakeRenderer();
-        const ctrl = new MarksController(renderer, new TypedEventBus<VelaEventMap>());
+        const ctrl = new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>());
         ctrl.defineGroup({ id: 'news', label: 'News', visible: false });
         ctrl.defineGroup({ id: 'news-latest', label: 'Latest news', parent: 'news' });
         expect(ctrl.isGroupVisible('news-latest')).toBe(false); // own default on, parent off
@@ -113,7 +113,7 @@ describe('MarksController', () => {
 
     it('stays inert on a renderer without the capability: the model fills, nothing is pushed, the setter warns', () => {
         const { renderer, pushes, features } = fakeRenderer({ capable: false });
-        const ctrl = new MarksController(renderer, new TypedEventBus<VelaEventMap>());
+        const ctrl = new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>());
         expect(ctrl.supported).toBe(false);
         ctrl.add(mark('a'));
         expect(ctrl.all().map((m) => m.id)).toEqual(['a']);
@@ -130,7 +130,7 @@ describe('MarksController', () => {
 describe('MarksControl (chart.marks)', () => {
     it('chains and mirrors the controller', () => {
         const { renderer, pushes } = fakeRenderer();
-        const control = new MarksControl(new MarksController(renderer, new TypedEventBus<VelaEventMap>()));
+        const control = new MarksControl(new MarksController(renderer, new TypedEventBus<TerminalTradingEventMap>()));
         const out = control.defineGroup({ id: 'g', label: 'G' }).add(mark('a', { group: 'g' })).add(mark('b'));
         expect(out).toBe(control);
         expect(control.supported).toBe(true);

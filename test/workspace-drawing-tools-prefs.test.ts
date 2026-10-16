@@ -13,21 +13,21 @@ import { describe, it, expect, beforeAll, afterEach } from 'vitest';
     disconnect() {}
 };
 
-import { VelaWorkspace } from '../src/workspace/VelaWorkspace';
+import { TerminalTradingWorkspace } from '../src/workspace/TerminalTradingWorkspace';
 
 beforeAll(() => {
     Element.prototype.animate ??= (() => ({ cancel() {}, finish() {}, addEventListener() {} })) as unknown as Element['animate'];
 });
 
-const live: VelaWorkspace[] = [];
+const live: TerminalTradingWorkspace[] = [];
 afterEach(() => {
     for (const ws of live.splice(0)) ws.destroy();
 });
 
-function mountWorkspace(opts: Record<string, unknown>): VelaWorkspace {
+function mountWorkspace(opts: Record<string, unknown>): TerminalTradingWorkspace {
     const host = document.createElement('div');
     document.body.append(host);
-    const ws = new VelaWorkspace(host, opts as never);
+    const ws = new TerminalTradingWorkspace(host, opts as never);
     live.push(ws);
     return ws;
 }

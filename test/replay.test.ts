@@ -2,7 +2,7 @@
 // memory. Revealed bars travel the live-bar path; live updates pause meanwhile; stopping
 // (or revealing the last bar) restores the full history and resumes them.
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import type {
     IChartRenderer,
     RendererCapabilities,
@@ -14,7 +14,7 @@ import type {
 } from '../src/core/ports/IChartRenderer';
 import type { ScriptingEngine, EngineCapabilities, PreparedScript, ExecutionRequest, ExecutionHandlers, ExecutionSession } from '../src/core/ports/ScriptingEngine';
 import type { MarketDataFeed, BarRange } from '../src/core/ports/MarketDataFeed';
-import type { MarketConfig, VelaTheme } from '../src/core/options';
+import type { MarketConfig, TerminalTradingTheme } from '../src/core/options';
 import type { OHLCV } from '../src/core/model/ohlcv';
 import type { Pane } from '../src/core/model/scene';
 import type { IndicatorModel } from '../src/core/model/indicator';
@@ -90,7 +90,7 @@ class FakeRenderer implements IChartRenderer {
     nativePushes: Array<[string, unknown]> = [];
     applyFeature(): void {}
     readFeature(key: string): unknown { return key === 'priceStyle' ? this.priceStyleFeature : undefined; }
-    mount(_c: HTMLElement, _t: VelaTheme): void {}
+    mount(_c: HTMLElement, _t: TerminalTradingTheme): void {}
     setTheme(): void {}
     resize(): void {}
     destroy(): void {}
@@ -147,12 +147,12 @@ class RecordingEngine implements ScriptingEngine {
 }
 
 const EL = {} as unknown as HTMLElement;
-const charts: Vela[] = [];
+const charts: TerminalTrading[] = [];
 function make(opts: { live?: boolean; bars?: number; total?: number; priceStyle?: string; engine?: ScriptingEngine } = {}) {
     const feed = new ReplayFeed(opts.total ?? 200);
     const renderer = new FakeRenderer();
     if (opts.priceStyle) renderer.priceStyleFeature = opts.priceStyle;
-    const chart = new Vela(EL, { symbol: 'AAA', timeframe: '60', bars: opts.bars ?? 100, live: opts.live ?? true, volume: false }, { renderer, engines: opts.engine ? [opts.engine] : [], dataFeed: feed });
+    const chart = new TerminalTrading(EL, { symbol: 'AAA', timeframe: '60', bars: opts.bars ?? 100, live: opts.live ?? true, volume: false }, { renderer, engines: opts.engine ? [opts.engine] : [], dataFeed: feed });
     charts.push(chart);
     return { chart, feed, renderer };
 }
@@ -391,7 +391,7 @@ describe('chart.replay', () => {
             return new Promise<OHLCV[]>((r) => (finish = r));
         };
         const renderer = new FakeRenderer();
-        const chart = new Vela(EL, { symbol: 'AAA', timeframe: '60', bars: 300, live: true, volume: false }, { renderer, engines: [], dataFeed: feed });
+        const chart = new TerminalTrading(EL, { symbol: 'AAA', timeframe: '60', bars: 300, live: true, volume: false }, { renderer, engines: [], dataFeed: feed });
         charts.push(chart);
         await chart.ready();
         expect(renderer.bars.length).toBe(100);

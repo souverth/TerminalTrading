@@ -12,17 +12,17 @@ import { describe, it, expect, beforeAll } from 'vitest';
     disconnect() {}
 };
 
-import { VelaWorkspace } from '../src/workspace/VelaWorkspace';
+import { TerminalTradingWorkspace } from '../src/workspace/TerminalTradingWorkspace';
 
 beforeAll(() => {
     Element.prototype.animate ??= (() => ({ cancel() {}, finish() {}, addEventListener() {} })) as unknown as Element['animate'];
 });
 
-function mountWorkspace(opts: Record<string, unknown> = {}): { ws: VelaWorkspace; root: HTMLElement } {
+function mountWorkspace(opts: Record<string, unknown> = {}): { ws: TerminalTradingWorkspace; root: HTMLElement } {
     const host = document.createElement('div');
     document.body.append(host);
-    const ws = new VelaWorkspace(host, { layout: '1', ...opts } as never);
-    return { ws, root: host.querySelector<HTMLElement>('.vela-workspace')! };
+    const ws = new TerminalTradingWorkspace(host, { layout: '1', ...opts } as never);
+    return { ws, root: host.querySelector<HTMLElement>('.tt-workspace')! };
 }
 
 /** The root's direct children, named by their first class. */
@@ -39,15 +39,15 @@ describe('docking a strip under the charts', () => {
         ws.context().dockStrip(b);
 
         const order = layout(root);
-        expect(order.indexOf('vela-ws-main')).toBeLessThan(order.indexOf('vela-ws-strips'));
-        expect(order.indexOf('vela-ws-strips')).toBeLessThan(order.indexOf('vela-widget-bottombar'));
-        expect([...root.querySelector('.vela-ws-strips')!.children]).toEqual([a, b]);
+        expect(order.indexOf('tt-ws-main')).toBeLessThan(order.indexOf('tt-ws-strips'));
+        expect(order.indexOf('tt-ws-strips')).toBeLessThan(order.indexOf('tt-widget-bottombar'));
+        expect([...root.querySelector('.tt-ws-strips')!.children]).toEqual([a, b]);
         ws.destroy();
     });
 
     it('the undock removes only that strip, and is a no-op once the element moved elsewhere', () => {
         const { ws, root } = mountWorkspace();
-        const strips = root.querySelector('.vela-ws-strips')!;
+        const strips = root.querySelector('.tt-ws-strips')!;
         const a = document.createElement('div');
         const b = document.createElement('div');
         const undockA = ws.context().dockStrip(a);
@@ -69,8 +69,8 @@ describe('docking a strip under the charts', () => {
         const a = document.createElement('div');
         ws.context().dockStrip(a);
         const order = layout(root);
-        expect(order.indexOf('vela-ws-main')).toBeLessThan(order.indexOf('vela-ws-strips'));
-        expect(a.parentElement?.className).toBe('vela-ws-strips');
+        expect(order.indexOf('tt-ws-main')).toBeLessThan(order.indexOf('tt-ws-strips'));
+        expect(a.parentElement?.className).toBe('tt-ws-strips');
         ws.destroy();
     });
 });

@@ -1,7 +1,7 @@
 // Chart context menu — right-click on the chart area. Items depend on the zone
 // (price axis / time axis / chart body) and current renderer feature states; the menu
 // itself is the kit Menu anchored at the pointer.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import { Menu, type MenuItemDescriptor } from '../ui/components/menu';
 import { widgetActions, type ContextMenuPointer, type WidgetContext } from './contributions';
 import {
@@ -41,7 +41,7 @@ export interface ContextMenuCallbacks {
 export class ChartContextMenu {
     private readonly menu: Menu;
     private readonly host: HTMLElement;
-    private chart: Vela | null = null;
+    private chart: TerminalTrading | null = null;
     private offCrosshair: (() => void) | null = null;
     /** The bound chart's latest crosshair report — a right-click always follows a pointer
      *  move to its spot, so this is where it landed. */
@@ -78,7 +78,7 @@ export class ChartContextMenu {
     }
 
     /** (Re)bind to a chart instance — called after every widget rebuild. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         this.offCrosshair?.();
         this.chart = chart;
         this.crosshair = OFF_PLOT;

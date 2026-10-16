@@ -1,14 +1,14 @@
-export const POPOVER_STYLE_ID = 'vela-ui-popover';
+export const POPOVER_STYLE_ID = 'tt-ui-popover';
 
 export const POPOVER_CSS = `
-.vela-popover {
+.tt-popover {
     position: fixed;
-    z-index: var(--vela-z-popover);
+    z-index: var(--tt-z-popover);
     box-sizing: border-box;
     /* Never serve as a scroll anchor: the shell is portaled and re-placed between
        gestures, and anchoring against it jumps the scroller underneath. */
     overflow-anchor: none;
 }
-.vela-popover[data-position='absolute'] { position: absolute; }
-.vela-popover[hidden] { display: none !important; }
+.tt-popover[data-position='absolute'] { position: absolute; }
+.tt-popover[hidden] { display: none !important; }
 `;

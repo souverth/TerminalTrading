@@ -59,10 +59,10 @@ function setup(drawing: Drawing) {
     const popup = new DrawingSettingsPopup(host, DARK_THEME);
     const c = chart(drawing);
     popup.open([drawing], null, c.actions);
-    const barButton = (tip: string): HTMLButtonElement => host.querySelector<HTMLButtonElement>(`.vela-dpop [data-tip="${tip}"]`)!;
+    const barButton = (tip: string): HTMLButtonElement => host.querySelector<HTMLButtonElement>(`.tt-dpop [data-tip="${tip}"]`)!;
     const dialogButton = (label: string): HTMLButtonElement =>
-        [...host.querySelectorAll<HTMLButtonElement>('.vela-dsp button')].find((b) => b.textContent === label)!;
-    const ratioInputs = (): HTMLInputElement[] => [...host.querySelectorAll<HTMLInputElement>('.vela-dsp .vela-dsp-lv input')];
+        [...host.querySelectorAll<HTMLButtonElement>('.tt-dsp button')].find((b) => b.textContent === label)!;
+    const ratioInputs = (): HTMLInputElement[] => [...host.querySelectorAll<HTMLInputElement>('.tt-dsp .tt-dsp-lv input')];
     return { host, popup, live: c.live, barButton, dialogButton, ratioInputs };
 }
 
@@ -115,7 +115,7 @@ describe('drawing settings reopened from the same toolbar', () => {
         const line = createDrawing('trendline', { id: 't', paneId: 'price', anchors: [{ time: 0, price: 100 }, { time: 10, price: 200 }] })!;
         const s = setup(line);
         s.barButton('Text').click();
-        const field = (): HTMLTextAreaElement => s.host.querySelector<HTMLTextAreaElement>('.vela-dpop textarea')!;
+        const field = (): HTMLTextAreaElement => s.host.querySelector<HTMLTextAreaElement>('.tt-dpop textarea')!;
         for (const v of ['H', 'He', 'Hello']) {
             field().value = v;
             field().dispatchEvent(new Event('input'));

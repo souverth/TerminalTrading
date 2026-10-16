@@ -1,21 +1,21 @@
-export const TEXT_STYLE_ID = 'vela-ui-text-2';
+export const TEXT_STYLE_ID = 'tt-ui-text-2';
 
 export const TEXT_CSS = `
-.vela-text {
+.tt-text {
     display: inline-block;
     min-width: 0;
 }
-.vela-text[data-fill] { width: 100%; }
-.vela-text:not([data-fill]) { width: 100px; flex: none; justify-self: start; }
-.vela-text-field {
+.tt-text[data-fill] { width: 100%; }
+.tt-text:not([data-fill]) { width: 100px; flex: none; justify-self: start; }
+.tt-text-field {
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
     height: 34px;
     background: transparent;
-    border: 1px solid var(--vela-border-strong);
+    border: 1px solid var(--tt-border-strong);
     border-radius: 6px;
-    color: var(--vela-fg-bright);
+    color: var(--tt-fg-bright);
     padding: 0 8px;
     font-size: 14px;
     font-family: inherit;
@@ -23,17 +23,17 @@ export const TEXT_CSS = `
     overflow: hidden;
     text-overflow: ellipsis;
     transition: border-color 0.12s ease, box-shadow 0.12s ease;
-    /* Selectable even under a user-select:none host (chart wrapper, .vela-ui). */
+    /* Selectable even under a user-select:none host (chart wrapper, .tt-ui). */
     user-select: text;
     -webkit-user-select: text;
 }
-.vela-text-field:hover { border-color: var(--vela-fg-muted); }
-.vela-text-field:focus { border-color: var(--vela-focus); box-shadow: 0 0 0 3px var(--vela-focus-soft); }
-.vela-text[data-size='sm'] .vela-text-field {
+.tt-text-field:hover { border-color: var(--tt-fg-muted); }
+.tt-text-field:focus { border-color: var(--tt-focus); box-shadow: 0 0 0 3px var(--tt-focus-soft); }
+.tt-text[data-size='sm'] .tt-text-field {
     height: 28px;
-    background: var(--vela-surface-elev);
-    border-radius: var(--vela-radius-sm);
-    color: var(--vela-fg);
+    background: var(--tt-surface-elev);
+    border-radius: var(--tt-radius-sm);
+    color: var(--tt-fg);
     font-size: 13px;
 }
 `;

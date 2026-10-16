@@ -26,12 +26,12 @@ export class TextArea {
         this.maxLines = opts.maxLines ?? 4;
 
         const wrap = doc.createElement('div');
-        wrap.className = 'vela-textarea';
+        wrap.className = 'tt-textarea';
         wrap.dataset.size = this.ctrl.size;
         if (this.autoGrow) wrap.dataset.autogrow = '';
 
         const ta = doc.createElement('textarea');
-        ta.className = 'vela-textarea-field';
+        ta.className = 'tt-textarea-field';
         if (opts.id) ta.id = opts.id;
         if (opts.placeholder) ta.placeholder = opts.placeholder;
         ta.rows = this.ctrl.rows;

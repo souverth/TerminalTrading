@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { Vela } from '../src/index';
+import { TerminalTrading } from '../src/index';
 import type {
     IChartRenderer,
     RendererCapabilities,
@@ -24,7 +24,7 @@ import type { Pane } from '../src/core/model/scene';
 import type { IndicatorModel } from '../src/core/model/indicator';
 import type { ScenePatch } from '../src/core/model/patch';
 import type { InputValue } from '../src/core/model/inputs';
-import type { VelaTheme, MoveTarget } from '../src/core/options';
+import type { TerminalTradingTheme, MoveTarget } from '../src/core/options';
 import type { Unsubscribe } from '../src/core/util/types';
 
 const flush = async (): Promise<void> => {
@@ -137,9 +137,9 @@ class MockEngine implements ScriptingEngine {
     }
 }
 
-async function makeChart(RendererCtor: new () => PaneRenderer = PaneRenderer): Promise<{ chart: Vela; renderer: PaneRenderer }> {
+async function makeChart(RendererCtor: new () => PaneRenderer = PaneRenderer): Promise<{ chart: TerminalTrading; renderer: PaneRenderer }> {
     const renderer = new RendererCtor();
-    const chart = new Vela({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: new MockDataFeed() });
+    const chart = new TerminalTrading({} as unknown as HTMLElement, { live: false, volume: false }, { renderer, engines: [new MockEngine()], dataFeed: new MockDataFeed() });
     await chart.ready();
     await flush();
     return { chart, renderer };

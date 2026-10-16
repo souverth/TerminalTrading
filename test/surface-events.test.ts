@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// Every surface of the chart's chrome announces itself: `vela:surface-open` on its own element
-// once it shows, `vela:surface-close` while it still shows (before it hides or leaves the DOM), both
+// Every surface of the chart's chrome announces itself: `tt:surface-open` on its own element
+// once it shows, `tt:surface-close` while it still shows (before it hides or leaves the DOM), both
 // bubbling to the host — so a host follows menus and panels without watching the DOM.
 import { describe, it, expect, beforeAll, afterEach } from 'vitest';
 
@@ -51,7 +51,7 @@ function showing(el: HTMLElement): boolean {
 /** A themed host the surfaces portal into, recording what bubbles up to it. */
 function hostWithEar(): { host: HTMLElement; heard: Heard[] } {
     const host = document.createElement('div');
-    host.className = 'vela-ui';
+    host.className = 'tt-ui';
     document.body.append(host);
     const heard: Heard[] = [];
     const ear = (e: Event): void => {
@@ -72,7 +72,7 @@ function button(host: HTMLElement): HTMLButtonElement {
 
 describe('surface open/close events', () => {
     it('names the event pair', () => {
-        expect([SURFACE_OPEN_EVENT, SURFACE_CLOSE_EVENT]).toEqual(['vela:surface-open', 'vela:surface-close']);
+        expect([SURFACE_OPEN_EVENT, SURFACE_CLOSE_EVENT]).toEqual(['tt:surface-open', 'tt:surface-close']);
     });
 
     it('menu: opens and closes on its list, with its trigger', async () => {
@@ -84,8 +84,8 @@ describe('surface open/close events', () => {
         menu.close();
         await settled();
         expect(heard.map((h) => [h.type, h.kind, h.target.className, h.trigger === trigger, h.showing])).toEqual([
-            ['vela:surface-open', 'menu', 'vela-menu', true, true],
-            ['vela:surface-close', 'menu', 'vela-menu', true, true],
+            ['tt:surface-open', 'menu', 'tt-menu', true, true],
+            ['tt:surface-close', 'menu', 'tt-menu', true, true],
         ]);
         menu.destroy();
     });
@@ -97,8 +97,8 @@ describe('surface open/close events', () => {
         await settled();
         menu.destroy();
         expect(heard.map((h) => [h.type, h.trigger])).toEqual([
-            ['vela:surface-open', null],
-            ['vela:surface-close', null],
+            ['tt:surface-open', null],
+            ['tt:surface-close', null],
         ]);
     });
 
@@ -111,8 +111,8 @@ describe('surface open/close events', () => {
         pop.hide();
         pop.hide();
         expect(heard.map((h) => [h.type, h.kind, h.target === pop.el, h.trigger === trigger, h.showing])).toEqual([
-            ['vela:surface-open', 'popover', true, true, true],
-            ['vela:surface-close', 'popover', true, true, true],
+            ['tt:surface-open', 'popover', true, true, true],
+            ['tt:surface-close', 'popover', true, true, true],
         ]);
         expect(pop.el.isConnected).toBe(false);
     });
@@ -122,7 +122,7 @@ describe('surface open/close events', () => {
         const pop = new Popover({ trigger: button(host), host, fadeMs: 120 });
         pop.show();
         pop.hide();
-        expect(heard.map((h) => h.type)).toEqual(['vela:surface-open', 'vela:surface-close']);
+        expect(heard.map((h) => h.type)).toEqual(['tt:surface-open', 'tt:surface-close']);
         expect(pop.el.isConnected).toBe(true); // still fading out
     });
 
@@ -174,7 +174,7 @@ describe('surface open/close events', () => {
 
     it('side panel: a listener that closes it on open leaves the host told it is closed', () => {
         const { host } = hostWithEar();
-        const panel = new SidePanel(host, 'Objects', 'vela-test');
+        const panel = new SidePanel(host, 'Objects', 'tt-test');
         const told: boolean[] = [];
         panel.onOpenChange = (open) => told.push(open);
         host.addEventListener(SURFACE_OPEN_EVENT, () => panel.toggle(false), { once: true });
@@ -223,7 +223,7 @@ describe('surface open/close events', () => {
     it('popover and side panel: a listener that closes again on close does not re-enter', () => {
         const { host, heard } = hostWithEar();
         const pop = new Popover({ trigger: button(host), host });
-        const panel = new SidePanel(host, 'Objects', 'vela-test');
+        const panel = new SidePanel(host, 'Objects', 'tt-test');
         host.addEventListener(SURFACE_CLOSE_EVENT, () => {
             pop.hide();
             panel.toggle(false);
@@ -233,10 +233,10 @@ describe('surface open/close events', () => {
         panel.toggle(true);
         panel.toggle(false);
         expect(heard.map((h) => [h.type, h.kind])).toEqual([
-            ['vela:surface-open', 'popover'],
-            ['vela:surface-close', 'popover'],
-            ['vela:surface-open', 'panel'],
-            ['vela:surface-close', 'panel'],
+            ['tt:surface-open', 'popover'],
+            ['tt:surface-close', 'popover'],
+            ['tt:surface-open', 'panel'],
+            ['tt:surface-close', 'panel'],
         ]);
         expect(panel.open).toBe(false);
     });
@@ -254,9 +254,9 @@ describe('surface open/close events', () => {
             await settled();
             view.hide();
             await settled();
-            expect(heard.map((h) => [h.type, h.kind, h.target.classList.contains(`vela-${kind}`), h.trigger === opener, h.showing])).toEqual([
-                ['vela:surface-open', kind, true, true, true],
-                ['vela:surface-close', kind, true, true, true],
+            expect(heard.map((h) => [h.type, h.kind, h.target.classList.contains(`tt-${kind}`), h.trigger === opener, h.showing])).toEqual([
+                ['tt:surface-open', kind, true, true, true],
+                ['tt:surface-close', kind, true, true, true],
             ]);
             view.destroy();
             expect(heard).toHaveLength(2);
@@ -269,24 +269,24 @@ describe('surface open/close events', () => {
             await settled();
             view.destroy();
             await settled();
-            expect(heard.map((h) => h.type)).toEqual(['vela:surface-open', 'vela:surface-close']);
+            expect(heard.map((h) => h.type)).toEqual(['tt:surface-open', 'tt:surface-close']);
             expect(heard[0]!.trigger).toBeNull(); // focus sat on <body>: no opener to name
         });
     });
 
     it('side panel: opens and closes on its element, and on teardown while open', () => {
         const { host, heard } = hostWithEar();
-        const panel = new SidePanel(host, 'Objects', 'vela-test');
+        const panel = new SidePanel(host, 'Objects', 'tt-test');
         panel.toggle(true);
         panel.toggle(true); // no change, no event
         panel.toggle(false);
         panel.toggle(true);
         panel.destroy();
         expect(heard.map((h) => [h.type, h.kind, h.target === panel.el, h.showing])).toEqual([
-            ['vela:surface-open', 'panel', true, true],
-            ['vela:surface-close', 'panel', true, true],
-            ['vela:surface-open', 'panel', true, true],
-            ['vela:surface-close', 'panel', true, true],
+            ['tt:surface-open', 'panel', true, true],
+            ['tt:surface-close', 'panel', true, true],
+            ['tt:surface-open', 'panel', true, true],
+            ['tt:surface-close', 'panel', true, true],
         ]);
     });
 
@@ -306,8 +306,8 @@ describe('surface open/close events', () => {
         picker.open();
         picker.close();
         expect(heard.map((h) => [h.type, h.kind, h.target.className, h.trigger === trigger, h.showing])).toEqual([
-            ['vela:surface-open', 'popover', 'vela-lp', true, true],
-            ['vela:surface-close', 'popover', 'vela-lp', true, true],
+            ['tt:surface-open', 'popover', 'tt-lp', true, true],
+            ['tt:surface-close', 'popover', 'tt-lp', true, true],
         ]);
         picker.destroy();
         expect(heard).toHaveLength(2);

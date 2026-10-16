@@ -1,6 +1,6 @@
 # Adding a UI-kit component
 
-`@luxalgo/vela/ui` is a **headless-first** component kit: every component splits into a
+`terminal-trading/ui` is a **headless-first** component kit: every component splits into a
 framework-agnostic **controller** (behavior, no DOM) and a thin vanilla **view**
 (DOM projection over the design tokens). Overlay chrome — menu, dialog, drawer,
 tooltip — wraps a [Zag.js](https://zagjs.com) state machine. Form primitives
@@ -26,7 +26,7 @@ components/<name>/
 
 ## 1 — controller.ts (Zag overlay)
 
-Wrap the machine and map Vela™-level options to machine props. Export an explicit
+Wrap the machine and map Terminal Trading-level options to machine props. Export an explicit
 interface for the return type (TypeScript can't name Zag's inferred types portably):
 
 ```ts
@@ -44,14 +44,14 @@ export interface TooltipController {
 export function tooltipController(opts: TooltipControllerOptions = {}): TooltipController {
     return {
         machine: tooltip.machine,
-        props: { id: nextUid('vela-tooltip'), /* map opts */ },
+        props: { id: nextUid('tt-tooltip'), /* map opts */ },
         connect: (service) => tooltip.connect(service, normalizeProps),
     };
 }
 ```
 
 Vanilla form primitives skip Zag: export a small state object (getters + `set*` /
-`sync` that do not emit, plus the mutating method that does) so a `vela-sync`
+`sync` that do not emit, plus the mutating method that does) so a `tt-sync`
 refresh can rewrite the displayed value without firing `onChange`.
 
 ## 2 — view.ts
@@ -95,14 +95,14 @@ expose `setChecked` / `setValue` that call the controller's non-emitting `sync`.
   option on Tooltip/Menu).
 - **Dialog-like machines expect conditional rendering** — their props carry no `hidden`;
   toggle visibility from `api.open` in your render (tooltip/menu props DO carry it).
-- **Style through the tokens** (`--vela-*` custom properties) and inject the sheet with
+- **Style through the tokens** (`--tt-*` custom properties) and inject the sheet with
   `injectStyles` (id-guarded, Shadow-DOM-friendly). Never hard-code colors: the tokens are
   derived from the theme in `src/core/tokens.ts`, and the fixed brand/meaning colors live in
   `src/core/palette.ts`. A test scans `src/` and fails on a stray hex literal.
 - **Take icons from the registry** (`src/core/icons.ts`) rather than inlining SVG: 16×16 at
   stroke 1.2 for UI chrome, 24×24 at stroke 1.8 for drawing tools, always `currentColor`.
-- Floating layers mount into the nearest `.vela-ui` host (token inheritance); use the
-  `vela-ui-layer` class on portal-ed positioners. Kit popovers call `ensureUIHost` on show
+- Floating layers mount into the nearest `.tt-ui` host (token inheritance); use the
+  `tt-ui-layer` class on portal-ed positioners. Kit popovers call `ensureUIHost` on show
   so a body-portaled list still has theme tokens.
 - Keyboard-facing components integrate with `KeymapManager` scopes: report open/close via
   an `onOpenChange` option so hosts can push/pop the `'dialog'` scope.
@@ -117,14 +117,14 @@ expose `setChecked` / `setValue` that call the controller's non-emitting `sync`.
   `finish()` it on teardown.
 - Renderer chrome that consumes the kit **imports the component folder**, not the
   `src/ui` barrel — otherwise Zag overlay machines get pulled into the native-renderer
-  bundle. Hosts and plugins import from `@luxalgo/vela/ui`.
+  bundle. Hosts and plugins import from `terminal-trading/ui`.
 
 ## Form primitives
 
 `Switch`, `Select`, `NumberInput`, `TextField`, `TextArea`, `ColorField` /
 `buildColorPicker`, `Popover`, `DatePicker`, the field layer (`fieldRow` / `fieldSection` /
 `buildFieldControl`), and `GlyphSelect` / `widthField` are public
-(`@luxalgo/vela/ui`). They are the shared controls behind the indicator dialog,
+(`terminal-trading/ui`). They are the shared controls behind the indicator dialog,
 chart settings, and the drawing settings dialog. The drawing toolbar's compact
 icon chrome (glyph dropdowns, color underline) stays purpose-built. Overlay
 chrome (`Dialog`, `Menu`) is Zag-driven; form primitives stay vanilla.
@@ -132,8 +132,8 @@ chrome (`Dialog`, `Menu`) is Zag-driven; form primitives stay vanilla.
 - **`Popover`** — portal + placement (below, flip above, `align` start/end, optional
   `matchWidth`) + clamp boundary (viewport, an element, or a rect getter) + capture-phase
   outside-dismiss + a process-wide single-open registry (`closeOpenPopovers`).
-- **`Switch`** — square check-toggle. `size: 'md'` is 20px with `--vela-fg-bright` on-fill
-  (settings dialogs); `size: 'sm'` is 18px with `--vela-selected-bg` (compact chrome).
+- **`Switch`** — square check-toggle. `size: 'md'` is 20px with `--tt-fg-bright` on-fill
+  (settings dialogs); `size: 'sm'` is 18px with `--tt-selected-bg` (compact chrome).
   `role="switch"`. `setChecked` does not emit.
 - **`Select`** — trigger + portaled themed list (not the OS popup) with a hand-rolled
   overlay scrollbar. `md` is 34px/14px and fills its parent unless `fill: false`
@@ -150,7 +150,7 @@ chrome (`Dialog`, `Menu`) is Zag-driven; form primitives stay vanilla.
   `text_area` inputs and the drawing bar's label editor.
 - **`ColorField`** / **`buildColorPicker`** — `circle` chip (settings dialogs: square
   swatch inset from a matching field border) or compact `square` trigger. `splitColor` /
-  `combineColor` stay available from `@luxalgo/vela/ui` and the browser bundle. The
+  `combineColor` stay available from `terminal-trading/ui` and the browser bundle. The
   opacity slider's `commit` option decides when a drag reaches `onChange`: `'live'`
   (default) on every move, for consumers that merely repaint (drawing styles, chart
   settings); `'release'` once on pointerup, for consumers that recompute (indicator

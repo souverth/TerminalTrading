@@ -1,6 +1,6 @@
-// vela/widget — the batteries-included chart app built on the vela/ui kit.
-export { VelaWidget, type VelaWidgetOptions } from './VelaWidget';
-export type { VelaShellOptions } from './shell-options';
+// terminal-trading/widget — the batteries-included chart app built on the terminal-trading/ui kit.
+export { TerminalTradingWidget, type TerminalTradingWidgetOptions } from './TerminalTradingWidget';
+export type { TerminalTradingShellOptions } from './shell-options';
 export { Topbar, priceStyleLabel, type TopbarOptions } from './topbar';
 export {
     resolveTopbarComposition,
@@ -18,8 +18,8 @@ export { Bottombar, RANGE_PRESETS, type BottombarOptions, type RangePreset } fro
 export { SymbolPicker, filterSymbols, type SymbolPickerOptions } from './symbol-picker';
 export { IndicatorPicker, type IndicatorPickerOptions, type IndicatorRow } from './indicator-picker';
 export { TimeframeQuick, type TimeframeQuickOptions } from './timeframe-quick';
-export { localStorageAdapter, type VelaStorage, type WidgetStorage } from './persist';
-// The unified shell-state document — the SAME format `vela/workspace` exposes; the
+export { localStorageAdapter, type TerminalTradingStorage, type WidgetStorage } from './persist';
+// The unified shell-state document — the SAME format `terminal-trading/workspace` exposes; the
 // widget's `getState()`/`applyState()` speak it with a single `c1` cell.
 export { encodeState, decodeState, sanitizeState } from '../state/document';
 export type { WorkspaceState, CellState, ChartState, PanelsState, DrawingToolsState } from '../state/document';

@@ -119,70 +119,70 @@ export function filterSymbols(list: readonly SymbolDescriptor[], query: string, 
     return [...prefix, ...substr, ...desc, ...venue].slice(0, limit);
 }
 
-const STYLE_ID = 'vela-widget-symbolpicker';
+const STYLE_ID = 'tt-widget-symbolpicker';
 const CSS = `
 /* The dialog body is flush (a flex column): search + market tabs are a fixed head
    and the result list is the ONLY scroller, in both layouts. A sticky head over a
    scrolling padded body is not an option — browsers pin sticky boxes to the
    scroller's content box, so the head lands one padding below the top and covers
    the first row. */
-.vela-sp-head { flex: none; padding: var(--vela-space-4) var(--vela-space-4) 0; }
-.vela-sp-searchrow {
+.tt-sp-head { flex: none; padding: var(--tt-space-4) var(--tt-space-4) 0; }
+.tt-sp-searchrow {
     display: flex;
     align-items: center;
     gap: 8px;
     height: 40px;
     padding: 0 12px;
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
     border-radius: 8px;
 }
-.vela-sp-searchrow:focus-within { border-color: var(--vela-border-strong); }
-.vela-sp-searchrow .vela-icon { color: var(--vela-fg-muted); }
-.vela-sp-input {
+.tt-sp-searchrow:focus-within { border-color: var(--tt-border-strong); }
+.tt-sp-searchrow .tt-icon { color: var(--tt-fg-muted); }
+.tt-sp-input {
     flex: 1;
     background: transparent;
-    color: var(--vela-fg);
+    color: var(--tt-fg);
     border: none;
     font-size: 14px;
     outline: none;
     text-transform: uppercase;
 }
-.vela-sp-input::placeholder { text-transform: none; }
-.vela-sp-tabs { display: flex; gap: 14px; margin: 12px 2px 0; border-bottom: 1px solid var(--vela-border); padding-bottom: 8px; }
+.tt-sp-input::placeholder { text-transform: none; }
+.tt-sp-tabs { display: flex; gap: 14px; margin: 12px 2px 0; border-bottom: 1px solid var(--tt-border); padding-bottom: 8px; }
 /* Mobile (fullscreen dialog): the asset-class strip scrolls sideways instead of
    overflowing the body, and the result list stops capping itself — it fills the
    rest of the screen. The bottom inset (+ safe area) is the kit's: every mobile
    dialog body carries it, flush or not, so the list adds none of its own. */
-[data-layout='mobile'] .vela-sp-tabs { overflow-x: auto; scrollbar-width: none; gap: 6px; }
-[data-layout='mobile'] .vela-sp-tabs::-webkit-scrollbar { display: none; }
-[data-layout='mobile'] .vela-sp-tab { flex: none; padding: 7px 10px; }
-[data-layout='mobile'] .vela-sp-list { flex: 1 1 auto; max-height: none; margin-bottom: 0; }
-.vela-sp-tab {
+[data-layout='mobile'] .tt-sp-tabs { overflow-x: auto; scrollbar-width: none; gap: 6px; }
+[data-layout='mobile'] .tt-sp-tabs::-webkit-scrollbar { display: none; }
+[data-layout='mobile'] .tt-sp-tab { flex: none; padding: 7px 10px; }
+[data-layout='mobile'] .tt-sp-list { flex: 1 1 auto; max-height: none; margin-bottom: 0; }
+.tt-sp-tab {
     all: unset;
     padding: 3px 10px;
     border-radius: 5px;
     cursor: pointer;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
     font-size: 13px;
     font-weight: 600;
 }
-.vela-sp-tab:hover { color: var(--vela-fg); }
-.vela-sp-tab[data-active] { background: var(--vela-selected-bg); color: var(--vela-selected-fg); }
-.vela-sp-list {
+.tt-sp-tab:hover { color: var(--tt-fg); }
+.tt-sp-tab[data-active] { background: var(--tt-selected-bg); color: var(--tt-selected-fg); }
+.tt-sp-list {
     min-height: 0;
-    margin: var(--vela-space-2) var(--vela-space-4) var(--vela-space-4);
+    margin: var(--tt-space-2) var(--tt-space-4) var(--tt-space-4);
     max-height: 46vh;
     overflow: auto;
 }
-.vela-sp-list::-webkit-scrollbar { width: 8px; }
-.vela-sp-list::-webkit-scrollbar-thumb {
-    background: var(--vela-scroll);
+.tt-sp-list::-webkit-scrollbar { width: 8px; }
+.tt-sp-list::-webkit-scrollbar-thumb {
+    background: var(--tt-scroll);
     border-radius: 4px;
     border: 2px solid transparent;
     background-clip: padding-box;
 }
-.vela-sp-row {
+.tt-sp-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -190,8 +190,8 @@ const CSS = `
     border-radius: 8px;
     cursor: pointer;
 }
-.vela-sp-row:hover, .vela-sp-row[data-highlighted] { background: var(--vela-hover); }
-.vela-sp-avatar {
+.tt-sp-row:hover, .tt-sp-row[data-highlighted] { background: var(--tt-hover); }
+.tt-sp-avatar {
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -199,31 +199,31 @@ const CSS = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--vela-fg-on-fill);
-    font-size: var(--vela-font-size-md);
+    color: var(--tt-fg-on-fill);
+    font-size: var(--tt-font-size-md);
     font-weight: 700;
 }
-.vela-sp-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.vela-sp-ticker { font-weight: 700; color: var(--vela-fg-bright); font-size: 14px; text-transform: uppercase; }
-.vela-sp-desc { color: var(--vela-fg-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vela-sp-badge {
+.tt-sp-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tt-sp-ticker { font-weight: 700; color: var(--tt-fg-bright); font-size: 14px; text-transform: uppercase; }
+.tt-sp-desc { color: var(--tt-fg-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-sp-badge {
     flex: none;
     padding: 2px 8px;
     border-radius: 4px;
-    background: var(--vela-surface-elev);
-    border: 1px solid var(--vela-border);
-    color: var(--vela-fg-muted);
+    background: var(--tt-surface-elev);
+    border: 1px solid var(--tt-border);
+    color: var(--tt-fg-muted);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 /* Provider brand marks — fixed by the venue, deliberately outside the theme palette. */
-.vela-sp-badge[data-p='binance'] { color: #f0b90b; } /* palette-exempt: venue brand mark */
-.vela-sp-badge[data-p='hyperliquid'] { color: #50d2c1; } /* palette-exempt: venue brand mark */
-.vela-sp-empty { padding: var(--vela-space-3); color: var(--vela-fg-muted); text-align: center; }
+.tt-sp-badge[data-p='binance'] { color: #f0b90b; } /* palette-exempt: venue brand mark */
+.tt-sp-badge[data-p='hyperliquid'] { color: #50d2c1; } /* palette-exempt: venue brand mark */
+.tt-sp-empty { padding: var(--tt-space-3); color: var(--tt-fg-muted); text-align: center; }
 /* Grouped listings (futures roots): the chevron unfolds members inline, indented. */
-.vela-sp-expander {
+.tt-sp-expander {
     all: unset;
     flex: none;
     display: inline-flex;
@@ -233,10 +233,10 @@ const CSS = `
     height: 22px;
     border-radius: 5px;
     cursor: pointer;
-    color: var(--vela-fg-muted);
+    color: var(--tt-fg-muted);
 }
-.vela-sp-expander:hover { background: var(--vela-surface-elev); color: var(--vela-fg); }
-.vela-sp-row[data-member] { padding-left: 34px; }
+.tt-sp-expander:hover { background: var(--tt-surface-elev); color: var(--tt-fg); }
+.tt-sp-row[data-member] { padding-left: 34px; }
 `;
 
 export interface SymbolPickerOptions {
@@ -280,19 +280,19 @@ export class SymbolPicker {
         injectStyles(STYLE_ID, CSS, doc);
 
         this.input = doc.createElement('input');
-        this.input.className = 'vela-sp-input';
+        this.input.className = 'tt-sp-input';
         this.input.placeholder = 'Search symbol…';
         this.input.setAttribute('spellcheck', 'false');
         const searchRow = doc.createElement('div');
-        searchRow.className = 'vela-sp-searchrow';
+        searchRow.className = 'tt-sp-searchrow';
         searchRow.append(iconEl('search', doc), this.input);
         this.tabs = doc.createElement('div');
-        this.tabs.className = 'vela-sp-tabs';
+        this.tabs.className = 'tt-sp-tabs';
         const head = doc.createElement('div');
-        head.className = 'vela-sp-head';
+        head.className = 'tt-sp-head';
         for (const t of ['All', 'Stocks', 'ETFs', 'Crypto', 'Futures', 'Forex', 'Commodities']) {
             const b = doc.createElement('button');
-            b.className = 'vela-sp-tab';
+            b.className = 'tt-sp-tab';
             b.textContent = t;
             if (t === this.activeTab) b.dataset.active = '1';
             b.addEventListener('click', () => {
@@ -305,7 +305,7 @@ export class SymbolPicker {
         }
         head.append(searchRow, this.tabs);
         this.list = doc.createElement('div');
-        this.list.className = 'vela-sp-list';
+        this.list.className = 'tt-sp-list';
         // Infinite scroll: nearing the bottom grows the page and APPENDS the new rows —
         // `filterSymbols` is a pure re-run with a larger limit whose result is a stable
         // superset (same ranking, same order), so appended rows never reshuffle the ones
@@ -365,11 +365,11 @@ export class SymbolPicker {
         });
         this.list.addEventListener('click', (e) => {
             const target = e.target as HTMLElement;
-            const row = target.closest<HTMLElement>('.vela-sp-row');
+            const row = target.closest<HTMLElement>('.tt-sp-row');
             if (!row) return;
             const s = this.rows[Number(row.dataset.i)];
             if (!s) return;
-            if (target.closest('.vela-sp-expander')) this.toggleExpand(s);
+            if (target.closest('.tt-sp-expander')) this.toggleExpand(s);
             else this.pick(s);
         });
     }
@@ -472,7 +472,7 @@ export class SymbolPicker {
                     this.ranked = { key, result: dedupeSymbols(out) };
                 })
                 .catch((err) => {
-                    console.warn('[vela] symbol ranking failed — pool order kept:', err);
+                    console.warn('[terminal-trading] symbol ranking failed — pool order kept:', err);
                     this.ranked = { key, result: [...raw] };
                 })
                 .finally(() => {
@@ -522,7 +522,7 @@ export class SymbolPicker {
         this.list.replaceChildren();
         if (!this.rows.length) {
             const empty = doc.createElement('div');
-            empty.className = 'vela-sp-empty';
+            empty.className = 'tt-sp-empty';
             empty.textContent = this.input.value ? 'No symbols match.' : 'No symbols indexed (provider still loading?).';
             this.list.appendChild(empty);
             return;
@@ -541,7 +541,7 @@ export class SymbolPicker {
     private rowEl(s: SymbolDescriptor, i: number): HTMLElement {
         const doc = this.list.ownerDocument;
         const row = doc.createElement('div');
-        row.className = 'vela-sp-row';
+        row.className = 'tt-sp-row';
         row.dataset.i = String(i);
         row.dataset.ticker = s.ticker;
         // The venue the user is pointing at travels with the pick — the same ticker can be
@@ -549,14 +549,14 @@ export class SymbolPicker {
         // The LISTING prefix wins over the provider id: it is the canonical spelling.
         const venue = s.prefix ?? s.provider;
         if (venue) row.dataset.venue = venue;
-        const av = tickerIconEl(doc, baseOf(s), s.ticker, 'vela-sp-avatar', this.opts.iconFor?.(s));
+        const av = tickerIconEl(doc, baseOf(s), s.ticker, 'tt-sp-avatar', this.opts.iconFor?.(s));
         const main = doc.createElement('span');
-        main.className = 'vela-sp-main';
+        main.className = 'tt-sp-main';
         const t = doc.createElement('span');
-        t.className = 'vela-sp-ticker';
+        t.className = 'tt-sp-ticker';
         t.textContent = s.ticker;
         const d = doc.createElement('span');
-        d.className = 'vela-sp-desc';
+        d.className = 'tt-sp-desc';
         d.textContent = s.description ?? (s.type ?? '');
         main.append(t, d);
         row.append(av, main);
@@ -565,14 +565,14 @@ export class SymbolPicker {
             // member) — a root must never be a dead click.
             row.dataset.group = '1';
             const expander = doc.createElement('button');
-            expander.className = 'vela-sp-expander';
+            expander.className = 'tt-sp-expander';
             expander.setAttribute('aria-label', 'Show contracts');
             expander.appendChild(iconEl(this.expanded.has(groupKeyOf(s)) ? 'chevron-down' : 'chevron-right', doc));
             row.appendChild(expander);
         } else if (s.group != null && this.expanded.has(groupKeyOf(s))) row.dataset.member = '1';
         if (venue) {
             const badge = doc.createElement('span');
-            badge.className = 'vela-sp-badge';
+            badge.className = 'tt-sp-badge';
             // Brand colors key on the PROVIDER id; the visible text is the venue label.
             badge.dataset.p = s.provider ?? venue;
             badge.textContent = venue;

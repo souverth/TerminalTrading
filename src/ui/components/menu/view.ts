@@ -94,9 +94,9 @@ class Surface {
         this.iconBadges = opts.iconBadges === true;
 
         this.positioner = doc.createElement('div');
-        this.positioner.className = 'vela-ui-layer';
+        this.positioner.className = 'tt-ui-layer';
         this.list = doc.createElement('ul');
-        this.list.className = 'vela-menu';
+        this.list.className = 'tt-menu';
         if (opts.minWidth) this.list.style.minWidth = opts.minWidth;
         this.positioner.appendChild(this.list);
         this.host.appendChild(this.positioner);
@@ -225,13 +225,13 @@ class Surface {
         for (const item of this.items) {
             if (item.separatorBefore) {
                 const sep = doc.createElement('li');
-                sep.className = 'vela-menu-sep';
+                sep.className = 'tt-menu-sep';
                 sep.setAttribute('role', 'separator');
                 this.list.appendChild(sep);
             }
             const branch = item.submenu !== undefined && item.submenu.length > 0;
             const li = doc.createElement('li');
-            li.className = 'vela-menu-item';
+            li.className = 'tt-menu-item';
             li.dataset.veiId = item.id;
             if (item.toggle) {
                 // Switch row: the pill carries the state.
@@ -243,7 +243,7 @@ class Surface {
                 // unchecked, so labels share a left edge); the row surface stays free
                 // for hover.
                 const mark = doc.createElement('span');
-                mark.className = 'vela-menu-mark';
+                mark.className = 'tt-menu-mark';
                 if (!branch && !item.toggle && item.checked) {
                     mark.appendChild(iconEl('check', doc));
                     li.dataset.checkmark = '1';
@@ -256,7 +256,7 @@ class Surface {
             }
             if (badged) {
                 const badge = doc.createElement('span');
-                badge.className = 'vela-menu-badge';
+                badge.className = 'tt-menu-badge';
                 if (item.icon) badge.appendChild(iconEl(item.icon, doc));
                 li.appendChild(badge);
             } else if (item.icon) {
@@ -265,20 +265,20 @@ class Surface {
                 li.appendChild(iconEl('', doc));
             }
             const label = doc.createElement('span');
-            label.className = 'vela-menu-label';
+            label.className = 'tt-menu-label';
             label.textContent = item.label;
             li.appendChild(label);
             if (item.hint) {
                 const hint = doc.createElement('span');
-                hint.className = 'vela-menu-hint';
+                hint.className = 'tt-menu-hint';
                 hint.textContent = item.hint;
                 li.appendChild(hint);
             }
             if (item.favorite !== undefined && this.onFavorite) {
                 const on = item.favorite;
                 const star = iconEl(on ? 'star-filled' : 'star', doc);
-                star.classList.add('vela-menu-star');
-                if (on) star.classList.add('vela-fav');
+                star.classList.add('tt-menu-star');
+                if (on) star.classList.add('tt-fav');
                 star.removeAttribute('aria-hidden'); // iconEl hides decorative icons; this one is a control
                 star.setAttribute('role', 'button');
                 star.setAttribute('aria-label', on ? 'Remove from favorites' : 'Add to favorites');
@@ -297,14 +297,14 @@ class Surface {
             }
             if (item.toggle) {
                 const sw = doc.createElement('span');
-                sw.className = 'vela-menu-switch' + (item.checked ? ' on' : '');
+                sw.className = 'tt-menu-switch' + (item.checked ? ' on' : '');
                 sw.setAttribute('aria-hidden', 'true');
                 li.appendChild(sw);
             }
             if (branch) {
                 li.dataset.branch = '1';
                 const arrow = iconEl('chevron-right', doc);
-                arrow.classList.add('vela-menu-arrow');
+                arrow.classList.add('tt-menu-arrow');
                 li.appendChild(arrow);
                 const sub = new Surface(doc, {
                     host: this.host,

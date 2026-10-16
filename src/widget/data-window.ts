@@ -4,38 +4,38 @@
 // so the panel only lays it out. Hover updates ride the crosshair seam; resting updates come from
 // the chart's live `bar` event and the indicator/pane events that change what the readout holds.
 // Rebound to each new chart instance after a widget rebuild.
-import type { Vela } from '../Vela';
+import type { TerminalTrading } from '../TerminalTrading';
 import type { DataWindowReadout } from '../core/ports/IChartRenderer';
 import { injectStyles } from '../ui/styles';
 import { SidePanel } from './side-panel';
 
-const STYLE_ID = 'vela-widget-datawindow';
+const STYLE_ID = 'tt-widget-datawindow';
 const CSS = `
-.vela-dw-group {
+.tt-dw-group {
     padding: 10px 8px 4px;
     margin-top: 4px;
-    border-top: 1px solid var(--vela-border);
-    color: var(--vela-fg-muted);
+    border-top: 1px solid var(--tt-border);
+    color: var(--tt-fg-muted);
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
-.vela-dw-group:first-child { border-top: none; margin-top: 0; padding-top: 8px; }
+.tt-dw-group:first-child { border-top: none; margin-top: 0; padding-top: 8px; }
 /* The readout is DATA, not chrome: selectable (an exception to the UI-wide
    user-select:none) so values can be copied out. The panel header stays chrome. */
-.vela-dw-group, .vela-dw-row { user-select: text; -webkit-user-select: text; cursor: text; }
-.vela-dw-row {
+.tt-dw-group, .tt-dw-row { user-select: text; -webkit-user-select: text; cursor: text; }
+.tt-dw-row {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 4px 8px;
     border-radius: 4px;
 }
-.vela-dw-row:hover { background: var(--vela-hover); }
-.vela-dw-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--vela-fg-bright); }
-.vela-dw-value { margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.vela-dw-empty { padding: 20px 10px; text-align: center; color: var(--vela-fg-muted); font-size: 12px; }
+.tt-dw-row:hover { background: var(--tt-hover); }
+.tt-dw-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--tt-fg-bright); }
+.tt-dw-value { margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tt-dw-empty { padding: 20px 10px; text-align: center; color: var(--tt-fg-muted); font-size: 12px; }
 `;
 
 /** Events that change what the readout holds — indicator values, plots, or the live bar. */
@@ -74,7 +74,7 @@ export function dataWindowSections(readout: DataWindowReadout): DataWindowSectio
     }
     const { ohlc } = readout;
     if (ohlc) {
-        const color = ohlc.up ? 'var(--vela-up)' : 'var(--vela-down)';
+        const color = ohlc.up ? 'var(--tt-up)' : 'var(--tt-down)';
         const lines: DataWindowLine[] = [
             { label: 'Open', value: ohlc.o, color },
             { label: 'High', value: ohlc.h, color },
@@ -91,11 +91,11 @@ export function dataWindowSections(readout: DataWindowReadout): DataWindowSectio
 }
 
 export class DataWindow extends SidePanel {
-    private chart: Vela | null = null;
+    private chart: TerminalTrading | null = null;
     private unsubs: Array<() => void> = [];
 
     constructor(host: HTMLElement) {
-        super(host, 'Data window', 'vela-dw');
+        super(host, 'Data window', 'tt-dw');
         injectStyles(STYLE_ID, CSS, host.ownerDocument);
     }
 
@@ -105,7 +105,7 @@ export class DataWindow extends SidePanel {
     }
 
     /** (Re)bind to a chart instance — called after every widget rebuild. */
-    onChart(chart: Vela): void {
+    onChart(chart: TerminalTrading): void {
         this.detach();
         this.chart = chart;
         for (const ev of REFRESH_EVENTS) this.unsubs.push(chart.on(ev, () => this.refresh()));
@@ -132,24 +132,24 @@ export class DataWindow extends SidePanel {
         const sections = readout ? dataWindowSections(readout) : [];
         if (sections.length === 0) {
             const empty = doc.createElement('div');
-            empty.className = 'vela-dw-empty';
+            empty.className = 'tt-dw-empty';
             empty.textContent = readout ? 'No data' : 'This renderer provides no data readout.';
             this.body.appendChild(empty);
             return;
         }
         for (const section of sections) {
             const head = doc.createElement('div');
-            head.className = 'vela-dw-group';
+            head.className = 'tt-dw-group';
             head.textContent = section.title;
             this.body.appendChild(head);
             for (const line of section.lines) {
                 const row = doc.createElement('div');
-                row.className = 'vela-dw-row';
+                row.className = 'tt-dw-row';
                 const label = doc.createElement('span');
-                label.className = 'vela-dw-label';
+                label.className = 'tt-dw-label';
                 label.textContent = line.label;
                 const value = doc.createElement('span');
-                value.className = 'vela-dw-value';
+                value.className = 'tt-dw-value';
                 value.textContent = line.value;
                 if (line.color) value.style.color = line.color;
                 row.append(label, value);

@@ -37,7 +37,7 @@ const TF_TO_INTERVAL: Record<string, string> = {
     D: '1d', W: '1w', M: '1M',
 };
 
-/** User-facing timeframe aliases → canonical keys (matches the other Vela layers). */
+/** User-facing timeframe aliases → canonical keys (matches the other Terminal Trading layers). */
 const TF_NORMALIZE: Record<string, string> = {
     '1m': '1', '3m': '3', '5m': '5', '15m': '15', '30m': '30', '45m': '45',
     '1h': '60', '2h': '120', '3h': '180', '4h': '240', '6h': '360', '8h': '480', '12h': '720',
@@ -68,7 +68,7 @@ export function normalizeTf(tf: string): string {
 }
 
 /**
- * Map a Vela ticker to a Hyperliquid `coin`. Perps are bare names (`BTC`); spot
+ * Map a Terminal Trading ticker to a Hyperliquid `coin`. Perps are bare names (`BTC`); spot
  * pairs are `BASE/QUOTE` (`PURR/USDC`). Bare names are upper-cased for convenience;
  * pair names are passed through verbatim (they're the API coin).
  */
@@ -123,7 +123,7 @@ function selectSubTf(targetMin: number): number | null {
  * (≈ 3.5d of 1m, ~7mo of 1h, daily back to listing) — there is no deeper backfill, so
  * it's a live/recent-history venue rather than a deep-history source.
  *
- *   import { HyperliquidProvider } from 'vela/providers/hyperliquid';
+ *   import { HyperliquidProvider } from 'terminal-trading/providers/hyperliquid';
  *   chart.data.registerProvider('hyperliquid', new HyperliquidProvider());
  */
 export class HyperliquidProvider implements DataProvider {
@@ -158,7 +158,7 @@ export class HyperliquidProvider implements DataProvider {
             const targetMin = /^\d+$/.test(tf) ? parseInt(tf, 10) : null;
             const subMin = targetMin != null ? selectSubTf(targetMin) : null;
             if (targetMin == null || subMin == null) {
-                console.warn(`[vela] Hyperliquid: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
+                console.warn(`[terminal-trading] Hyperliquid: timeframe "${timeframe}" is not supported and cannot be aggregated.`);
                 return [];
             }
             const ratio = targetMin / subMin;
@@ -169,7 +169,7 @@ export class HyperliquidProvider implements DataProvider {
         } catch (e) {
             // Fail soft (consistent with the Binance provider): an empty result parks/empties
             // the chart with a warning rather than rejecting the parked load.
-            console.warn(`[vela] Hyperliquid: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
+            console.warn(`[terminal-trading] Hyperliquid: failed to fetch ${ticker} ${timeframe} — ${e instanceof Error ? e.message : String(e)}`);
             return [];
         }
     }
@@ -291,7 +291,7 @@ export class HyperliquidProvider implements DataProvider {
             if (reconnect) { clearTimeout(reconnect); reconnect = null; }
             try { ws?.close(); } catch { /* ignore */ }
             ws = null;
-            console.warn(`[vela] Hyperliquid: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
+            console.warn(`[terminal-trading] Hyperliquid: ${ticker} ${timeframe} stream delivered no data; falling back to polling.`);
             polling = this.pollBars(ticker, timeframe, onBar);
         };
 

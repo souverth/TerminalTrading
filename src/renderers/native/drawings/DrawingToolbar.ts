@@ -1,4 +1,4 @@
-import type { VelaTheme } from '../../../core/options';
+import type { TerminalTradingTheme } from '../../../core/options';
 import type { DrawingTypeKey, SnapMode } from '../../../core/drawings';
 import type { ToolbarDefinition, ToolGroup, ToolSection } from '../../../core/drawings';
 import { icon } from '../../../core/icons';
@@ -95,7 +95,7 @@ export class DrawingToolbar {
 
     constructor(
         private readonly host: HTMLElement,
-        private theme: VelaTheme,
+        private theme: TerminalTradingTheme,
         private readonly onArm: (type: DrawingTypeKey | null) => void,
         private readonly onMagnet: (mode: SnapMode) => void = () => {},
         private readonly onMeasure: () => void = () => {},
@@ -111,7 +111,7 @@ export class DrawingToolbar {
         this.onDrawingsSync = options.onDrawingsSync ?? null;
         ensureStyles();
         this.root = document.createElement('div');
-        this.root.className = 'vela-dtb';
+        this.root.className = 'tt-dtb';
         this.styleRoot();
         host.appendChild(this.root);
     }
@@ -141,7 +141,7 @@ export class DrawingToolbar {
         this.root.style.cssText =
             placement +
             `display:${this.visible ? 'flex' : 'none'};flex-direction:column;gap:4px;` +
-            `padding:6px 0;box-sizing:border-box;background:${t.background};border-right:1px solid ${this.borderColor};color:var(--vela-fg-muted);` + // no h-padding → buttons span the bar width
+            `padding:6px 0;box-sizing:border-box;background:${t.background};border-right:1px solid ${this.borderColor};color:var(--tt-fg-muted);` + // no h-padding → buttons span the bar width
             `pointer-events:auto;overflow-y:auto;overflow-x:hidden;`;
     }
 
@@ -170,7 +170,7 @@ export class DrawingToolbar {
     /** Paint one star for the current favorite state (filled + gold, or outline). */
     private paintStar(el: HTMLElement, type: DrawingTypeKey): void {
         const on = this.favorites.has(type);
-        el.classList.toggle('vela-fav', on);
+        el.classList.toggle('tt-fav', on);
         el.setAttribute('aria-label', on ? 'Remove from favorites' : 'Add to favorites');
         el.setAttribute('aria-pressed', on ? 'true' : 'false');
         el.innerHTML = sizedIcon(on ? STAR_FILLED_ICON : STAR_ICON);
@@ -194,7 +194,7 @@ export class DrawingToolbar {
         this.highlight();
     }
 
-    setTheme(theme: VelaTheme): void {
+    setTheme(theme: TerminalTradingTheme): void {
         this.theme = theme;
         this.styleRoot();
         this.rebuild();
@@ -237,7 +237,7 @@ export class DrawingToolbar {
         }
         // Collapse/expand toggle — pinned to the bottom; the only child a collapsed strip shows.
         this.collapseBtn = this.makeButton(COLLAPSE_ICON, 'Collapse toolbar', () => this.toggleCollapsed());
-        this.collapseBtn.classList.add('vela-dtb-collapse');
+        this.collapseBtn.classList.add('tt-dtb-collapse');
         this.root.appendChild(this.collapseBtn);
         this.paintMeasure();
         this.paintEraser();
@@ -270,17 +270,17 @@ export class DrawingToolbar {
     /** A cell: a full-width icon button (arms/toggles the primary action) plus, when
      *  {@link opts.multi} is set, a chevron button absolutely pinned to the right. The icon spans the
      *  whole cell so its glyph stays centered in the bar (aligned with the single-icon buttons); the
-     *  hover/active tint lives on a centered square (`.vela-dtb-hit`) that hugs the glyph, not the whole
+     *  hover/active tint lives on a centered square (`.tt-dtb-hit`) that hugs the glyph, not the whole
      *  row. The chevron is its own hover target — revealed on cell hover, tinted only on its own hover. */
     private makeCell(
         label: string,
         opts: { iconSvg?: string; multi: boolean; onIcon: () => void; onArrow?: () => void },
     ): { cell: HTMLDivElement; icon: HTMLButtonElement; arrow: HTMLButtonElement | null } {
         const cell = document.createElement('div');
-        cell.className = 'vela-dtb-cell';
+        cell.className = 'tt-dtb-cell';
         const icon = document.createElement('button');
         icon.type = 'button';
-        icon.className = 'vela-dtb-icon';
+        icon.className = 'tt-dtb-icon';
         icon.setAttribute('aria-label', label);
         if (opts.iconSvg) icon.innerHTML = hitHtml(opts.iconSvg);
         icon.addEventListener('click', opts.onIcon);
@@ -290,7 +290,7 @@ export class DrawingToolbar {
             const onArrow = opts.onArrow;
             arrow = document.createElement('button'); // its own hover target, hidden until the cell is hovered (CSS)
             arrow.type = 'button';
-            arrow.className = 'vela-dtb-arrow';
+            arrow.className = 'tt-dtb-arrow';
             arrow.setAttribute('aria-label', `${label} — more`);
             arrow.innerHTML = arrowHitHtml(ARROW_ICON);
             arrow.addEventListener('click', (e) => {
@@ -468,12 +468,12 @@ export class DrawingToolbar {
             back.fly.replaceChildren();
         }
         const fly = back?.fly ?? document.createElement('div');
-        fly.className = 'vela-dtb-flyout';
+        fly.className = 'tt-dtb-flyout';
         // A detached card like the topbar dropdowns, on the bar's own surface: over a chart of
         // that same color its edge comes from the menu border + shadow.
         fly.style.cssText =
-            `position:absolute;z-index:23;display:flex;flex-direction:column;gap:2px;padding:4px;border-radius:var(--vela-radius-md);` +
-            `background:var(--vela-surface);border:1px solid ${this.borderOverride ?? 'var(--vela-border-strong)'};box-shadow:var(--vela-shadow);pointer-events:auto;` +
+            `position:absolute;z-index:23;display:flex;flex-direction:column;gap:2px;padding:4px;border-radius:var(--tt-radius-md);` +
+            `background:var(--tt-surface);border:1px solid ${this.borderOverride ?? 'var(--tt-border-strong)'};box-shadow:var(--tt-shadow);pointer-events:auto;` +
             `overflow-y:auto;overscroll-behavior:contain;`;
         // The flyout is hosted OUTSIDE the bar root (it must escape its overflow), so it
         // carries its own copy of the tokens.
@@ -490,7 +490,7 @@ export class DrawingToolbar {
         this.flyout = fly;
         this.flyoutOwnerId = ownerId;
         this.flyoutCell = cell;
-        cell.classList.add('vela-open'); // keep the opening cell highlighted (+ square its right corners) while open
+        cell.classList.add('tt-open'); // keep the opening cell highlighted (+ square its right corners) while open
         this.highlight();
         // dismiss on the next OUTSIDE press; this click's pointerdown already fired, so add synchronously
         document.addEventListener('pointerdown', this.onOutside);
@@ -559,8 +559,8 @@ export class DrawingToolbar {
         const header = document.createElement('div');
         header.textContent = text.toUpperCase();
         header.style.cssText =
-            `padding:6px 12px 2px 8px;font:var(--vela-font-size-sm) ${t.fontFamily};font-weight:600;letter-spacing:0.04em;` +
-            `color:var(--vela-fg-muted);user-select:none;`;
+            `padding:6px 12px 2px 8px;font:var(--tt-font-size-sm) ${t.fontFamily};font-weight:600;letter-spacing:0.04em;` +
+            `color:var(--tt-fg-muted);user-select:none;`;
         return header;
     }
 
@@ -572,7 +572,7 @@ export class DrawingToolbar {
 
     /** A flyout row, left to right: optional leading icon badge, label, a check when it's the
      *  selected entry, an optional shortcut hint, and — at the far right — the favorite star (tool
-     *  rows). Hover tint is CSS (`.vela-dtb-item:hover`), so navigating the menu stays smooth. */
+     *  rows). Hover tint is CSS (`.tt-dtb-item:hover`), so navigating the menu stays smooth. */
     private makeFlyoutItem(opts: {
         icon?: string;
         /** Reserve the badge column on an icon-less row (a flyout whose other rows carry icons),
@@ -589,16 +589,16 @@ export class DrawingToolbar {
         const t = this.theme;
         const item = document.createElement('button');
         item.type = 'button';
-        item.className = 'vela-dtb-item';
+        item.className = 'tt-dtb-item';
         item.setAttribute('aria-label', opts.label);
         const badged = opts.badge === true || !!opts.icon;
         // A badged row grows to the 24px badge, so it trims its own vertical padding.
         const box = badged ? 'gap:10px;padding:4px 10px 4px 6px;' : 'gap:8px;padding:5px 10px 5px 8px;';
-        item.style.cssText = `display:flex;align-items:center;${box}cursor:pointer;color:${t.textColor};border-radius:var(--vela-radius-sm);font:13px ${t.fontFamily};white-space:nowrap;min-width:148px;`;
+        item.style.cssText = `display:flex;align-items:center;${box}cursor:pointer;color:${t.textColor};border-radius:var(--tt-radius-sm);font:13px ${t.fontFamily};white-space:nowrap;min-width:148px;`;
         if (opts.selected) item.dataset.selected = '1';
         if (badged) {
             const badge = document.createElement('span');
-            badge.className = 'vela-dtb-badge';
+            badge.className = 'tt-dtb-badge';
             if (opts.icon) badge.innerHTML = opts.icon;
             item.appendChild(badge);
         }
@@ -612,14 +612,14 @@ export class DrawingToolbar {
         item.appendChild(check);
         if (opts.shortcut) {
             const hint = document.createElement('span');
-            hint.className = 'vela-dtb-hint';
+            hint.className = 'tt-dtb-hint';
             hint.textContent = opts.shortcut;
-            hint.style.cssText = `flex:none;font:var(--vela-font-size-md) ${t.fontFamily};color:var(--vela-fg-muted);`;
+            hint.style.cssText = `flex:none;font:var(--tt-font-size-md) ${t.fontFamily};color:var(--tt-fg-muted);`;
             item.appendChild(hint);
         }
         if (opts.favorite) {
             const star = document.createElement('span');
-            star.className = 'vela-dtb-star';
+            star.className = 'tt-dtb-star';
             star.setAttribute('role', 'button');
             this.paintStar(star, opts.favorite.type);
             this.starEls.set(opts.favorite.type, star);
@@ -663,7 +663,7 @@ export class DrawingToolbar {
                 fly.remove();
             });
             if (exit) this.exitingFlyouts.set(owner, { fly, exit });
-            this.flyoutCell?.classList.remove('vela-open');
+            this.flyoutCell?.classList.remove('tt-open');
             this.flyoutCell = null;
             this.flyoutOwnerId = null;
             document.removeEventListener('pointerdown', this.onOutside);
@@ -687,7 +687,7 @@ export class DrawingToolbar {
     private highlight(): void {
         const activeGroup = this.active ? this.def.groups.find((g) => g.tools.some((t) => t.type === this.active)) : null;
         for (const [id, cell] of this.groupCells) {
-            const on = id === activeGroup?.id; // armed group only — flyout-open tints the chevron via vela-open
+            const on = id === activeGroup?.id; // armed group only — flyout-open tints the chevron via tt-open
             cell.dataset.active = on ? '1' : '';
         }
         if (this.cursorBtn) this.cursorBtn.dataset.active = this.active == null && !this.measureActive && !this.eraserActive ? '1' : '';
@@ -700,7 +700,7 @@ export class DrawingToolbar {
     private makeButton(icon: string, title: string, onClick: () => void): HTMLButtonElement {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'vela-dtb-btn';
+        btn.className = 'tt-dtb-btn';
         btn.setAttribute('aria-label', title); // not `title` — we render our own 2s-dwell tooltip
         this.tipText.set(btn, title);
         if (icon) btn.innerHTML = hitHtml(icon);
@@ -720,7 +720,7 @@ export class DrawingToolbar {
 
 const MAGNET_ID = '__magnet__';
 
-const STYLE_ID = 'vela-drawing-toolbar-styles';
+const STYLE_ID = 'tt-drawing-toolbar-styles';
 /** Inject the scoped CSS that inline styles can't express: the centered hit-square that carries the
  *  hover/active tint (so the highlight hugs the icon rather than filling the row), the chevron's own
  *  hover target, and the chevron reveal — all `:hover`/`[data-active]`-driven and transitioned so
@@ -735,48 +735,48 @@ function ensureStyles(): void {
         document.head.appendChild(s);
     }
     s.textContent = `
-.vela-dtb-hit{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:var(--vela-radius-md);transition:background var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-dtb-hit--arrow{width:11px;height:22px;}
-.vela-dtb-btn{position:relative;width:100%;height:30px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:inherit;background:transparent;border:none;padding:0;transition:color var(--vela-dur-fast) ease;}
-.vela-dtb-btn:hover{color:var(--vela-fg-bright);}
-.vela-dtb-btn:hover .vela-dtb-hit{background:var(--vela-hover);}
-.vela-dtb-btn[data-active='1']{color:var(--vela-fg-bright);}
-.vela-dtb-btn[data-active='1'] .vela-dtb-hit{background:var(--vela-active);}
-.vela-dtb-cell{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:30px;}
-.vela-dtb-icon{flex:none;width:26px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;cursor:pointer;padding:0;transition:color var(--vela-dur-fast) ease;}
-.vela-dtb-icon:hover{color:var(--vela-fg-bright);}
-.vela-dtb-cell[data-active='1'] .vela-dtb-icon{color:var(--vela-fg-bright);}
-.vela-dtb-cell[data-active='1'] .vela-dtb-icon .vela-dtb-hit{background:var(--vela-active);}
-.vela-dtb-arrow{position:absolute;right:1px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;cursor:pointer;padding:0;opacity:0;pointer-events:none;transition:opacity var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-dtb-cell:hover .vela-dtb-arrow,.vela-dtb-icon:hover~.vela-dtb-arrow,.vela-dtb-cell.vela-open .vela-dtb-arrow{opacity:1;pointer-events:auto;}
-.vela-dtb-arrow:hover{color:var(--vela-fg-bright);}
-.vela-dtb-icon:hover .vela-dtb-hit,.vela-dtb-arrow:hover .vela-dtb-hit{background:var(--vela-hover);}
-.vela-dtb-cell.vela-open .vela-dtb-arrow .vela-dtb-hit{background:var(--vela-active);}
-.vela-dtb-cell.vela-open .vela-dtb-arrow:hover .vela-dtb-hit{background:var(--vela-hover);}
-.vela-dtb-collapse{margin-top:auto;}
-.vela-dtb[data-collapsed='1']>*:not(.vela-dtb-collapse){display:none;}
-.vela-dtb[data-collapsed='1'] .vela-dtb-collapse .vela-dtb-hit{width:14px;}
-.vela-dtb-item{background:transparent;border:none;transition:background var(--vela-dur-fast) ease;}
-.vela-dtb-item:hover{background:var(--vela-hover-strong);}
-.vela-dtb-badge{width:24px;height:24px;padding:3px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none;border-radius:var(--vela-radius-md);background:var(--vela-hover);border:1px solid var(--vela-border);color:var(--vela-fg-muted);transition:background var(--vela-dur-fast) ease,border-color var(--vela-dur-fast) ease,color var(--vela-dur-fast) ease;}
-.vela-dtb-badge:empty{background:transparent;border-color:transparent;}
-.vela-dtb-badge svg{width:100%;height:100%;}
-.vela-dtb-item:hover .vela-dtb-badge:not(:empty){background:var(--vela-active);color:var(--vela-fg-bright);}
-.vela-dtb-item[data-selected='1'] .vela-dtb-badge:not(:empty){background:color-mix(in srgb,var(--vela-fg-bright) 83%,var(--vela-surface));border-color:color-mix(in srgb,var(--vela-fg-bright) 40%,transparent);color:var(--vela-surface);}
-.vela-dtb-star{width:26px;height:22px;margin:-3px -5px -3px 0;padding:3px 5px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none;opacity:0;color:inherit;border-radius:var(--vela-radius-sm);transition:opacity .1s ease,color .1s ease,background .1s ease;}
-.vela-dtb-star svg{width:16px;height:16px;}
-.vela-dtb-item:hover .vela-dtb-star{opacity:.55;}
-.vela-dtb-star:hover{opacity:1 !important;background:var(--vela-hover-strong);}
-.vela-dtb-star.vela-fav{opacity:.95;color:var(--vela-highlight);}
+.tt-dtb-hit{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:var(--tt-radius-md);transition:background var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-dtb-hit--arrow{width:11px;height:22px;}
+.tt-dtb-btn{position:relative;width:100%;height:30px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:inherit;background:transparent;border:none;padding:0;transition:color var(--tt-dur-fast) ease;}
+.tt-dtb-btn:hover{color:var(--tt-fg-bright);}
+.tt-dtb-btn:hover .tt-dtb-hit{background:var(--tt-hover);}
+.tt-dtb-btn[data-active='1']{color:var(--tt-fg-bright);}
+.tt-dtb-btn[data-active='1'] .tt-dtb-hit{background:var(--tt-active);}
+.tt-dtb-cell{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:30px;}
+.tt-dtb-icon{flex:none;width:26px;height:30px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;cursor:pointer;padding:0;transition:color var(--tt-dur-fast) ease;}
+.tt-dtb-icon:hover{color:var(--tt-fg-bright);}
+.tt-dtb-cell[data-active='1'] .tt-dtb-icon{color:var(--tt-fg-bright);}
+.tt-dtb-cell[data-active='1'] .tt-dtb-icon .tt-dtb-hit{background:var(--tt-active);}
+.tt-dtb-arrow{position:absolute;right:1px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;background:transparent;border:none;color:inherit;cursor:pointer;padding:0;opacity:0;pointer-events:none;transition:opacity var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-dtb-cell:hover .tt-dtb-arrow,.tt-dtb-icon:hover~.tt-dtb-arrow,.tt-dtb-cell.tt-open .tt-dtb-arrow{opacity:1;pointer-events:auto;}
+.tt-dtb-arrow:hover{color:var(--tt-fg-bright);}
+.tt-dtb-icon:hover .tt-dtb-hit,.tt-dtb-arrow:hover .tt-dtb-hit{background:var(--tt-hover);}
+.tt-dtb-cell.tt-open .tt-dtb-arrow .tt-dtb-hit{background:var(--tt-active);}
+.tt-dtb-cell.tt-open .tt-dtb-arrow:hover .tt-dtb-hit{background:var(--tt-hover);}
+.tt-dtb-collapse{margin-top:auto;}
+.tt-dtb[data-collapsed='1']>*:not(.tt-dtb-collapse){display:none;}
+.tt-dtb[data-collapsed='1'] .tt-dtb-collapse .tt-dtb-hit{width:14px;}
+.tt-dtb-item{background:transparent;border:none;transition:background var(--tt-dur-fast) ease;}
+.tt-dtb-item:hover{background:var(--tt-hover-strong);}
+.tt-dtb-badge{width:24px;height:24px;padding:3px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none;border-radius:var(--tt-radius-md);background:var(--tt-hover);border:1px solid var(--tt-border);color:var(--tt-fg-muted);transition:background var(--tt-dur-fast) ease,border-color var(--tt-dur-fast) ease,color var(--tt-dur-fast) ease;}
+.tt-dtb-badge:empty{background:transparent;border-color:transparent;}
+.tt-dtb-badge svg{width:100%;height:100%;}
+.tt-dtb-item:hover .tt-dtb-badge:not(:empty){background:var(--tt-active);color:var(--tt-fg-bright);}
+.tt-dtb-item[data-selected='1'] .tt-dtb-badge:not(:empty){background:color-mix(in srgb,var(--tt-fg-bright) 83%,var(--tt-surface));border-color:color-mix(in srgb,var(--tt-fg-bright) 40%,transparent);color:var(--tt-surface);}
+.tt-dtb-star{width:26px;height:22px;margin:-3px -5px -3px 0;padding:3px 5px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none;opacity:0;color:inherit;border-radius:var(--tt-radius-sm);transition:opacity .1s ease,color .1s ease,background .1s ease;}
+.tt-dtb-star svg{width:16px;height:16px;}
+.tt-dtb-item:hover .tt-dtb-star{opacity:.55;}
+.tt-dtb-star:hover{opacity:1 !important;background:var(--tt-hover-strong);}
+.tt-dtb-star.tt-fav{opacity:.95;color:var(--tt-highlight);}
 /* Thin thumb-only scrollbar. Avoid scrollbar-width in Chromium — it disables ::-webkit-scrollbar. */
 @supports not selector(::-webkit-scrollbar){
-.vela-dtb-flyout{scrollbar-width:thin;scrollbar-color:var(--vela-scroll) transparent;}
+.tt-dtb-flyout{scrollbar-width:thin;scrollbar-color:var(--tt-scroll) transparent;}
 }
-.vela-dtb-flyout::-webkit-scrollbar{width:4px;}
-.vela-dtb-flyout::-webkit-scrollbar-button{display:none;width:0;height:0;}
-.vela-dtb-flyout::-webkit-scrollbar-track,.vela-dtb-flyout::-webkit-scrollbar-track-piece,.vela-dtb-flyout::-webkit-scrollbar-corner{background:transparent;}
-.vela-dtb-flyout::-webkit-scrollbar-thumb{background:var(--vela-scroll);border-radius:var(--vela-radius-sm);}
-.vela-dtb-flyout::-webkit-scrollbar-thumb:hover{background:var(--vela-fg-muted);}`;
+.tt-dtb-flyout::-webkit-scrollbar{width:4px;}
+.tt-dtb-flyout::-webkit-scrollbar-button{display:none;width:0;height:0;}
+.tt-dtb-flyout::-webkit-scrollbar-track,.tt-dtb-flyout::-webkit-scrollbar-track-piece,.tt-dtb-flyout::-webkit-scrollbar-corner{background:transparent;}
+.tt-dtb-flyout::-webkit-scrollbar-thumb{background:var(--tt-scroll);border-radius:var(--tt-radius-sm);}
+.tt-dtb-flyout::-webkit-scrollbar-thumb:hover{background:var(--tt-fg-muted);}`;
 }
 
 const CURSOR_ICON = icon('cursor');
@@ -808,13 +808,13 @@ function iconSpan(svg: string, size = 18): string {
     return `<span style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;">${sizedIcon(svg)}</span>`;
 }
 
-/** A button's inner content: the glyph inside a centered square (`.vela-dtb-hit`) that carries the
+/** A button's inner content: the glyph inside a centered square (`.tt-dtb-hit`) that carries the
  *  hover/active highlight, so the tint hugs the icon instead of stretching across the whole row. */
 function hitHtml(svg: string, iconSize = 18): string {
-    return `<span class="vela-dtb-hit">${iconSpan(svg, iconSize)}</span>`;
+    return `<span class="tt-dtb-hit">${iconSpan(svg, iconSize)}</span>`;
 }
 
 /** The chevron's inner content: same hover/active tint as the icon hit, in a narrow pill beside it. */
 function arrowHitHtml(svg: string): string {
-    return `<span class="vela-dtb-hit vela-dtb-hit--arrow">${iconSpan(svg, 11)}</span>`;
+    return `<span class="tt-dtb-hit tt-dtb-hit--arrow">${iconSpan(svg, 11)}</span>`;
 }

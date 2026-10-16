@@ -97,10 +97,10 @@ describe('SidePanel width', () => {
         const { doc, root } = stubDoc();
         const panel = new SidePanel(root as never, 'Fixed', 'x-fixed');
         expect(panel.width).toBe(280);
-        expect(find(panel.el as never, 'vela-panel-resizer')).toBeUndefined();
+        expect(find(panel.el as never, 'tt-panel-resizer')).toBeUndefined();
         panel.setWidth(900); // no resize bounds on a fixed panel
         expect(panel.width).toBe(900);
-        expect((panel.el as unknown as StubEl).style.props['--vela-panel-w']).toBe('900px');
+        expect((panel.el as unknown as StubEl).style.props['--tt-panel-w']).toBe('900px');
         expect(doc).toBeTruthy();
     });
 
@@ -109,7 +109,7 @@ describe('SidePanel width', () => {
         const panel = new SidePanel(root as never, 'Sized', 'x-sized', { width: 300, resizable: true, minWidth: 240, maxWidth: 500 });
         const seen: number[] = [];
         panel.onWidthChange = (px) => seen.push(px);
-        const handle = find(panel.el as never, 'vela-panel-resizer');
+        const handle = find(panel.el as never, 'tt-panel-resizer');
         expect(handle).toBeDefined();
 
         handle!.fire('pointerdown', { clientX: 1000 });
@@ -142,13 +142,13 @@ describe('SidePanel placement', () => {
         const docked = new SidePanel(root as never, 'Docked', 'x-docked', { resizable: true });
         expect((docked.el as unknown as StubEl).dataset.overlay).toBeUndefined();
         expect(docked.overlay).toBe(false);
-        expect(find(docked.el as never, 'vela-panel-pin')).toBeUndefined(); // nothing to pin
+        expect(find(docked.el as never, 'tt-panel-pin')).toBeUndefined(); // nothing to pin
         const floating = new SidePanel(root as never, 'Floating', 'x-floating', { width: 800, resizable: true, overlay: true });
         expect((floating.el as unknown as StubEl).dataset.overlay).toBe('1');
         expect(floating.overlay).toBe(true);
         // Width policy is independent of placement — an overlay still resizes and clamps.
         expect(floating.width).toBe(640);
-        expect(find(floating.el as never, 'vela-panel-resizer')).toBeDefined();
+        expect(find(floating.el as never, 'tt-panel-resizer')).toBeDefined();
     });
 
     it('the pin docks a floating panel and reports the user’s choice; setOverlay is silent', () => {
@@ -156,7 +156,7 @@ describe('SidePanel placement', () => {
         const panel = new SidePanel(root as never, 'Floating', 'x-floating', { overlay: true });
         const seen: boolean[] = [];
         panel.onPlacementChange = (overlay) => seen.push(overlay);
-        const pin = find(panel.el as never, 'vela-panel-pin')!;
+        const pin = find(panel.el as never, 'tt-panel-pin')!;
         expect(pin).toBeDefined();
         expect(pin.dataset.on).toBe('0');
 
@@ -187,7 +187,7 @@ describe('SidePanel maximize', () => {
         const { root } = stubDoc();
         const panel = new SidePanel(root as never, 'Editor', 'x-ed', { overlay: true, maximizable: true });
         const el = panel.el as unknown as StubEl;
-        const button = find(panel.el as never, 'vela-panel-max')!;
+        const button = find(panel.el as never, 'tt-panel-max')!;
         expect(button).toBeDefined();
         expect(button.title).toBe('Maximize');
 
@@ -210,7 +210,7 @@ describe('SidePanel maximize', () => {
     it('a panel not declared maximizable has no button and ignores the call', () => {
         const { root } = stubDoc();
         const panel = new SidePanel(root as never, 'Tree', 'x-tree');
-        expect(find(panel.el as never, 'vela-panel-max')).toBeUndefined();
+        expect(find(panel.el as never, 'tt-panel-max')).toBeUndefined();
         panel.setMaximized(true);
         expect(panel.maximized).toBe(false);
     });
@@ -221,10 +221,10 @@ describe('SidePanel maximize', () => {
         let header: Parameters<Parameters<typeof registerSidePanel>[0]['mount']>[2] | null = null;
         const off = registerSidePanel({ id: 'm', title: 'M', icon: 'im', overlay: true, maximizable: true, mount: (_c, _b, h) => void (header = h) });
         d.refresh();
-        expect(find(root, 'vela-panel-max')).toBeDefined();
+        expect(find(root, 'tt-panel-max')).toBeDefined();
         header!.setMaximized(true);
         expect(header!.maximized).toBe(true);
-        expect(find(root, 'vela-panel-m')!.dataset.maximized).toBe('1');
+        expect(find(root, 'tt-panel-m')!.dataset.maximized).toBe('1');
         off();
         d.refresh();
     });
@@ -323,7 +323,7 @@ describe('PanelDock', () => {
         const { dock: d, root, changed } = dock();
         const off = registerSidePanel({ id: 'x', title: 'X', icon: 'ix', overlay: true, mount: () => {} });
         d.refresh();
-        const pin = find(root, 'vela-panel-x')!.children.find((c) => c.className === 'vela-panel-header')!.children.find((c) => c.className === 'vela-panel-pin')!;
+        const pin = find(root, 'tt-panel-x')!.children.find((c) => c.className === 'tt-panel-header')!.children.find((c) => c.className === 'tt-panel-pin')!;
         const before = changed();
         pin.fire('click');
         expect(d.getState()).toEqual({ pinned: ['x'] });
@@ -333,9 +333,9 @@ describe('PanelDock', () => {
 
         // A restore applies the list wholesale — and its absence unpins.
         d.applyState({ pinned: ['x'] });
-        expect(find(root, 'vela-panel-x')!.dataset.overlay).toBeUndefined();
+        expect(find(root, 'tt-panel-x')!.dataset.overlay).toBeUndefined();
         d.applyState({ open: 'a' });
-        expect(find(root, 'vela-panel-x')!.dataset.overlay).toBe('1');
+        expect(find(root, 'tt-panel-x')!.dataset.overlay).toBe('1');
 
         // A pinned id naming a panel that registers later applies when it docks.
         off();
@@ -343,7 +343,7 @@ describe('PanelDock', () => {
         d.applyState({ pinned: ['late'] });
         registerSidePanel({ id: 'late', title: 'Late', icon: 'il', overlay: true, mount: () => {} });
         d.refresh();
-        expect(find(root, 'vela-panel-late')!.dataset.overlay).toBeUndefined();
+        expect(find(root, 'tt-panel-late')!.dataset.overlay).toBeUndefined();
         unregisterSidePanel('late');
         d.refresh();
     });
@@ -393,7 +393,7 @@ describe('PanelDock', () => {
         expect(buttons().map((b) => b.id)).toEqual(['a', 'b', 'x']); // default order lands last
         expect(mount).toHaveBeenCalledTimes(1);
         // The descriptor's placement reaches the panel the dock builds.
-        expect(find(root, 'vela-panel-x')!.dataset.overlay).toBe('1');
+        expect(find(root, 'tt-panel-x')!.dataset.overlay).toBe('1');
 
         const chart = {} as never;
         d.onChart(chart);
@@ -434,12 +434,12 @@ describe('PanelDock', () => {
             },
         });
         d.refresh();
-        const panel = find(root, 'vela-panel-h')!;
-        expect(find(panel, 'vela-panel-title')!.textContent).toBe('My script'); // setTitle replaced the declared title
+        const panel = find(root, 'tt-panel-h')!;
+        expect(find(panel, 'tt-panel-title')!.textContent).toBe('My script'); // setTitle replaced the declared title
         expect(slotChildren).toBe(1); // the control landed in the slot
         // The slot sits between the title and the close button in the header row.
-        const header = find(panel, 'vela-panel-header')!;
-        expect(header.children.map((c) => c.className)).toEqual(['vela-panel-title', 'vela-panel-header-slot', 'vela-panel-close']);
+        const header = find(panel, 'tt-panel-header')!;
+        expect(header.children.map((c) => c.className)).toEqual(['tt-panel-title', 'tt-panel-header-slot', 'tt-panel-close']);
         off();
         d.refresh();
     });

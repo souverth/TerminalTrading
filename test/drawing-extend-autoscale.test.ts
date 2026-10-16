@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DrawingSceneRenderer, EMPTY_DRAWING_SET, type DrawingSet } from '../src/renderers/shared/DrawingSceneRenderer';
 import type { DrawingBox, DrawingLine } from '../src/core/model/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /**
  * Lines and autoscale: a line folds its ANCHOR prices (y1/y2) while some painted
@@ -12,7 +12,7 @@ import type { VelaTheme } from '../src/core/options';
  * nothing — its far-away anchor prices must not squeeze the pane.
  */
 
-const theme = { textColor: '#fff' } as VelaTheme;
+const theme = { textColor: '#fff' } as TerminalTradingTheme;
 
 function line(over: Partial<DrawingLine>): DrawingLine {
     return {

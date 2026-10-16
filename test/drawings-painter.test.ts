@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { DrawingPainter } from '../src/renderers/native/drawings/DrawingPainter';
 import { sliceKeyFor } from '../src/renderers/native/drawings/UserDrawingController';
 import { createDrawing, type Projector } from '../src/core/drawings';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 
 /** Linear projector: x = time, y = 100 − price, single pane 'price'. */
 function fakeProjector(): Projector {
@@ -51,7 +51,7 @@ function recordingCtx() {
     return { ctx: ctx as unknown as CanvasRenderingContext2D, arcs: () => arcs, lines: () => lines };
 }
 
-const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as VelaTheme;
+const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme;
 const hline = (id: string, price: number) => createDrawing('hline', { id, paneId: 'price', anchors: [{ time: 10, price }] })!;
 
 describe('DrawingPainter.paintAll handle highlighting', () => {
@@ -256,7 +256,7 @@ describe('DrawingPainter trendline label follows the line', () => {
         (ctx as unknown as Record<string, unknown>).strokeText = function (this: CanvasRenderingContext2D) {
             halos.push(String(this.strokeStyle));
         };
-        new DrawingPainter().paintAll(ctx, [d], fakeProjector(), { ...theme, background: '#101010' } as VelaTheme);
+        new DrawingPainter().paintAll(ctx, [d], fakeProjector(), { ...theme, background: '#101010' } as TerminalTradingTheme);
         expect(halos).toEqual(['#101010']);
     });
 

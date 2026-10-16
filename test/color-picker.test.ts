@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import type { VelaTheme } from '../src/core/options';
+import type { TerminalTradingTheme } from '../src/core/options';
 import { splitColor, combineColor, buildColorPicker } from '../src/ui/components/color-picker';
 
 // A minimal element stub (this suite runs in the node env — no jsdom). It models just
@@ -50,7 +50,7 @@ function fakeEl(tag: string): FakeEl {
 }
 
 describe('color picker custom "+" input', () => {
-    const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as VelaTheme;
+    const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme;
     let savedDocument: unknown;
 
     beforeEach(() => {
@@ -111,7 +111,7 @@ describe('color picker custom "+" input', () => {
 });
 
 describe('color picker opacity slider', () => {
-    const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as VelaTheme;
+    const theme = { textColor: '#fff', fontFamily: 'sans-serif' } as unknown as TerminalTradingTheme;
     let savedDocument: unknown;
 
     beforeEach(() => {
