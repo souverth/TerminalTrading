@@ -96,8 +96,10 @@
     "playground": "vite"
   },
   "devDependencies": {
+    "@luxalgo/vela-pinets": "^0.2.16",
     "eslint": "^9.0.0",
     "jsdom": "^29.1.1",
+    "pinets": "^0.11.1",
     "tsup": "^8.0.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.0.0",
@@ -105,14 +107,12 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@luxalgo/vela-pinets": "^0.2.16",
     "@zag-js/core": "^1.42.0",
     "@zag-js/dialog": "^1.42.0",
     "@zag-js/dom-query": "^1.42.0",
     "@zag-js/menu": "^1.42.0",
     "@zag-js/tooltip": "^1.42.0",
     "@zag-js/types": "^1.42.0",
-    "@zag-js/vanilla": "^1.42.0",
-    "pinets": "^0.11.1"
+    "@zag-js/vanilla": "^1.42.0"
   }
 }
