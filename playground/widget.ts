@@ -6,18 +6,16 @@
 // Terminal Trading SHIPS NO SCRIPTING ENGINE. `demo-engine.ts` (next to this file) is a ~300-line
 // engine written against the public `ScriptingEngine` port purely so this page can
 // exercise the indicator path with zero dependencies — it is the runnable companion to
-// docs/contributing/adding-an-engine.md, not a product. For Pine Script, install the
-// addon and swap one line:
+// docs/contributing/adding-an-engine.md, not a product. Pine Script comes from the
+// separately licensed (AGPL-3.0) addon, installed here as a dev dependency:
 //
-//     npm i @luxalgo/vela-pinets pinets
 //     import { PineWorkerEngine } from '@luxalgo/vela-pinets';
 //     engines: { pine: () => new PineWorkerEngine() }
-//
-// …which is exactly what the addon's own playground does (repos/Vela-pinets, port 5192).
 import { TerminalTradingWorkspace } from '../src/workspace';
 import { BinanceProvider } from '../src/data/providers/binance';
 import { addSampleMarks } from './marks';
-import { DemoEngine, DEMO_SCRIPTS } from './demo-engine';
+import { DemoEngine } from './demo-engine';
+import { PineWorkerEngine } from '@luxalgo/vela-pinets';
 import { playgroundStorage } from './persistence';
 
 // The playground's CUSTOM persistence (shared with the workspace page): with `persist`
@@ -36,8 +34,11 @@ const ws = new TerminalTradingWorkspace('#chart', {
     persist: 'tt-widget', // → 'tt-play:tt-widget' in devtools (the page's historical key)
     storage,
     providers: { binance: () => new BinanceProvider() },
-    engines: { demo: () => new DemoEngine() }, // swap for `pine: () => new PineWorkerEngine()` (see the header)
-    defaultLanguage: 'demo', // scripts added without a `language` run on the engine above
+    engines: {
+        demo: () => new DemoEngine(),
+        pine: () => new PineWorkerEngine(), // Pine Script v5/v6 via PineTS, off the main thread
+    },
+    defaultLanguage: 'pine', // scripts added without a `language` run on Pine; `language: 'demo'` picks the demo engine
     // No script manifest: the indicators dialog lists the built-in catalog only. Scripts
     // reach the chart through the Code panel below (or an `indicators` manifest — see the
     // commented option further down).
@@ -138,6 +139,16 @@ import { Dialog } from '../src/ui';
 
 registerIcon('code', '<svg viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 4.5-4 3.5 4 3.5M10.5 4.5l4 3.5-4 3.5"/></svg>');
 
+const PINE_SAMPLE = `//@version=5
+indicator("Bollinger Bands", overlay=true)
+length = input.int(20, "Length", minval=1)
+mult = input.float(2.0, "Mult", minval=0.1)
+basis = ta.sma(close, length)
+dev = mult * ta.stdev(close, length)
+plot(basis, "Basis", color=color.blue)
+plot(basis + dev, "Upper", color=color.gray)
+plot(basis - dev, "Lower", color=color.gray)`;
+
 // Lazy UI singletons — DOM state only (the edited script survives reopen). The
 // WidgetContext is NEVER stored: `run(ctx)` rebinds the Run button's handler on every
 // invocation, so the ctx lives in that closure alone and always belongs to the
@@ -155,7 +166,7 @@ registerWidgetAction({
     run: (ctx) => {
         if (!codeDialog) {
             codeArea = document.createElement('textarea');
-            codeArea.value = DEMO_SCRIPTS.bands;
+            codeArea.value = PINE_SAMPLE;
             codeArea.spellcheck = false;
             codeArea.style.cssText =
                 'width:520px;max-width:80vw;height:220px;resize:vertical;background:var(--tt-surface-overlay);color:var(--tt-fg);border:1px solid var(--tt-border-soft);border-radius:var(--tt-radius-md);padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;outline:none;';

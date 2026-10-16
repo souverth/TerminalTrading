@@ -9,9 +9,6 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
-    ignore:
-      # The core must never depend on the AGPL-3.0 Pine Script engine.
-      - dependency-name: pinets
 
   - package-ecosystem: npm
     directory: /server
