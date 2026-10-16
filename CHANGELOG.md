@@ -4,8 +4,23 @@ All notable changes to Terminal Trading (and, before the rename, to the Vela lib
 
 ## [Unreleased]
 
+### Added
+
+- **Footprint chart style.** Pick **Footprint** in the chart-style menu to see the volume
+  traded at every price inside each bar, split into sell volume on the left and buy volume
+  on the right as bars sized by volume. The busiest price of each bar is outlined, lopsided
+  prices are highlighted, and pointing at a row opens a card with its price range, buy and
+  sell volume, total and net. Zoomed out, each bar becomes a grey volume silhouette. Settings
+  control the row size, how many recent bars carry a footprint, the numbers, the imbalance
+  ratio and the colors. Bars still loading show slowly turning layers and fade in once
+  their data arrives. Footprint reads Binance's public trade feed, so it works on Binance
+  symbols only; on any other symbol the chart explains that instead of drawing.
+
 ### Changed
 
+- **A calmer loading screen.** While a chart loads its first bars or switches market, a row
+  of small candles climbs from left to right with a soft wave of light sweeping across it,
+  and a quiet "Loading" label sits beneath. It replaces the three pulsing dots.
 - **Linear Regression is now two studies: an LSMA and a slope.** The Linear Regression
   Curve opened an empty pane below the chart while its curve drew over the candles. It is
   replaced by the **Least Squares Moving Average**, which draws on the price chart like the
