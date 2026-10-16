@@ -70,6 +70,10 @@ export class IndicatorInputsDialog {
     private snapshot: Record<string, InputValue> | null = null;
     private propSnapshot: Record<string, InputValue> | null = null;
     private dialogTips: Array<() => void> = [];
+    /** Where the dialog's tooltips mount: the SAME positioned host the dialog sits in, so a
+     *  tip clamps to the dialog's own bounds. Mounting in the (possibly narrower) chart
+     *  container pulled the tip of a right-hand ⓘ across to the label column. */
+    private tipHost: HTMLElement | null = null;
     /** Re-applies every `when` gate against current values; set while the dialog is open. */
     private refreshVisibility: (() => void) | null = null;
     private choicePop: Popover | null = null;
@@ -102,6 +106,7 @@ export class IndicatorInputsDialog {
         const border = 'var(--vela-border)';
         const fg = 'var(--vela-fg-bright)';
         const host = this.host.dialogHost() ?? this.host.container;
+        this.tipHost = host;
 
         const ui = new Dialog({
             host,
@@ -130,7 +135,7 @@ export class IndicatorInputsDialog {
         applyChromeTokens(ui.panel, t);
         ui.panel.style.colorScheme = this.isDarkTheme() ? 'dark' : 'light';
         this.dialogTips.push(attachChromeTooltip(ui.panel.querySelector('.vela-dialog-close') as HTMLElement, {
-            host: this.host.container,
+            host,
             theme: () => this.host.theme(),
             text: () => 'Close',
         }));
@@ -230,6 +235,7 @@ export class IndicatorInputsDialog {
         // popover (color picker, select list) is swapped in one gesture, jumping this scroller
         // to its max — content here only scrolls when the user scrolls it.
         body.style.cssText = inputDialogBodyStyle(this.host.mobile());
+        body.className = 'vela-ind-body'; // scopes the wrapping labels (see ensureDialogStyles)
         for (const group of groupInputs(inputs)) {
             const section = document.createElement('div');
             section.style.cssText = 'display:contents;';
@@ -465,7 +471,7 @@ export class IndicatorInputsDialog {
 
     /** The shared ⓘ hint carrying an input's `tooltip` (see {@link chromeHint}). */
     private infoButton(tooltip: string): HTMLElement {
-        const { el, dispose } = chromeHint(tooltip, { host: this.host.container, theme: () => this.host.theme(), size: 18 });
+        const { el, dispose } = chromeHint(tooltip, { host: this.tipHost ?? this.host.container, theme: () => this.host.theme(), size: 18 });
         this.dialogTips.push(dispose);
         return el;
     }
@@ -849,7 +855,7 @@ const CLOCK_SVG = iconAt('clock', 14);
 
 const DIALOG_STYLE_ID = 'vela-ind-dialog-styles';
 /** Bump when the injected sheet's rules change so an already-mounted page refreshes them. */
-const DIALOG_STYLE_REV = '30';
+const DIALOG_STYLE_REV = '31';
 const LEGEND_ICON_PX = 16;
 
 /** Inject the scoped styles inline cssText can't reach (color-swatch, focus ring, scrollbar). */
@@ -862,6 +868,7 @@ export function ensureDialogStyles(): void {
     s.dataset.rev = DIALOG_STYLE_REV;
     s.textContent = `
 .vela-ind-combo input{${FIELD_FOCUS_CSS}}
+.vela-ind-body .vela-field-label{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.35;}
 .vela-ind-combo input:hover{border-color:var(--vela-fg-muted);}
 .vela-ind-combo input:focus{${FIELD_FOCUS_RING}}
 .vela-ind-combo-chevron{position:absolute;right:0;top:0;bottom:0;width:26px;border:none;background:transparent;color:inherit;opacity:0.55;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;}

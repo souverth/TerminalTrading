@@ -10,7 +10,7 @@ export const FIELD_CSS = `
     column-gap: ${FIELD_GAP_PX}px;
     row-gap: ${FIELD_GAP_PX}px;
 }
-.vela-field-grid[data-variant='inputs'] { grid-template-columns: max-content 1fr; }
+.vela-field-grid[data-variant='inputs'] { grid-template-columns: fit-content(55%) minmax(150px,1fr); }
 .vela-field-grid[data-variant='inputs'][data-mobile] { grid-template-columns: minmax(0,1fr) auto; }
 .vela-field-grid[data-variant='settings'] {
     grid-template-columns: max-content max-content;

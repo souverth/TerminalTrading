@@ -57,6 +57,6 @@ describe('inputDialogBodyStyle — settings-dialog row rhythm', () => {
         const style = inputDialogBodyStyle(false);
         expect(style).toContain('align-content:start');
         expect(style).toContain(`row-gap:${INPUT_DIALOG_GAP_PX}px`);
-        expect(style).toContain('grid-template-columns:max-content 1fr');
+        expect(style).toContain('grid-template-columns:fit-content(55%) minmax(150px,1fr)');
     });
 });

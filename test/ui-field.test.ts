@@ -5,7 +5,7 @@ import { glyphSelectController, widthFieldOptions, WIDTH_FIELD_OPTIONS } from '.
 
 describe('fieldGridColumns', () => {
     it('gives leftover space to the inputs control column', () => {
-        expect(fieldGridColumns('inputs', false)).toBe('max-content 1fr');
+        expect(fieldGridColumns('inputs', false)).toBe('fit-content(55%) minmax(150px,1fr)');
         expect(fieldGridColumns('inputs', true)).toBe('minmax(0,1fr) auto');
     });
 

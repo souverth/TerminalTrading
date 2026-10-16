@@ -10,6 +10,10 @@ import type { Vela } from "../src";
 import { VelaWorkspace } from "../src/workspace";
 import { BinanceProvider } from "../src/data/providers/binance";
 import { DemoEngine } from "./demo-engine";
+import { PineWorkerEngine } from "@luxalgo/vela-pinets";
+import { TradingViewServerProvider } from "./tv-provider";
+import { loadManifest } from "./library-api";
+import { installScriptLibrary } from "./scripts-manager";
 import { playgroundStorage } from "./persistence";
 import { addSampleMarks } from "./marks";
 
@@ -19,20 +23,29 @@ const ws = new VelaWorkspace("#workspace", {
   // `cells` overrides per cell. A cell's NAME is its durable identity (persistence,
   // sync groups, ws.cell(name)) — DECLARATION ORDER fills the layout's slots, and
   // any entry is optional (an undeclared slot boots on the defaults above).
-  symbol: "BTCUSDT", // bare = first declared provider; 'coinbase:BTC-USD' pins a venue
+  symbol: "tv:OANDA:XAUUSD", // 'provider:SYMBOL' pins a provider
   timeframe: "60",
   cells: {
+    gold: { symbol: "tv:OANDA:XAUUSD", timeframe: "60" },
+    silver: { symbol: "tv:OANDA:XAGUSD", timeframe: "60" },
+    eur: { symbol: "tv:OANDA:EURUSD", timeframe: "15" },
     btc: { symbol: "BTCUSDT", timeframe: "60" },
-    eth: { symbol: "ETHUSDT", timeframe: "15" },
-    sol: { symbol: "SOLUSDT", timeframe: "240" },
-    bnb: { symbol: "BNBUSDT", timeframe: "D" },
   },
-  providers: { binance: () => new BinanceProvider() },
-  engines: { demo: () => new DemoEngine() }, // ONE instance per cell (a worker engine would get a thread each)
-  defaultLanguage: "demo", // scripts added without a `language` run on the engine above
-  // No script manifest: the indicators dialog lists the built-in catalog only.
+  providers: {
+    tv: () => new TradingViewServerProvider(),
+    binance: () => new BinanceProvider(),
+  },
+  engines: {
+    demo: () => new DemoEngine(), // ONE instance per cell (a worker engine would get a thread each)
+    pine: () => new PineWorkerEngine(), // Pine Script v5/v6 via PineTS, off the main thread
+  },
+  defaultLanguage: "pine", // scripts added without a `language` run on Pine
+  // Scripts of the library (trading server), listed in the indicators dialog beside the
+  // built-in catalog. Listed only — nothing is added to a chart until the user picks it.
+  indicators: loadManifest,
   live: true,
   theme: "dark",
+  timezone: "Asia/Ho_Chi_Minh", // display zone (default Etc/UTC); data stays in UTC
   autofocus: true, // the workspace IS the page — shortcuts work from the first keystroke
   // The playground's CUSTOM persistence (shared with the widget page): the whole
   // workspace document — layout, sync, timezone, and per cell the market, renderer
@@ -91,6 +104,9 @@ const ws = new VelaWorkspace("#workspace", {
   // maxWebglCells: 8,               // above this many cells, every cell renders canvas2d
   //                                 //  (browser WebGL-context budget; glow unavailable there)
 });
+
+// The Pine script library: CRUD, favorites, compile check and thumbnails (scripts-manager.ts).
+installScriptLibrary(ws);
 
 // The page shell follows the app theme — flip it from any cell's chart settings →
 // Canvas → Theme (or `__ws.setTheme('light')` in the console); every LIVE cell relays
